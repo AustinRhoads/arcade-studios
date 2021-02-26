@@ -3,11 +3,19 @@
 
 
 
+
+
 var context, controller, rectangle, loop;
 
 context = document.querySelector("canvas").getContext("2d");
 context.canvas.height = 180;
 context.canvas.width = 320;
+
+
+let defaultToken = {
+    jumpingHeight: 25,
+    speed: 0.5//0.5 is avg, 1.2 is fast but good
+}
 
 
 rectangle = {
@@ -53,20 +61,20 @@ rectangle = {
   
     if (controller.up && rectangle.jumping == false) {
   
-      rectangle.y_velocity -= 20;
+      rectangle.y_velocity -= defaultToken.jumpingHeight; //jumping height
       rectangle.jumping = true;
   
     }
   
     if (controller.left) {
   
-      rectangle.x_velocity -= 0.5;
+      rectangle.x_velocity -= defaultToken.speed;//speed 0.5
   
     }
   
     if (controller.right) {
   
-      rectangle.x_velocity += 0.5;
+      rectangle.x_velocity += defaultToken.speed;//speed 0.5
   
     }
   
