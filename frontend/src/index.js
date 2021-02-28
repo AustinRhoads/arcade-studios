@@ -13,10 +13,15 @@ context.canvas.width = 320;
 
 
 let defaultToken = {
-    jumpingHeight: 25,
-    speed: 0.5//0.5 is avg, 1.2 is fast but good
+    jumpingHeight: 25, //25 is good starting point
+    speed: 0.8   //0.5 is avg, 1.2 is fast but good
 }
 
+let defaultEnvironment = {
+    gravity: 1.1,  //1.5 is good starting point
+    xFriction: 0.93,
+    yFriction: 0.93    //friction at 0.9 for SP
+}
 
 rectangle = {
 
@@ -78,11 +83,11 @@ rectangle = {
   
     }
   
-    rectangle.y_velocity += 1.5;// gravity
+    rectangle.y_velocity += defaultEnvironment.gravity;// gravity 1.5 SP
     rectangle.x += rectangle.x_velocity;
     rectangle.y += rectangle.y_velocity;
-    rectangle.x_velocity *= 0.9;// friction
-    rectangle.y_velocity *= 0.9;// friction
+    rectangle.x_velocity *= defaultEnvironment.xFriction;// friction 0.9 SP
+    rectangle.y_velocity *= defaultEnvironment.yFriction;// friction 0.9 SP
   
     // if rectangle is falling below floor line
     if (rectangle.y > 180 - 16 - 32) {
@@ -125,3 +130,27 @@ rectangle = {
   window.addEventListener("keydown", controller.keyListener)
   window.addEventListener("keyup", controller.keyListener);
   window.requestAnimationFrame(loop);
+
+
+
+
+
+
+
+
+  /////front end functions
+  function User(name) {
+      return{
+          name
+      }
+  }
+
+  function Player(name, speed, jump_height){
+      return {
+          name,
+          speed,
+          jump_height
+      }
+  }
+
+  
