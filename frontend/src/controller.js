@@ -1,18 +1,21 @@
-;
+const Controller = function(){
 
-let defaultToken = {
-    jumpingHeight: 25, //25 is good starting point
-    speed: 0.8,   //0.5 is avg, 1.2 is fast but good
-    rectangle: {
+    this.left = new Controller.ButtonInput();
+    this.up = new Controller.ButtonInput();
+    this.right = new Controller.ButtonInput();
 
-        height:32,
-        jumping:true,
-        width:32,
-        x:144, // center of the canvas *** change to drop point
-        x_velocity:0,
-        y:0,
-        y_velocity:0
-      
-      }
-}
+
+    this.keyDownUp = function(type, key_code){
+        var isKeyDown = (type == "keyDown")? true:false;
+
+        switch(key_code){
+            case 37: this.left.getInput(isKeyDown); 
+            break;
+            case 38: this.up.getInput(isKeyDown);
+            break;
+            case 39: this.right.getInput(isKeyDown);
+        };
+    };
+
+};
 
