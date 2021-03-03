@@ -1,11 +1,7 @@
 {
   "games": [
-
+  
   ],
-  "players": [
- 
-  ],
-  "baddies": [
-    
-  ]
+  "players": [],
+  "baddies": []
 }
