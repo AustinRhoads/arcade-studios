@@ -10,7 +10,9 @@ class GamesController < ApplicationController
 
     def create
         game = Game.create(game_params)
-        player = game.build_player(player_params).save
+        if player_params[:name] != "" #tempfix
+         player = game.build_player(player_params).save
+        end
       
        render json: game, include: [:player]
     end
