@@ -5,8 +5,14 @@ function newGame(){
 
 
 let gameData = {
-  name: document.getElementById('new_game_name').value
+  name: document.getElementById('game_name').value,
+  player: {
+    name: document.getElementById('player_name').value
+  }
 }
+
+
+
 
 let postGameObject = {
   method: "POST",
@@ -26,9 +32,10 @@ let lefetch = fetch("http://localhost:3000/games", postGameObject)
    
 })
 
-document.getElementById('new_game_name').value = "";
+document.getElementById('game_name').value = "";
+document.getElementById('player_name').value ="";
 }
 
-document.getElementById('new_game_button').addEventListener("click", function(){
+document.getElementById('game_save_button').addEventListener("click", function(){
   newGame();
 });
