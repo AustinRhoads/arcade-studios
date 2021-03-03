@@ -9,13 +9,19 @@ class GamesController < ApplicationController
     end
 
     def create
-      
         game = Game.create(game_params)
-       render json: game
+        player = game.build_player(player_params).save
+      
+       render json: game, include: [:player]
     end
 
     def game_params
         params.require(:game).permit(:name)
     end
+
+    def player_params
+        params.require(:player).permit(:name)
+    end
+
 
 end
