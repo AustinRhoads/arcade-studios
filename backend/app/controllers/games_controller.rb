@@ -28,7 +28,7 @@ class GamesController < ApplicationController
     end
 
     def game_params
-        params.require(:game).permit(:name, :gravity)
+        params.require(:game).permit(:name, :gravity, :friction)
     end
 
     def player_params

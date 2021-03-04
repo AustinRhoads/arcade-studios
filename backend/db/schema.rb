@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
 
   create_table "games", force: :cascade do |t|
     t.string "name"
+    t.float "gravity", default: 1.5
+    t.float "friction", default: 0.9
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
