@@ -10,11 +10,24 @@ class GamesController < ApplicationController
 
     def create
         game = Game.create(game_params)
-        if player_params[:name] != "" #tempfix
-         player = game.build_player(player_params).save
+        player = game.build_player(player_params)
+        if player.valid?
+         player.save
         end
       
-       render json: game, include: [:player]
+       # binding.pry
+        baddy_params[:baddies].each do |bad|
+           # binding.pry
+           
+            baddy = game.baddies.build(bad)
+           
+            if baddy.valid?
+                baddy.save
+            end
+        end
+
+
+        render json: game, include: [:player, :baddies]
     end
 
     def game_params
@@ -23,6 +36,11 @@ class GamesController < ApplicationController
 
     def player_params
         params.require(:player).permit(:name)
+    end
+
+    def baddy_params
+        params.permit(baddies: [:name])
+       
     end
 
 
