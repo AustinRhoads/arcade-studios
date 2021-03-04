@@ -7,7 +7,9 @@ function newGame(){
 let gameData = {
   name: document.getElementById('game_name').value,
   player: {
-    name: document.getElementById('player_name').value
+    name: document.getElementById('player_name').value,
+    speed: document.getElementById('player_speed').value,
+    jumping_height: document.getElementById('player_jumping_height').value,
   },
   baddies: [
     //all baddies get pushed here
