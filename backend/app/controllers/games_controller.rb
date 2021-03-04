@@ -15,12 +15,9 @@ class GamesController < ApplicationController
          player.save
         end
       
-       # binding.pry
+    
         baddy_params[:baddies].each do |bad|
-           # binding.pry
-           
             baddy = game.baddies.build(bad)
-           
             if baddy.valid?
                 baddy.save
             end
@@ -35,7 +32,7 @@ class GamesController < ApplicationController
     end
 
     def player_params
-        params.require(:player).permit(:name)
+        params.require(:player).permit(:name, :speed, :jumping_height)
     end
 
     def baddy_params

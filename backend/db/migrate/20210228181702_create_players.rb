@@ -2,8 +2,8 @@ class CreatePlayers < ActiveRecord::Migration[6.0]
   def change
     create_table :players do |t|
       t.string :name
-      t.integer :speed
-      t.integer :jump_height
+      t.float :speed, :default => 0.5
+      t.integer :jumping_height, :default => 25
 
       t.references :game, foreign_key: true
       t.timestamps
