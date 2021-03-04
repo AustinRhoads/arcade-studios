@@ -28,7 +28,7 @@ class GamesController < ApplicationController
     end
 
     def game_params
-        params.require(:game).permit(:name)
+        params.require(:game).permit(:name, :gravity)
     end
 
     def player_params
@@ -36,7 +36,7 @@ class GamesController < ApplicationController
     end
 
     def baddy_params
-        params.permit(baddies: [:name])
+        params.permit(baddies: [:name, :speed])
        
     end
 
