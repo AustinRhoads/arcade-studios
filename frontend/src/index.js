@@ -1,11 +1,13 @@
 
 
 
-function newGame(){
+function saveGame(){
 
 
 let gameData = {
   name: document.getElementById('game_name').value,
+  gravity: document.getElementById('game_gravity').value,
+  friction: document.getElementById('game_friction').value,
   player: {
     name: document.getElementById('player_name').value,
     speed: document.getElementById('player_speed').value,
@@ -53,13 +55,23 @@ let lefetch = fetch("http://localhost:3000/games", postGameObject)
 }
 
 document.getElementById('game_save_button').addEventListener("click", function(){
-  newGame();
+  saveGame();
+});
+
+window.addEventListener("keypress", function(e){
+ if(e.key == "Enter"){
+   saveGame()
+ }
 });
 
 
+let currentGame = {}
+
+const gameDefaultSettings = {
+
+}
 
 function loadGameObject(obj){
-  document.getElementById('game_name').value = obj.name;
-  document.getElementById('player_name').value = obj.player.name;
+
   console.log(obj);
 }
