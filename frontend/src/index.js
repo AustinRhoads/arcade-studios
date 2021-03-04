@@ -22,7 +22,10 @@ console.log(allBaddies);
 console.log(allBaddies.length);
 
 for(let x = 0; x < allBaddies.length; x++){
-  gameData.baddies.push({name: allBaddies[x].querySelector('input[name="baddy_name"]').value});
+  gameData.baddies.push({
+  name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+  speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
+});
   console.log(gameData.baddies)
 }
 
