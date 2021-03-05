@@ -138,9 +138,7 @@ function loadGameObject(obj){
 
 
 
- //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
- window.addEventListener("keydown", controller.keyListener)
- window.addEventListener("keyup", controller.keyListener)
+
 
 
 
@@ -148,4 +146,78 @@ function loadGameObject(obj){
   //////////////////////
  ///GAME ENGINE LOOP///
 //////////////////////
- 
+
+
+ loop = function(){
+
+    if(controller.up && rectangle.jumping == false) { ////make sure to replace rectangel with player object
+      rectangle.y_velocity -= 20; ///player.jumping_height
+      rectangle.jumping = true;
+    }
+
+    if(controller.left){
+      rectangle.x_velocity -= 0.5;   //replace with player.speed
+    }
+
+    if(controller.right){
+      rectangle.x_velocity += 0.5;   //replace with player.speed
+    }
+     ////////////////////////\\\\\\\\\\\\\\\
+    ///GMAE WORLD PHYSICS///\\\ WORLD \\\\\\\
+   ////////////////////////\\\\\\\\\\\\\\\\\\\
+
+   rectangle.y_velocity += 1.5;   //replace with game.gravity
+   rectangle.x += rectangle.x_velocity
+   rectangle.y += rectangle.y_velocity
+   rectangle.x_velocity *= 0.9; //replace with game.friction
+   rectangle.y_velocity *= 0.9; //replace with game.friction
+
+
+         /////////////////////////////////////////////
+        ///BASIC COLLISION DETECTION FOR THE FLOOR///
+       /////////////////////////////////////////////
+
+
+    //if rectangle is below the floor line
+    if (rectangle.y > 180 - 16 - 32){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+      rectangle.jumping = false;
+      rectangle.y = 180 - 16 - 32;
+      rectangle.y_velocity = 0;
+    }
+
+    ////////////////////\\\\\\\\\\\\\\\\\
+    ///side screen CD//  \\PACMAN STYLE\\\
+    //////////////////    \\\\\\\\\\\\\\\\\
+
+    if(rectangle.x < - 32) { //32 is player.width
+      rectangle.x = 320; //other side of canvas
+    } else if (rectangle.x > 320) { // canvas width
+      rectangle.x = -32; //other side of canvas
+    }
+
+    //fill background with dark grey
+    context.fillStyle = '#202020'; //dark grey background
+    context.fillRect(0, 0, 320, 180); //fill in the size of the game.canvas_width/height
+
+    //draw rectangle
+    context.fillStyle= "#ff0000" //hex code for red
+    context.beginPath();
+    context.rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height); ///change to player. height/width etc
+    context.fill();
+
+    //draws the floor
+    context.strokeStyle = '#202830';
+    context.lineWidth = 4;
+    context.beginPath();
+    context.moveTo(0, 164);
+    context.lineTo(320, 164);
+    context.stroke();
+
+    //calls upon itself
+    window.requestAnimationFrame(loop);
+ }
+
+ window.requestAnimationFrame(loop);
+  //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
+  window.addEventListener("keydown", controller.keyListener)
+  window.addEventListener("keyup", controller.keyListener)
