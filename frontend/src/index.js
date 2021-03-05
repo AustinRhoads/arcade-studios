@@ -106,35 +106,10 @@ function loadGameObject(obj){
 
 
 
-   //////////////////////
-  ///CONTROLLER LOGIC///
- //////////////////////
+   //////////////////////    \\\\\\\\\\     ////////////////////////////   
+  ///CONTROLLER LOGIC///      XXXXXXXXX >  ///moved to controller.js/// 
+ //////////////////////      //////////   ////////////////////////////   
 
-
- controller = {
-   left: false,
-   right: false,
-   up: false,
-
-  keyListener: function(event) {
-    var key_state = (event.type == "keydown")? true:false;
-    switch(event.keyCode){
-      case 37: //left
-        controller.left = key_state;
-        console.log("left" + `${key_state}`);
-      break;
-      case 38: //up
-        controller.up = key_state;
-        console.log("up" + `${key_state}`);
-      break;
-      case 39: //right
-        controller.right = key_state;
-        console.log("right" + `${key_state}`);
-      break;
-    }
-  }
-
- }
 
 
 
@@ -217,7 +192,30 @@ function loadGameObject(obj){
     window.requestAnimationFrame(loop);
  }
 
- window.requestAnimationFrame(loop);
+
+
+
+
+
+ //wait until it all loads and then...
+
+    ///////////////////////////
+   ///START THE GAME ENGINE///
+  ///////////////////////////
+ //\       SIGHT OF        /
+ // \  FUTURE ASCII ART   /
+//   \                   /
+  //  \                 /
+  //   \    BOOM!      /
+
+ window.addEventListener('DOMContentLoaded', () => {
+
+
+
+  window.requestAnimationFrame(loop);
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
   window.addEventListener("keydown", controller.keyListener)
   window.addEventListener("keyup", controller.keyListener)
+});
+
+
