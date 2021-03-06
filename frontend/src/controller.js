@@ -52,7 +52,8 @@
  //////////////////////
 
 
- controller = {
+ function Controller() {
+     return{
     left: false,
     right: false,
     up: false,
@@ -74,5 +75,8 @@
        break;
      }
    }
+}
  
   }
+
+  
