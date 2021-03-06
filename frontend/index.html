@@ -2,21 +2,31 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>ARCADE STUDIOS</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="player-editor">
-     <input type="text" id="player_name" placeholder = "--Name of player--">
-     <br>
-     <label for="player_speed">Player's Running speed (0.5-2):</label>
-      <input type="number" id="player_speed" min="0.5" max="2" step="0.1">
+
+    <div id="game-loader">
+      <select class="game-selector"></select>
+    </div>
+
+    <div id="player-editor" class = "editor_box">
+      <input type="text" id="player_name" placeholder = "--Name of player--">
+
       <br>
-     <label for="player_jumping_height">Player's Jumping Height (20-40):</label>
+      <canvas></canvas>
+      <br>
+    
+      <label for="player_speed">Player's Running speed (0.5-2):</label>
+      <input type="number" id="player_speed" min="0.5" max="2" step="0.1">
+
+      <label for="player_jumping_height">Player's Jumping Height (20-40):</label>
       <input type="number" id="player_jumping_height" min="20" max="40" step="1">
 
     </div>
 
-    <div id="baddies-editor">
+    <div id="baddies-editor" class = "editor_box">
       <div class="baddy">
         <input type="text" name="baddy_name" placeholder = "--Name of baddy--">
         <br>
@@ -32,7 +42,7 @@
       </div>
     </div>
     
-    <div id="game-world-editor">
+    <div id="game-world-editor" class = "editor_box">
       <input type="text" id="game_name" placeholder = "--Name of the game--">
       <br>
       <label for="game_gravity">gravity (1-3):</label>
@@ -45,7 +55,7 @@
     <input type="submit" value = "Save Game" id = "game_save_button">
 <br>
 
-<canvas></canvas>
+
 
 
 

@@ -63,15 +63,15 @@
      switch(event.keyCode){
        case 37: //left
          controller.left = key_state;
-         console.log("left" + `${key_state}`);
+         
        break;
        case 38: //up
          controller.up = key_state;
-         console.log("up" + `${key_state}`);
+         
        break;
        case 39: //right
          controller.right = key_state;
-         console.log("right" + `${key_state}`);
+         
        break;
      }
    }
