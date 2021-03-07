@@ -1,74 +1,108 @@
+////////// SOME IMPORTANT VARIABLES /////////////////
+
+const BASE_URL = "http://localhost:3000/";
+const GAMES_URL = BASE_URL + "/games";
 
 
-let game_load_list = document.querySelector('select.game-selector');
+
+
+
+
+let game_load_list = document.querySelector('select#game-selector');
 
 
 function populate_load_list(){
-   let records = fetch("http://localhost:3000/games")
+
+  let oldList = game_load_list.querySelectorAll('option')
+  oldList.forEach((el) => el.parentElement.removeChild(el));
+ 
+  let all = fetch("http://localhost:3000/games")
    .then(resp => resp.json())
    .then( function(obj){
-    return obj
+
+
+    //populate the select list
+     dataArray = obj['data'];
+    for(const game of dataArray){
+
+      let opt = document.createElement('option');
+      opt.value = game.id;
+      opt.innerText = game.attributes.name;
+      game_load_list.appendChild(opt);
+    }
+
+
+
+    // console.log(dataArray[0].attributes.name)
+
+
+
    });
-
-console.log(records)
-
+   
+   
 }
 
 
+  
+   /////////////// 
+  ///SAVE GAME///
+ ///////////////
 
 
 function saveGame(){
 
 
-let gameData = {
-  name: document.getElementById('game_name').value,
-  gravity: document.getElementById('game_gravity').value,
-  friction: document.getElementById('game_friction').value,
-  player: {
-    name: document.getElementById('player_name').value,
-    speed: document.getElementById('player_speed').value,
-    jumping_height: document.getElementById('player_jumping_height').value,
-  },
-  baddies: [
-    //all baddies get pushed here
-  ]
+  let gameData = {
+    name: document.getElementById('game_name').value,
+    gravity: document.getElementById('game_gravity').value,
+    friction: document.getElementById('game_friction').value,
+    player: {
+      name: document.getElementById('player_name').value,
+      speed: document.getElementById('player_speed').value,
+      jumping_height: document.getElementById('player_jumping_height').value,
+    },
+    baddies: [
+      //all baddies get pushed here
+    ]
+
+  }
+
+  let allBaddies = document.getElementsByClassName('baddy');
+
+  for(let x = 0; x < allBaddies.length; x++){
+    gameData.baddies.push({
+    name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+    speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
+  });
+    //console.log(gameData.baddies)
+  }
+
+
+  let postGameObject = {
+    method: "POST",
+    headers:{
+        "Content-Type":"application/json",
+        "Accept":"application/json"
+    },
+    body: JSON.stringify(gameData)
+  };
+
+  let lefetch = fetch(GAMES_URL, postGameObject)
+  .then(resp => resp.json())
+  .then(function(obj){
+     loadGame(obj.id)
+     populate_load_list()
+    })
+  .catch(function(error){
+      alert ("holy shmokes");
+
+
+  })
   
 }
 
-let allBaddies = document.getElementsByClassName('baddy');
-console.log(allBaddies);
-console.log(allBaddies.length);
 
-for(let x = 0; x < allBaddies.length; x++){
-  gameData.baddies.push({
-  name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-  speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
-});
-  console.log(gameData.baddies)
-}
-
-
-let postGameObject = {
-  method: "POST",
-  headers:{
-      "Content-Type":"application/json",
-      "Accept":"application/json"
-  },
-  body: JSON.stringify(gameData)
-};
-
-let lefetch = fetch("http://localhost:3000/games", postGameObject)
-.then(resp => resp.json())
-.then(obj => loadGameObject(obj))
-.catch(function(error){
-    alert ("holy shmokes");
-  
-   
-})
-
-//document.getElementById('game_name').value = "";
-//document.getElementById('player_name').value ="";
-}
+///event listeners to save game
 
 document.getElementById('game_save_button').addEventListener("click", function(){
   saveGame();
@@ -87,9 +121,26 @@ const gameDefaultSettings = {
 
 }
 
-function loadGameObject(obj){
 
+    ///////////////
+   ///LOAD GAME///
+  ///////////////
+
+
+
+
+function loadGame(id){
+
+
+ let fetcher = fetch(GAMES_URL+`/${id}`)
+ .then(resp => resp.json())
+ .then(function(obj){
   console.log(obj);
+ })
+
+
+
+
 }
 
 
@@ -242,12 +293,21 @@ function loadGameObject(obj){
   //  \                 /  
   //   \    BOOM!      /
 
- window.addEventListener('DOMContentLoaded', () => {
 
+  
+ window.addEventListener('DOMContentLoaded', () => {
+  
   controller = new Controller();
 
+
+  //game loader
   populate_load_list();
-  
+  let loadButton = document.getElementById("load_game");
+  loadButton.addEventListener("click", function(){
+    loadGame(document.getElementById('game-selector').value);
+  })
+
+
 
   window.requestAnimationFrame(loop);
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
