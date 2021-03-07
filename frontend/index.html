@@ -30,17 +30,17 @@
       <br>
     
       <label for="player_speed">Player's Running speed (0.5-2):</label>
-      <input style="margin: 10px;" type="number" id="player_speed" min="0.5" max="2" step="0.1">
+      <input style="margin: 10px;" type="number" id="player_speed" min="0.5" max="2" step="0.1" value = "0.5">
       <br>
       <label for="player_jumping_height">Player's Jumping Height (20-40):</label>
-      <input style="margin: 10px;" type="number" id="player_jumping_height" min="20" max="40" step="1">
+      <input style="margin: 10px;" type="number" id="player_jumping_height" min="20" max="40" step="1" value = "20">
 
     </fieldset>
 <br>
     <fieldset id="baddies-editor" class = "editor_box">
       <legend>Baddies Editor</legend>
       <button id="add-baddy">Add Baddy</button>
-      <div class="baddy">
+      
     
     </fieldset>
     
@@ -49,10 +49,10 @@
     <fieldset id="game-world-editor" class = "editor_box">
       <legend>Game World Physics</legend>
       <label for="game_gravity">gravity (1-3):</label>
-      <input style="margin: 10px;" type="number" id="game_world_gravity" min="1" max="3" step="0.5">
+      <input style="margin: 10px;" type="number" id="game_world_gravity" min="1" max="3" step="0.5" value = "1.5">
       <br>
       <label for="game_friction">friction (0.88-0.96):</label>
-      <input style="margin: 10px;" type="number" id="game_world_friction" min="0.88" max="0.96" step="0.01">
+      <input style="margin: 10px;" type="number" id="game_world_friction" min="0.88" max="0.96" step="0.01" value = "0.9">
     </fieldset>
 
     <input type="submit" value = "Save Game" id = "game_save_button">

@@ -82,6 +82,7 @@ function addBaddy(){
   speedInput.min = "0.5";
   speedInput.max = "2";
   speedInput.step = "0.1";
+  speedInput.value = "0.5";
 
 
   //<div class="baddy">
@@ -180,7 +181,7 @@ window.addEventListener("keypress", function(e){
 });
 
 
-let currentGame = {}
+var currentGame = {}
 
 const gameDefaultSettings = {
 
@@ -197,11 +198,40 @@ const gameDefaultSettings = {
 function loadGame(id){
 
 
- let fetcher = fetch(GAMES_URL+`/${id}`)
- .then(resp => resp.json())
- .then(function(obj){
-  console.log(obj);
- })
+  let fetcher = fetch(GAMES_URL+`/${id}`)
+    .then(resp => resp.json())
+    .then(function(obj){
+    let gameData = obj['data'].attributes
+
+     //game properties
+    let name = gameData.name;
+    let gravity = gameData.gravity;
+    let friction = gameData.friction;
+    let canvas_width = gameData.canvas_width;
+    let canvas_height = gameData.canvas_height;
+
+    let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
+
+    //player properties
+    let p_name = gameData.player.name;
+    let p_height = gameData.player.height;
+    let p_width = gameData.player.width;
+    let p_speed = gameData.player.speed;
+    let p_jumping_height = gameData.player.jumping_height;
+    
+    loadedGame.player = new Player(p_name, p_height, p_width, p_speed, p_jumping_height);
+
+    //baddy properties
+    loadedGame.baddies = [];
+    gameData.baddies.forEach((el) => 
+      loadedGame.baddies.push(new Baddy(el.name, el.height, el.width, el.speed))
+    )
+
+
+    
+    currentGame = loadedGame;
+    console.log(currentGame);
+   })
 
 
 
