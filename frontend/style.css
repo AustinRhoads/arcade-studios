@@ -1,5 +1,6 @@
 .editor_box{
     border: 3px solid rgb(78, 76, 76);
+    width: 320px;
 }
 
 .game-loader{

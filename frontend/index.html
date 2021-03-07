@@ -7,50 +7,53 @@
   </head>
   <body>
 
-    <div id="game-loader">
+    <fieldset id="game-loader" class = "editor_box">
+      <legend>Game Loader</legend>
       <select id="game-selector"></select><button id="load_game">Load</button>
-    </div>
+    </fieldset>
 
-    <div id="player-editor" class = "editor_box">
-      <input type="text" id="player_name" placeholder = "--Name of player--">
+    <br>
+
+    <fieldset class="editor_box">
+      <legend>Game Name</legend>
+      <input style="margin: 10px;" type="text" id="game_name" placeholder = "--Name of the game--">
+    </fieldset>
+    <br>
+
+
+    <fieldset id="player-editor" class = "editor_box">
+      <legend>Player Editor</legend>
+      <input style="margin: 10px;" type="text" id="player_name" placeholder = "--Name of player--">
 
       <br>
       <canvas></canvas>
       <br>
     
       <label for="player_speed">Player's Running speed (0.5-2):</label>
-      <input type="number" id="player_speed" min="0.5" max="2" step="0.1">
-
-      <label for="player_jumping_height">Player's Jumping Height (20-40):</label>
-      <input type="number" id="player_jumping_height" min="20" max="40" step="1">
-
-    </div>
-
-    <div id="baddies-editor" class = "editor_box">
-      <div class="baddy">
-        <input type="text" name="baddy_name" placeholder = "--Name of baddy--">
-        <br>
-        <label for="baddy_speed">Baddy's Running speed (0.5-2):</label>
-        <input type="number" name="baddy_speed" min="0.5" max="2" step="0.1">
-        
-      </div>
-      <div class="baddy">
-        <input type="text" name="baddy_name" placeholder = "--Name of baddy--">
-        <br>
-        <label for="baddy_speed">Baddy's Running speed (0.5-2):</label>
-        <input type="number" name="baddy_speed" min="0.5" max="2" step="0.1">
-      </div>
-    </div>
-    
-    <div id="game-world-editor" class = "editor_box">
-      <input type="text" id="game_name" placeholder = "--Name of the game--">
+      <input style="margin: 10px;" type="number" id="player_speed" min="0.5" max="2" step="0.1">
       <br>
+      <label for="player_jumping_height">Player's Jumping Height (20-40):</label>
+      <input style="margin: 10px;" type="number" id="player_jumping_height" min="20" max="40" step="1">
+
+    </fieldset>
+<br>
+    <fieldset id="baddies-editor" class = "editor_box">
+      <legend>Baddies Editor</legend>
+      <button id="add-baddy">Add Baddy</button>
+      <div class="baddy">
+    
+    </fieldset>
+    
+    <br>
+
+    <fieldset id="game-world-editor" class = "editor_box">
+      <legend>Game World Physics</legend>
       <label for="game_gravity">gravity (1-3):</label>
-      <input type="number" id="game_gravity" min="1" max="3" step="0.5">
+      <input style="margin: 10px;" type="number" id="game_world_gravity" min="1" max="3" step="0.5">
       <br>
       <label for="game_friction">friction (0.88-0.96):</label>
-      <input type="number" id="game_friction" min="0.88" max="0.96" step="0.01">
-    </div>
+      <input style="margin: 10px;" type="number" id="game_world_friction" min="0.88" max="0.96" step="0.01">
+    </fieldset>
 
     <input type="submit" value = "Save Game" id = "game_save_button">
 <br>

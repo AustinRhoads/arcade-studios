@@ -13,6 +13,7 @@ let game_load_list = document.querySelector('select#game-selector');
 
 function populate_load_list(){
 
+  //clear old list
   let oldList = game_load_list.querySelectorAll('option')
   oldList.forEach((el) => el.parentElement.removeChild(el));
  
@@ -43,6 +44,70 @@ function populate_load_list(){
 }
 
 
+
+///baddies editor
+
+var newBadButton = document.getElementById('add-baddy');
+
+function addBaddy(){
+
+  let editor = document.getElementById('baddies-editor');
+
+  let div = document.createElement('div');
+  div.classList.add("baddy");
+
+  let removeBaddyButton = document.createElement('button');
+  removeBaddyButton.textContent = "remove";
+  removeBaddyButton.addEventListener("click", function(){
+    removeMe(this);
+  });
+
+  let nameInput = document.createElement('input')
+  nameInput.style = "margin: 10px;";
+  nameInput.type = "text";
+  nameInput.name = "baddy_name";
+  nameInput.placeholder = "--Name of baddy--";
+
+  let br = document.createElement('br');
+  let br2 = document.createElement('br');
+
+  let speedLabel = document.createElement('label');
+  speedLabel.for = "baddy_speed";
+  speedLabel.textContent = "Baddy's Running speed (0.5-2):";
+
+  let speedInput = document.createElement("input");
+  speedInput.style = "margin: 10px;";
+  speedInput.type = "number";
+  speedInput.name = "baddy_speed";
+  speedInput.min = "0.5";
+  speedInput.max = "2";
+  speedInput.step = "0.1";
+
+
+  //<div class="baddy">
+  //<input style="margin: 10px;" type="text" name="baddy_name" placeholder = "--Name of baddy--">
+  //<br>
+  //<label for="baddy_speed">Baddy's Running speed (0.5-2):</label>
+  //<input style="margin: 10px;" type="number" name="baddy_speed" min="0.5" max="2" step="0.1">
+  //</div>
+  
+  div.appendChild(nameInput);
+  div.appendChild(removeBaddyButton);
+  div.appendChild(br);
+  div.appendChild(speedLabel);
+  div.appendChild(speedInput);
+  editor.appendChild(div)
+  editor.appendChild(br2);
+
+}
+
+
+function removeMe(el){
+  let baddyEl = el.parentElement;
+  console.log(baddyEl)
+  baddyEl.parentElement.removeChild(baddyEl);
+}
+
   
    /////////////// 
   ///SAVE GAME///
@@ -54,8 +119,8 @@ function saveGame(){
 
   let gameData = {
     name: document.getElementById('game_name').value,
-    gravity: document.getElementById('game_gravity').value,
-    friction: document.getElementById('game_friction').value,
+    gravity: document.getElementById('game_world_gravity').value,
+    friction: document.getElementById('game_world_friction').value,
     player: {
       name: document.getElementById('player_name').value,
       speed: document.getElementById('player_speed').value,
@@ -307,6 +372,10 @@ function loadGame(id){
     loadGame(document.getElementById('game-selector').value);
   })
 
+
+  //baddies editor
+  
+  newBadButton.addEventListener("click", () => addBaddy());
 
 
   window.requestAnimationFrame(loop);
