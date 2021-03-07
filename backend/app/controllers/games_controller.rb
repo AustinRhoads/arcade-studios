@@ -3,9 +3,9 @@ class GamesController < ApplicationController
     def index
         games = Game.all 
         options = {
-            include: [:players, :baddies]
+            include: [:players, :baddies,  :name, :player, :gravity, :friction, :canvas_width, :canvas_height]
         }
-        render json: games, include: [:player, :baddies]
+        render json: GameSerializer.new(games)
     end
 
     def create
@@ -27,8 +27,16 @@ class GamesController < ApplicationController
         render json: game, include: [:player, :baddies]
     end
 
+
+    def show
+        game = Game.find_by(:id => params[:id])
+        render json: game
+    end
+
+
+
     def game_params
-        params.require(:game).permit(:name, :gravity, :friction)
+        params.require(:game).permit( :name, :player, :gravity, :friction, :canvas_width, :canvas_height)
     end
 
     def player_params
