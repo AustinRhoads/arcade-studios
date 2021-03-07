@@ -2,7 +2,7 @@
 
 const BASE_URL = "http://localhost:3000/";
 const GAMES_URL = BASE_URL + "/games";
-
+var currentGame;
 
 
 
@@ -84,13 +84,6 @@ function addBaddy(){
   speedInput.step = "0.1";
   speedInput.value = "0.5";
 
-
-  //<div class="baddy">
-  //<input style="margin: 10px;" type="text" name="baddy_name" placeholder = "--Name of baddy--">
-  //<br>
-  //<label for="baddy_speed">Baddy's Running speed (0.5-2):</label>
-  //<input style="margin: 10px;" type="number" name="baddy_speed" min="0.5" max="2" step="0.1">
-  //</div>
   
   div.appendChild(nameInput);
   div.appendChild(removeBaddyButton);
@@ -181,11 +174,8 @@ window.addEventListener("keypress", function(e){
 });
 
 
-var currentGame = {}
 
-const gameDefaultSettings = {
 
-}
 
 
     ///////////////
@@ -230,15 +220,24 @@ function loadGame(id){
 
     
     currentGame = loadedGame;
+    currentGame.player.x = 144;
+    currentGame.player.y = 0;
+    currentGame.player.jumping = true;
     console.log(currentGame);
    })
-
-
-
 
 }
 
 
+
+function defaultSettings(){
+
+  let defaultGame = new Game(...Array(1), 1.5, 0.9, 320, 180 );
+  defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
+  return defaultGame;
+  
+
+}
 
 
 
@@ -249,24 +248,21 @@ function loadGame(id){
    //// SIMPLY GAME BUILD///
   /////////////////////////
   
-  var context, controller, rectangle, loop;
+  var context, controller, loop;
 
   
 
-  context = document.querySelector("canvas").getContext("2d");
+  
 
-  context.canvas.height = 180; //replace with game.canvas_height attr
-  context.canvas.width = 320; //replace with game.canvas_width attr
-
-  rectangle = {
-    height: 32,
-    width: 32,
-    jumping: true,
-    x: 144, //center of canvas spawn placement
-    y: 0,
-    x_velocity: 0,
-    y_velocity: 0
-  };
+  //rectangle = {
+  //  height: 32,
+  //  width: 32,
+  //  jumping: true,
+  //  x: 144, //center of canvas spawn placement
+  //  y: 0,
+  //  x_velocity: 0,
+  //  y_velocity: 0
+  //};
 
 
 
@@ -280,101 +276,9 @@ function loadGame(id){
 
 
 
-
-
-  //////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///
- ///GAME ENGINE LOOP/////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  /// 
-/////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///   
-                         ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///       
-
-
-
-
-
- loop = function(){
-
-       if(controller.up && rectangle.jumping == false) { ////make sure to replace rectangel with player object
-         rectangle.y_velocity -= 20; ///player.jumping_height
-         rectangle.jumping = true;
-       }
-     
-       if(controller.left){
-         rectangle.x_velocity -= 0.5;   //replace with player.speed
-       }
-     
-       if(controller.right){
-         rectangle.x_velocity += 0.5;   //replace with player.speed
-       }
-        ////////////////////////\\\\\\\\\\\\\\\
-       ///GMAE WORLD PHYSICS///\\\ WORLD \\\\\\\
-      ////////////////////////\\\\\\\\\\\\\\\\\\\
-     
-      rectangle.y_velocity += 1.5;   //replace with game.gravity 1.5
-      rectangle.x += rectangle.x_velocity
-      rectangle.y += rectangle.y_velocity
-      rectangle.x_velocity *= 0.9; //replace with game.friction
-      rectangle.y_velocity *= 0.9; //replace with game.friction
-     
-     
-            /////////////////////////////////////////////
-           ///BASIC COLLISION DETECTION FOR THE FLOOR///
-          /////////////////////////////////////////////
-     
-     
-       //if rectangle is below the floor line
-       if (rectangle.y > 180 - 16 - 32){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
-         rectangle.jumping = false;
-         rectangle.y = 180 - 16 - 32;
-         rectangle.y_velocity = 0;
-       }
-     
-        ///////////////////\\\\\\\\\\\\\\\\\
-       ///side screen CD//  \\PACMAN STYLE\\\
-      ///////////////////    \\\\\\\\\\\\\\\\\
-     
-     
-    //    __________________|      |____________________________________________
-    //       ,--.    ,--.          ,--.   ,--.
-    //      |oo  | _  \  `.       | oo | |  oo|
-    //  o  o|~~  |(_) /   ;       | ~~ | |  ~~|o  o  o  o  o  o  o  o  o  o  o
-    //      |/\/\|   '._,'        |/\/\| |/\/\|
-    //    __________________        ____________________________________________
-    //                      |      |
-     
-     
-       if(rectangle.x < - 32) { //32 is player.width
-         rectangle.x = 320; //other side of canvas
-       } else if (rectangle.x > 320) { // canvas width
-         rectangle.x = -32; //other side of canvas
-       }
-     
-       //fill background with dark grey
-       context.fillStyle = '#202020'; //dark grey background
-       context.fillRect(0, 0, 320, 180); //fill in the size of the game.canvas_width/height
-     
-       //draw rectangle
-       context.fillStyle= "#ff0000" //hex code for red
-       context.beginPath();
-       context.rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height); ///change to player. height/width etc
-       context.fill();
-     
-       //draws the floor
-       context.strokeStyle = '#202830';
-       context.lineWidth = 4;
-       context.beginPath();
-       context.moveTo(0, 164);
-       context.lineTo(320, 164);
-       context.stroke();
-     
-       //calls upon itself
-       window.requestAnimationFrame(loop);
-  }
-
-  ///////////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                     
- ///END OF GAME ENGINE LOOP///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                    
-///////////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                   
-                               ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///      
-
+   //////////////////////////
+  ///GAME ENGINE WAS HERE///    
+ //////////////////////////
 
 
  //wait until it all loads and then...
@@ -390,12 +294,126 @@ function loadGame(id){
 
 
   
- window.addEventListener('DOMContentLoaded', () => {
+ window.addEventListener('DOMContentLoaded',  () => {
   
+  currentGame = defaultSettings();
+   currentGame.player.x = 144;
+   currentGame.player.y = 0;
+   currentGame.player.jumping = true;
+  console.log(currentGame)
+
   controller = new Controller();
+ // engine = new Engine();
+
+   //////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///
+ ///GAME ENGINE LOOP/////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  /// 
+/////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///   
+                         ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///       
 
 
-  //game loader
+
+//function Engine(){
+  var canvas = document.querySelector("canvas");
+  canvas.style.width = currentGame.canvas_width;
+  canvas.style.height = currentGame.canvas_height;
+  var context = document.querySelector("canvas").getContext("2d");
+    
+
+  context.canvas.height = currentGame.canvas_height; //replace with game.canvas_height attr
+  context.canvas.width = currentGame.canvas_width; //replace with game.canvas_width attr
+  
+
+                        loop = function(){
+
+                          if(controller.up && currentGame.player.jumping == false) { ////make sure to replace rectangel with player object
+                            currentGame.player.y_velocity -= currentGame.player.jumping_height; ///player.jumping_height
+                            currentGame.player.jumping = true;
+                          }
+                        
+                          if(controller.left){
+                            currentGame.player.x_velocity -= currentGame.player.speed;   //replace with player.speed
+                          }
+                        
+                          if(controller.right){
+                            currentGame.player.x_velocity += currentGame.player.speed;   //replace with player.speed
+                          }
+                           ////////////////////////\\\\\\\\\\\\\\\
+                          ///GMAE WORLD PHYSICS///\\\ WORLD \\\\\\\
+                         ////////////////////////\\\\\\\\\\\\\\\\\\\
+                        
+                         currentGame.player.y_velocity += currentGame.gravity;   //replace with game.gravity 1.5
+                         currentGame.player.x += currentGame.player.x_velocity
+                         currentGame.player.y += currentGame.player.y_velocity
+                         currentGame.player.x_velocity *= currentGame.friction; //replace with game.friction 0.9
+                         currentGame.player.y_velocity *= currentGame.friction; //replace with game.friction 0.9
+                        
+                        
+                               /////////////////////////////////////////////
+                              ///BASIC COLLISION DETECTION FOR THE FLOOR///
+                             /////////////////////////////////////////////
+                        
+                        
+                          //if rectangle is below the floor line
+                          if (currentGame.player.y > currentGame.canvas_height - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+                            currentGame.player.jumping = false;
+                            currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;
+                            currentGame.player.y_velocity = 0;
+                          }
+                        
+                           ///////////////////\\\\\\\\\\\\\\\\\
+                          ///side screen CD//  \\PACMAN STYLE\\\
+                         ///////////////////    \\\\\\\\\\\\\\\\\
+                        
+                        
+                       //    __________________|      |____________________________________________
+                       //       ,--.    ,--.          ,--.   ,--.
+                       //      |oo  | _  \  `.       | oo | |  oo|
+                       //  o  o|~~  |(_) /   ;       | ~~ | |  ~~|o  o  o  o  o  o  o  o  o  o  o
+                       //      |/\/\|   '._,'        |/\/\| |/\/\|
+                       //    __________________        ____________________________________________
+                       //                      |      |
+                        
+                        
+                          if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
+                            currentGame.player.x = currentGame.canvas_width; //other side of canvas
+                          } else if (currentGame.player.x > currentGame.canvas_width) { // canvas width
+                            currentGame.player.x = -currentGame.player.width; //other side of canvas
+                          }
+                        
+                          //fill background with dark grey
+                          context.fillStyle = '#202020'; //dark grey background
+                          context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
+                        
+                          //draw rectangle
+                          context.fillStyle= "#ff0000" //hex code for red
+                          context.beginPath();
+                          context.rect(currentGame.player.x, currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
+                          context.fill();
+                        
+                          //draws the floor
+                          context.strokeStyle = '#202830';
+                          context.lineWidth = 4;
+                          context.beginPath();
+                          context.moveTo(0, 164);
+                          context.lineTo(320, 164);
+                          context.stroke();
+                        
+                          //calls upon itself
+                          window.requestAnimationFrame(loop);
+                         
+                      }
+                  
+//}
+
+
+
+                   
+                     ///////////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                     
+                    ///END OF GAME ENGINE LOOP///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                    
+                   ///////////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                   
+                                                  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  
+
+  
   populate_load_list();
   let loadButton = document.getElementById("load_game");
   loadButton.addEventListener("click", function(){
@@ -408,10 +426,12 @@ function loadGame(id){
   newBadButton.addEventListener("click", () => addBaddy());
 
 
+
   window.requestAnimationFrame(loop);
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
   window.addEventListener("keydown", controller.keyListener)
   window.addEventListener("keyup", controller.keyListener)
+
 });
 
 
