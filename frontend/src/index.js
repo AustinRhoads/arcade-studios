@@ -223,6 +223,22 @@ function loadGame(id){
     currentGame.player.x = 144;
     currentGame.player.y = 0;
     currentGame.player.jumping = true;
+
+    document.getElementById('game_name').value = name;
+    document.getElementById('game_world_gravity').value = gravity;
+    document.getElementById('game_world_friction').value = friction;
+    document.getElementById('player_name').value = currentGame.player.name;
+    document.getElementById('player_speed').value = currentGame.player.speed;
+    document.getElementById('player_jumping_height').value = currentGame.player.jumping_height;
+    
+    for(let x =0; x < currentGame.baddies.length; x++){
+      newBadButton.click();
+      let allBaddies = document.getElementsByClassName('baddy');
+      
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_name"]').value = currentGame.baddies[x].name;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = currentGame.baddies[x].speed;
+    }
+    
     console.log(currentGame);
    })
 
