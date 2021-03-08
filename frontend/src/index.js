@@ -8,6 +8,7 @@ var currentGame;
 
 
 
+
 let game_load_list = document.querySelector('select#game-selector');
 
 
@@ -348,18 +349,22 @@ function defaultSettings(){
                         
                           if(controller.left){
                             currentGame.player.x_velocity -= currentGame.player.speed;   //replace with player.speed
+                          //  currentGame.player.x_velocity = Math.ceil(currentGame.player.x_velocity - 1)//experiment
                           }
                         
                           if(controller.right){
                             currentGame.player.x_velocity += currentGame.player.speed;   //replace with player.speed
+                          //  currentGame.player.x_velocity = Math.floor(currentGame.player.x_velocity +1)//experiment
                           }
                            ////////////////////////\\\\\\\\\\\\\\\
                           ///GMAE WORLD PHYSICS///\\\ WORLD \\\\\\\
                          ////////////////////////\\\\\\\\\\\\\\\\\\\
                         
                          currentGame.player.y_velocity += currentGame.gravity;   //replace with game.gravity 1.5
-                         currentGame.player.x += currentGame.player.x_velocity
-                         currentGame.player.y += currentGame.player.y_velocity
+                         currentGame.player.x += currentGame.player.x_velocity;
+                         //currentGame.player.x = Math.ceil(currentGame.player.x);//experiment
+                         //experiment
+                         currentGame.player.y += currentGame.player.y_velocity;
                          currentGame.player.x_velocity *= currentGame.friction; //replace with game.friction 0.9
                          currentGame.player.y_velocity *= currentGame.friction; //replace with game.friction 0.9
                         
@@ -397,8 +402,11 @@ function defaultSettings(){
                           }
                         
                           //fill background with dark grey
-                          context.fillStyle = '#202020'; //dark grey background
-                          context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
+                         // context.fillStyle = '#202020'; //dark grey background
+                         // context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
+                          let testImg = document.createElement('img')
+                          testImg.src = './public/images/checkered_32px.png';
+                          context.drawImage(testImg, 0, 0);
                         
                           //draw rectangle
                           context.fillStyle= "#ff0000" //hex code for red
