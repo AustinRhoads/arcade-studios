@@ -6,3 +6,9 @@
 .game-loader{
     border: 3px solid rgb(78, 76, 76);
 }
+
+#editor-toolbox{
+    background-color: rgb(109, 105, 105);
+    width: 360px;
+    color: seashell;
+}

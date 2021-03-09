@@ -29,19 +29,11 @@ function populate_load_list(){
 
       let opt = document.createElement('option');
       opt.value = game.id;
-      opt.innerText = game.attributes.name;
+      opt.textContent = game.attributes.name;
       game_load_list.appendChild(opt);
     }
 
-
-
-    // console.log(dataArray[0].attributes.name)
-
-
-
-   });
-   
-   
+   });   
 }
 
 
@@ -52,15 +44,18 @@ var newBadButton = document.getElementById('add-baddy');
 
 function addBaddy(){
 
-  let editor = document.getElementById('baddies-editor');
+ 
+  let editor = document.getElementById('baddies-box');
 
   let div = document.createElement('div');
   div.classList.add("baddy");
 
   let removeBaddyButton = document.createElement('button');
+  removeBaddyButton.classList.add("removeBaddyButton");
   removeBaddyButton.textContent = "remove";
   removeBaddyButton.addEventListener("click", function(){
     removeMe(this);
+   // currentGame.baddies.remove(this);
   });
 
   let nameInput = document.createElement('input')
@@ -99,42 +94,66 @@ function addBaddy(){
 
 function removeMe(el){
   let baddyEl = el.parentElement;
-  console.log(baddyEl)
   baddyEl.parentElement.removeChild(baddyEl);
 }
 
+
+//real time parameter changes
+let p_speed = document.getElementById('player_speed');
+
+p_speed.addEventListener("click", function() {
+  currentGame.player.speed = parseFloat(p_speed.value);
+})
+
+let p_jumping_height = document.getElementById('player_jumping_height');
+
+p_jumping_height.addEventListener("click", function() {
+  currentGame.player.jumping_height = p_jumping_height.value;
+})
+
+let game_gravity = document.getElementById('game_world_gravity');
+
+game_gravity.addEventListener("click", function() {
+  currentGame.gravity = parseFloat(game_gravity.value);
+})
+
+let game_friction = document.getElementById('game_world_friction');
+
+game_friction.addEventListener("click", function() {
+  currentGame.friction = parseFloat(game_friction.value);
+})
+
+
   
-   /////////////// 
-  ///SAVE GAME///
- ///////////////
+           ////////////// 
+          ///NEW GAME///
+         //////////////
 
 
-function saveGame(){
+function newGame(){
 
+  let name = document.getElementById('game_name').value;  
+  let gravity = document.getElementById('game_world_gravity').value;
+  let friction = document.getElementById('game_world_friction').value;
 
-  let gameData = {
-    name: document.getElementById('game_name').value,
-    gravity: document.getElementById('game_world_gravity').value,
-    friction: document.getElementById('game_world_friction').value,
-    player: {
-      name: document.getElementById('player_name').value,
-      speed: document.getElementById('player_speed').value,
-      jumping_height: document.getElementById('player_jumping_height').value,
-    },
-    baddies: [
-      //all baddies get pushed here
-    ]
+  let gameData = new Game(name, gravity, friction)
 
-  }
+  let player_name = document.getElementById('player_name').value;
+  let player_speed = document.getElementById('player_speed').value;
+  let player_jumping_height = document.getElementById('player_jumping_height').value;
+
+  gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
+
+  gameData.baddies = [];
 
   let allBaddies = document.getElementsByClassName('baddy');
 
   for(let x = 0; x < allBaddies.length; x++){
     gameData.baddies.push({
-    name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-    speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
-  });
-    //console.log(gameData.baddies)
+      name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+      speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
+     });
+    
   }
 
 
@@ -161,17 +180,78 @@ function saveGame(){
   
 }
 
+///event listeners to save game
+
+document.getElementById('new_game_button').addEventListener("click", function(){
+  newGame();
+});
+
+
+
+
+                ///////////////
+               ///SAVE GAME///
+              ///////////////
+
+
+function saveGame(){
+
+  let name = document.getElementById('game_name').value;  
+  let gravity = document.getElementById('game_world_gravity').value;
+  let friction = document.getElementById('game_world_friction').value;
+
+  let gameData = new Game(name, gravity, friction)
+
+  let player_name = document.getElementById('player_name').value;
+  let player_speed = document.getElementById('player_speed').value;
+  let player_jumping_height = document.getElementById('player_jumping_height').value;
+
+  gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
+
+  gameData.baddies = [];
+
+  let allBaddies = document.getElementsByClassName('baddy');
+
+  for(let x = 0; x < allBaddies.length; x++){
+    gameData.baddies.push({
+      name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+      speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
+     });
+    
+  }
+
+
+
+
+    let postGameObject = {
+      method: "POST",
+      headers:{
+          "Content-Type":"application/json",
+          "Accept":"application/json"
+      },
+      body: JSON.stringify(gameData)
+    };
+
+  fetch(GAMES_URL, postGameObject)
+  .then(resp => resp.json())
+  .then(function(obj){
+     loadGame(obj.id)
+     populate_load_list()
+    })
+  .catch(function(error){
+      alert ("holy shmokes");
+
+
+  })
+
+  
+}
+
 
 ///event listeners to save game
 
 document.getElementById('game_save_button').addEventListener("click", function(){
   saveGame();
-});
-
-window.addEventListener("keypress", function(e){
- if(e.key == "Enter"){
-   saveGame()
- }
 });
 
 
@@ -187,6 +267,9 @@ window.addEventListener("keypress", function(e){
 
 
 function loadGame(id){
+
+  let editor = document.getElementById('baddies-box');
+  editor.innerHTML = "";
 
 
   let fetcher = fetch(GAMES_URL+`/${id}`)
@@ -225,13 +308,25 @@ function loadGame(id){
     currentGame.player.y = 0;
     currentGame.player.jumping = true;
 
+    //populating the editor form
+
     document.getElementById('game_name').value = name;
     document.getElementById('game_world_gravity').value = gravity;
     document.getElementById('game_world_friction').value = friction;
     document.getElementById('player_name').value = currentGame.player.name;
     document.getElementById('player_speed').value = currentGame.player.speed;
     document.getElementById('player_jumping_height').value = currentGame.player.jumping_height;
-    
+
+   
+ 
+   
+   
+//    if(removeBaddyButtons){
+//    removeBaddyButtons.forEach((el) => {
+//      el.click();
+//    });
+//  };
+//    
     for(let x =0; x < currentGame.baddies.length; x++){
       newBadButton.click();
       let allBaddies = document.getElementsByClassName('baddy');
@@ -239,8 +334,6 @@ function loadGame(id){
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_name"]').value = currentGame.baddies[x].name;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = currentGame.baddies[x].speed;
     }
-    
-    console.log(currentGame);
    })
 
 }
@@ -265,21 +358,7 @@ function defaultSettings(){
    //// SIMPLY GAME BUILD///
   /////////////////////////
   
-  var context, controller, loop;
-
   
-
-  
-
-  //rectangle = {
-  //  height: 32,
-  //  width: 32,
-  //  jumping: true,
-  //  x: 144, //center of canvas spawn placement
-  //  y: 0,
-  //  x_velocity: 0,
-  //  y_velocity: 0
-  //};
 
 
 
@@ -291,25 +370,6 @@ function defaultSettings(){
 
 
 
-
-
-   //////////////////////////
-  ///GAME ENGINE WAS HERE///    
- //////////////////////////
-
-
- //wait until it all loads and then...
-
-    ///////////////////////////
-   ///START THE GAME ENGINE///
-  ///////////////////////////
- //\       SIGHT OF        /
- // \  FUTURE ASCII ART   / 
-//   \                   /
-  //  \                 /  
-  //   \    BOOM!      /
-
-
   
  window.addEventListener('DOMContentLoaded',  () => {
   
@@ -317,130 +377,133 @@ function defaultSettings(){
    currentGame.player.x = 144;
    currentGame.player.y = 0;
    currentGame.player.jumping = true;
-  console.log(currentGame)
+  
 
   controller = new Controller();
- // engine = new Engine();
-
-   //////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///
- ///GAME ENGINE LOOP/////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  /// 
-/////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///   
-                         ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///       
-
-
-
-//function Engine(){
-  var canvas = document.querySelector("canvas");
-  canvas.style.width = currentGame.canvas_width;
-  canvas.style.height = currentGame.canvas_height;
-  var context = document.querySelector("canvas").getContext("2d");
-    
-
-  context.canvas.height = currentGame.canvas_height; //replace with game.canvas_height attr
-  context.canvas.width = currentGame.canvas_width; //replace with game.canvas_width attr
   
 
-                        loop = function(){
 
-                          if(controller.up && currentGame.player.jumping == false) { ////make sure to replace rectangel with player object
-                            currentGame.player.y_velocity -= currentGame.player.jumping_height; ///player.jumping_height
-                            currentGame.player.jumping = true;
-                          }
+
+  canvas = document.querySelector("canvas");
+                      
+  context = document.querySelector("canvas").getContext("2d");
+   
+ context.canvas.height = currentGame.canvas_height;
+ context.canvas.width = currentGame.canvas_width;
+
+
+
+
+ 
+                                              //////////////////////
+                                             ///GAME ENGINE LOOP///
+                                            //////////////////////                                                                                                              
+ 
+                       loop = function(){
+                         if(controller.up && currentGame.player.jumping == false) { 
+                           currentGame.player.y_velocity -= currentGame.player.jumping_height; 
+                           currentGame.player.jumping = true;
+                         }
+                       
+                         if(controller.left){
+                           currentGame.player.x_velocity -= currentGame.player.speed; 
                         
-                          if(controller.left){
-                            currentGame.player.x_velocity -= currentGame.player.speed;   //replace with player.speed
-                          //  currentGame.player.x_velocity = Math.ceil(currentGame.player.x_velocity - 1)//experiment
-                          }
-                        
-                          if(controller.right){
-                            currentGame.player.x_velocity += currentGame.player.speed;   //replace with player.speed
-                          //  currentGame.player.x_velocity = Math.floor(currentGame.player.x_velocity +1)//experiment
-                          }
-                           ////////////////////////\\\\\\\\\\\\\\\
-                          ///GMAE WORLD PHYSICS///\\\ WORLD \\\\\\\
-                         ////////////////////////\\\\\\\\\\\\\\\\\\\
-                        
-                         currentGame.player.y_velocity += currentGame.gravity;   //replace with game.gravity 1.5
-                         currentGame.player.x += currentGame.player.x_velocity;
-                         //currentGame.player.x = Math.ceil(currentGame.player.x);//experiment
-                         //experiment
-                         currentGame.player.y += currentGame.player.y_velocity;
-                         currentGame.player.x_velocity *= currentGame.friction; //replace with game.friction 0.9
-                         currentGame.player.y_velocity *= currentGame.friction; //replace with game.friction 0.9
-                        
-                        
-                               /////////////////////////////////////////////
-                              ///BASIC COLLISION DETECTION FOR THE FLOOR///
-                             /////////////////////////////////////////////
-                        
-                        
-                          //if rectangle is below the floor line
-                          if (currentGame.player.y > currentGame.canvas_height - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
-                            currentGame.player.jumping = false;
-                            currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;
-                            currentGame.player.y_velocity = 0;
-                          }
-                        
-                           ///////////////////\\\\\\\\\\\\\\\\\
-                          ///side screen CD//  \\PACMAN STYLE\\\
-                         ///////////////////    \\\\\\\\\\\\\\\\\
-                        
-                        
-                       //    __________________|      |____________________________________________
-                       //       ,--.    ,--.          ,--.   ,--.
-                       //      |oo  | _  \  `.       | oo | |  oo|
-                       //  o  o|~~  |(_) /   ;       | ~~ | |  ~~|o  o  o  o  o  o  o  o  o  o  o
-                       //      |/\/\|   '._,'        |/\/\| |/\/\|
-                       //    __________________        ____________________________________________
-                       //                      |      |
-                        
-                        
-                          if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
-                            currentGame.player.x = currentGame.canvas_width; //other side of canvas
-                          } else if (currentGame.player.x > currentGame.canvas_width) { // canvas width
-                            currentGame.player.x = -currentGame.player.width; //other side of canvas
-                          }
-                        
-                          //fill background with dark grey
-                         // context.fillStyle = '#202020'; //dark grey background
-                         // context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
-                          let testImg = document.createElement('img')
-                          testImg.src = './public/images/checkered_32px.png';
-                          context.drawImage(testImg, 0, 0);
-                        
-                          //draw rectangle
-                          context.fillStyle= "#ff0000" //hex code for red
-                          context.beginPath();
-                          context.rect(currentGame.player.x, currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
-                          context.fill();
-                        
-                          //draws the floor
-                          context.strokeStyle = '#202830';
-                          context.lineWidth = 4;
-                          context.beginPath();
-                          context.moveTo(0, 164);
-                          context.lineTo(320, 164);
-                          context.stroke();
-                        
-                          //calls upon itself
-                          window.requestAnimationFrame(loop);
-                         
+                         }
+                       
+                         if(controller.right){
+                           currentGame.player.x_velocity += currentGame.player.speed; 
+                       
+                         }
+                         if(controller.down && currentGame.player.jumping == true){
+                          currentGame.player.y_velocity += currentGame.player.speed
+                         }
+                          
+                                            //////////////////
+                                           ///GAME PHYSICS///
+                                          //////////////////
+
+                        currentGame.player.y_velocity += currentGame.gravity;
+                        currentGame.player.x += currentGame.player.x_velocity;
+
+                        currentGame.player.y += currentGame.player.y_velocity;
+                        currentGame.player.x_velocity *= currentGame.friction; 
+                        currentGame.player.y_velocity *= currentGame.friction; 
+                       
+                       
+                              /////////////////////////////////////////////
+                             ///BASIC COLLISION DETECTION FOR THE FLOOR///
+                            /////////////////////////////////////////////
+                       
+                       
+                         //if rectangle is below the floor line
+                         if (currentGame.player.y > currentGame.canvas_height - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+                           currentGame.player.jumping = false;
+                           currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;
+                           currentGame.player.y_velocity = 0;
+                         }
+                       
+                          ///////////////////                          \\\\\\\\\\\\\\\\\
+                         ///side screen CD//                            \\PACMAN STYLE\\\
+                        ///////////////////                              \\\\\\\\\\\\\\\\\
+                       
+                       
+                      //    __________________|      |____________________________________________
+                      //       ,--.    ,--.          ,--.   ,--.
+                      //      |oo  | _  \  `.       | oo | |  oo|
+                      //  o  o|~~  |(_) /   ;       | ~~ | |  ~~|o  o  o  o  o  o  o  o  o  o  o
+                      //      |/\/\|   '._,'        |/\/\| |/\/\|
+                      //    __________________        ____________________________________________
+                      //                      |      |
+                       
+                       
+                         if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
+                           currentGame.player.x = currentGame.canvas_width; //other side of canvas
+                         } else if (currentGame.player.x > currentGame.canvas_width) { // canvas width
+                           currentGame.player.x = -currentGame.player.width; //other side of canvas
+                         }
+                       
+                         //fill background with dark grey
+                        // context.fillStyle = '#202020'; //dark grey background
+                        // context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
+                         let testImg = document.createElement('img')
+                         testImg.src = './public/images/grey_checkered_4px.png';
+                         context.drawImage(testImg, 0, 0);
+                       
+                         //draw rectangle
+                         context.fillStyle= "#ff0000" 
+                         context.beginPath();
+                         context.rect(currentGame.player.x, currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
+                         context.fill();
+                       
+                         //draws the floor
+                         context.strokeStyle = '#202830';
+                         context.lineWidth = 4;
+                         context.beginPath();
+                         context.moveTo(0, 164);
+                         context.lineTo(320, 164);
+                         context.stroke();
+                       
+                         //calls upon itself
+                         window.requestAnimationFrame(loop);
+                       
                       }
-                  
-//}
+                
 
 
 
-                   
-                     ///////////////////////////////  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                     
-                    ///END OF GAME ENGINE LOOP///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                    
-                   ///////////////////////////////// ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///                   
-                                                  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  ///  
 
-  
+                 
+                                    ///////////////////////////
+                                   //END OF GAME ENGINE LOOP///
+                                  ////////////////////////////
+                             
+
+ 
   populate_load_list();
   let loadButton = document.getElementById("load_game");
   loadButton.addEventListener("click", function(){
+   
+  
     loadGame(document.getElementById('game-selector').value);
   })
 
@@ -451,6 +514,7 @@ function defaultSettings(){
 
 
 
+  //window.requestAnimationFrame(loop);
   window.requestAnimationFrame(loop);
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
   window.addEventListener("keydown", controller.keyListener)

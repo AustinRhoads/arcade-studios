@@ -57,6 +57,7 @@
     left: false,
     right: false,
     up: false,
+    down: false,
  
    keyListener: function(event) {
      var key_state = (event.type == "keydown")? true:false;
@@ -71,8 +72,10 @@
        break;
        case 39: //right
          controller.right = key_state;
-         
        break;
+       case 40: //down
+        controller.down = key_state;
+        break;
      }
    }
 }
