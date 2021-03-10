@@ -33,6 +33,15 @@ class GamesController < ApplicationController
         render json: GameSerializer.new(game)
     end
 
+    def update
+        game = Game.find_by(:id => params[:id])
+        game.player.update(player_params)
+        game.player.save
+        game.update(game_params)
+        #do same for baddies here
+        game.save
+        render json: GameSerializer.new(game)
+    end
 
 
     def game_params
