@@ -37,10 +37,16 @@ class GamesController < ApplicationController
         game = Game.find_by(:id => params[:id])
         game.player.update(player_params)
         game.player.save
+         #do same for baddies here
         game.update(game_params)
-        #do same for baddies here
         game.save
+
         render json: GameSerializer.new(game)
+    end
+
+    def destroy
+        game = Game.find_by(:id => params[:id])
+        game.delete
     end
 
 
