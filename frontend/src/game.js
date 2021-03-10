@@ -1,5 +1,6 @@
-function Game(name, gravity, friction, canvas_width, canvas_height ) {
+function Game( name, gravity, friction, canvas_width, canvas_height ) {
     return {
+        
         name,
         gravity,
         friction,
@@ -11,8 +12,8 @@ function Game(name, gravity, friction, canvas_width, canvas_height ) {
 
 
 
-function Player(name, height, width, speed, jumping_height) {
-   
+function Player( name, height, width, speed, jumping_height) {
+    
     this.name = name,
     this.height = height,
     this.width = width,

@@ -1,6 +1,6 @@
 ////////// SOME IMPORTANT VARIABLES /////////////////
 
-const BASE_URL = "http://localhost:3000/";
+const BASE_URL = "http://localhost:3000";
 const GAMES_URL = BASE_URL + "/games";
 var currentGame;
 
@@ -220,8 +220,8 @@ function saveGame(){
     
   }
 
-
-
+if(currentGame.id == null){
+  console.log(currentGame.id + "==null");
 
     let postGameObject = {
       method: "POST",
@@ -243,6 +243,32 @@ function saveGame(){
 
 
   })
+}
+
+if(currentGame.id != null){
+  
+console.log(currentGame.id + "updated");
+      let patchGameObject = {
+        method: "PATCH",
+        headers:{
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(gameData)
+      };
+    
+    fetch(GAMES_URL + `/${currentGame.id}`, patchGameObject)
+    .then(resp => resp.json())
+    .then(function(obj){
+      // loadGame(obj['data'].id)
+       populate_load_list()
+      })
+    .catch(function(error){
+        alert ("holy shmokes");
+    
+    
+    })
+}
 
   
 }
@@ -251,7 +277,7 @@ function saveGame(){
 ///event listeners to save game
 
 document.getElementById('game_save_button').addEventListener("click", function(){
-  saveGame();
+  saveGame(currentGame);
 });
 
 
@@ -275,6 +301,7 @@ function loadGame(id){
   let fetcher = fetch(GAMES_URL+`/${id}`)
     .then(resp => resp.json())
     .then(function(obj){
+      console.log(obj)
     let gameData = obj['data'].attributes
 
      //game properties
@@ -285,6 +312,7 @@ function loadGame(id){
     let canvas_height = gameData.canvas_height;
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
+    loadedGame.id = id;
 
     //player properties
     let p_name = gameData.player.name;
