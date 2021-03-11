@@ -12,3 +12,15 @@
     width: 360px;
     color: seashell;
 }
+
+#game-canvas{
+    border: solid black 3px;
+    border-radius: 25px;
+    
+}
+
+div#game-screen{
+    position: absolute;
+    margin-left: 400px;
+    top: 0;
+}

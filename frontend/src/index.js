@@ -488,7 +488,7 @@ function resetGame(gameObj){
 
  // canvas = document.querySelector("canvas");
                       
- game_context = document.querySelector("game-canvas").getContext("2d");
+ game_context = document.querySelector("#game-canvas").getContext("2d");
    
  game_context.canvas.height = currentGame.canvas_height;
  game_context.canvas.width = currentGame.canvas_width;
@@ -584,7 +584,12 @@ function resetGame(gameObj){
                                               game_context.stroke();
                                             
                                               //calls upon itself
-                                              window.requestAnimationFrame(game_loop);
+                                              if(game_paused == false){
+
+                                                window.requestAnimationFrame(game_loop);
+
+                                              }
+                                             
                                             
                                            }
                                      
@@ -636,11 +641,14 @@ function resetGame(gameObj){
 
                        currentGame.player.y_velocity += currentGame.gravity;
                        currentGame.player.x += currentGame.player.x_velocity;
+                      
 
                        currentGame.player.y += currentGame.player.y_velocity;
                        currentGame.player.x_velocity *= currentGame.friction; 
                        currentGame.player.y_velocity *= currentGame.friction; 
                       
+                       currentGame.player.x = Math.round(currentGame.player.x);//experiment
+                       
                       
                              /////////////////////////////////////////////
                             ///BASIC COLLISION DETECTION FOR THE FLOOR///
@@ -742,6 +750,17 @@ function resetGame(gameObj){
     
   });
 
+
+  let game_play_button = document.getElementById('game-play-button');
+
+  let game_paused = true;
+
+  game_play_button.addEventListener("click", function(){
+    game_paused = !game_paused;
+    player_editor_paused = true;
+    
+    window.requestAnimationFrame(game_loop);  
+  })
   
 
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
