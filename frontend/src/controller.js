@@ -64,18 +64,20 @@
      switch(event.keyCode){
        case 37: //left
          controller.left = key_state;
-         
+         event.preventDefault();
        break;
        case 38: //up
          controller.up = key_state;
-         
+         event.preventDefault();
        break;
        case 39: //right
          controller.right = key_state;
+         event.preventDefault();
        break;
        case 40: //down
-        controller.down = key_state;
-        break;
+         controller.down = key_state;
+         event.preventDefault();
+       break;
      }
    }
 }

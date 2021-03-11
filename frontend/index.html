@@ -9,24 +9,24 @@
     <div id = "editor-toolbox">
         <fieldset id="game-loader" class = "editor_box">
           <legend>Load Game</legend>
-          <select id="game-selector"></select><button id="load_game">Load</button>
+          <select id="game-selector"></select><button id="load_game">Load</button><button id = "reset_game_button">New Game</button>
         </fieldset>
       
         <br>
       
         <fieldset class="editor_box">
           <legend>Game Name</legend>
-          <input style="margin: 10px;" type="text" id="game_name" placeholder = "--Name of the game--"><button id = "new_game_button">New Game</button>
+          <input style="margin: 10px;" type="text" id="game_name" placeholder = "--Name of the game--">
         </fieldset>
         <br>
       
       
         <fieldset id="player-editor" class = "editor_box">
           <legend>Player Editor</legend>
-          <input style="margin: 10px;" type="text" id="player_name" placeholder = "--Name of player--">
+          <input style="margin: 10px;" type="text" id="player_name" placeholder = "--Name of player--"><button id ='player_editor_button'>play/pause</button>
         
           <br>
-          <canvas></canvas>
+          <canvas id = "pe_canvas"></canvas>
           <br>
         
           <label for="player_speed">Player's Running speed (0.5-33):</label>
@@ -59,6 +59,7 @@
       
         <input type="submit" value = "Save Game" id = "game_save_button">
     </div>
+    <canvas id = "game-canvas"></canvas>
 <br>
 
 
