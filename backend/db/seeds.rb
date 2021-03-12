@@ -10,3 +10,7 @@ game_a = Game.create(name: "Super Mario World")
 player_a = Player.create(name: "Mario", game: game_a)
 
 baddie_a = Baddy.create(name: "Bowser", game: game_a)
+
+
+game_b = Game.create(name: "Feather Cube", gravity: 0.1, friction: 0.79)
+player_b =Player.create(name: "Feather Fast", speed: 27, jumping_height:33, game: game_b )

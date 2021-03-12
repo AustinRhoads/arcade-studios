@@ -44,6 +44,8 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.boolean "jumping", default: true
     t.integer "x_velocity", default: 0
     t.integer "y_velocity", default: 0
+    t.integer "x_respawn", default: 100
+    t.integer "y_respawn", default: 330
     t.integer "game_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

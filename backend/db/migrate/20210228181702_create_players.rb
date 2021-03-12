@@ -9,6 +9,8 @@ class CreatePlayers < ActiveRecord::Migration[6.0]
       t.boolean :jumping, :default => true
       t.integer :x_velocity, :default => 0
       t.integer :y_velocity, :default => 0
+      t.integer :x_respawn, :default => 100
+      t.integer :y_respawn, :default => 330
 
 
       t.references :game, foreign_key: true
