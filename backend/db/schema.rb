@@ -29,8 +29,8 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.string "name"
     t.float "gravity", default: 1.5
     t.float "friction", default: 0.9
-    t.integer "canvas_width", default: 320
-    t.integer "canvas_height", default: 180
+    t.integer "canvas_width", default: 1000
+    t.integer "canvas_height", default: 550
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
