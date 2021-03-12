@@ -431,7 +431,7 @@ function defaultSettings(){
   let editor = document.getElementById('baddies-box');
   editor.innerHTML = "";
 
-  let defaultGame = new Game(...Array(1), 1.5, 0.9, 320, 180 );
+  let defaultGame = new Game(...Array(1), 1.5, 0.9, 1000, 550 );
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   return defaultGame;
   
@@ -486,8 +486,10 @@ function resetGame(gameObj){
 
   
 
- // canvas = document.querySelector("canvas");
-                      
+  game_canvas = document.querySelector("#game-canvas");
+  game_canvas.height = currentGame.canvas_height;
+  game_canvas.width = currentGame.canvas_width;
+
  game_context = document.querySelector("#game-canvas").getContext("2d");
    
  game_context.canvas.height = currentGame.canvas_height;
@@ -538,7 +540,7 @@ function resetGame(gameObj){
                                               //if rectangle is below the floor line
                                               if (currentGame.player.y > currentGame.canvas_height - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
                                                 currentGame.player.jumping = false;
-                                                currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;
+                                                currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;   ///replace 16 with game.canvas_floor
                                                 currentGame.player.y_velocity = 0;
                                               }
                                             
@@ -563,11 +565,11 @@ function resetGame(gameObj){
                                               }
                                             
                                               //fill background with dark grey
-                                             // context.fillStyle = '#202020'; //dark grey background
-                                             // context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
-                                              let testImg = document.createElement('img')
-                                              testImg.src = './public/images/grey_checkered_4px.png';
-                                              game_context.drawImage(testImg, 0, 0);
+                                              game_context.fillStyle = '#202020'; //dark grey background
+                                              game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
+                                            //  let testImg = document.createElement('img')
+                                            //  testImg.src = './public/images/grey_checkered_4px.png';
+                                            //  game_context.drawImage(testImg, 0, 0);
                                             
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
@@ -579,8 +581,8 @@ function resetGame(gameObj){
                                               game_context.strokeStyle = '#202830';
                                               game_context.lineWidth = 4;
                                               game_context.beginPath();
-                                              game_context.moveTo(0, 164);
-                                              game_context.lineTo(320, 164);
+                                              game_context.moveTo(0, currentGame.canvas_height - 16);
+                                              game_context.lineTo(currentGame.canvas_width, currentGame.canvas_height - 16);
                                               game_context.stroke();
                                             
                                               //calls upon itself
@@ -745,6 +747,10 @@ function resetGame(gameObj){
   player_editor_button.addEventListener("click",function(){
 
       player_editor_paused = !player_editor_paused;
+      if(player_editor_paused == true){
+         currentGame.player.x = 144;
+         currentGame.player.y = 0;
+        }
     
       window.requestAnimationFrame(player_editor_loop);  
     
