@@ -446,8 +446,10 @@ function resetGame(gameObj){
    populate_load_list();
    gameObj ||= defaultSettings();
    currentGame = gameObj;
-   currentGame.player.x = 144;//add currentGame.x_respawn 
-   currentGame.player.y = 0;//add currentGame.y_respawn 
+   currentGame.player.x = currentGame.player.x_respawn;//add currentGame.x_respawn 
+   currentGame.player.y = currentGame.player.y_respawn;//add currentGame.y_respawn
+   currentGame.player.edit_x = 144;
+   currentGame.player.edit_y = 0; 
    currentGame.player.jumping = true;
    populate_editor(gameObj);
 }
@@ -642,14 +644,14 @@ function resetGame(gameObj){
                                          //////////////////
 
                        currentGame.player.y_velocity += currentGame.gravity;
-                       currentGame.player.x += currentGame.player.x_velocity;
+                       currentGame.player.edit_x += currentGame.player.x_velocity;
                       
 
-                       currentGame.player.y += currentGame.player.y_velocity;
+                       currentGame.player.edit_y += currentGame.player.y_velocity;
                        currentGame.player.x_velocity *= currentGame.friction; 
                        currentGame.player.y_velocity *= currentGame.friction; 
                       
-                       currentGame.player.x = Math.round(currentGame.player.x);//experiment
+                       currentGame.player.x = Math.round(currentGame.player.edit_x);//experiment
                        
                       
                              /////////////////////////////////////////////
@@ -658,9 +660,9 @@ function resetGame(gameObj){
                       
                       
                         //if rectangle is below the floor line
-                        if (currentGame.player.y > 180 - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+                        if (currentGame.player.edit_y > 180 - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
                           currentGame.player.jumping = false;
-                          currentGame.player.y = 180 - 16 - currentGame.player.height;
+                          currentGame.player.edit_y = 180 - 16 - currentGame.player.height;
                           currentGame.player.y_velocity = 0;
                         }
                       
@@ -678,10 +680,10 @@ function resetGame(gameObj){
                      //                      |      |
                       
                       
-                        if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
-                          currentGame.player.x = 320; //other side of canvas
-                        } else if (currentGame.player.x > 320) { // canvas width
-                          currentGame.player.x = -currentGame.player.width; //other side of canvas
+                        if(currentGame.player.edit_x < - currentGame.player.width) { //32 is player.width
+                          currentGame.player.edit_x = 320; //other side of canvas
+                        } else if (currentGame.player.edit_x > 320) { // canvas width
+                          currentGame.player.edit_x = -currentGame.player.width; //other side of canvas
                         }
                       
                         //fill background with dark grey
@@ -694,7 +696,7 @@ function resetGame(gameObj){
                         //draw rectangle
                         player_editor_context.fillStyle= "#ff0000" 
                         player_editor_context.beginPath();
-                        player_editor_context.rect(currentGame.player.x, currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
+                        player_editor_context.rect(currentGame.player.edit_x, currentGame.player.edit_y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
                         player_editor_context.fill();
                       
                         //draws the floor
@@ -747,15 +749,15 @@ function resetGame(gameObj){
   player_editor_button.addEventListener("click",function(){
 
       player_editor_paused = !player_editor_paused;
-      if(player_editor_paused == true){
-         currentGame.player.x = 144;
-         currentGame.player.y = 0;
-        }
+      game_paused = true;
     
       window.requestAnimationFrame(player_editor_loop);  
     
   });
 
+                 /////////////////////////
+                ///RUNNING GAME ENGINE///
+               /////////////////////////
 
   let game_play_button = document.getElementById('game-play-button');
 
@@ -763,6 +765,13 @@ function resetGame(gameObj){
 
   game_play_button.addEventListener("click", function(){
     game_paused = !game_paused;
+
+console.log(currentGame.player.x_respawn)      
+console.log(currentGame.player.y_respawn)    
+    currentGame.player.x = currentGame.player.x_respawn;
+    currentGame.player.y = currentGame.player.y_respawn;
+
+
     player_editor_paused = true;
     
     window.requestAnimationFrame(game_loop);  
@@ -776,3 +785,9 @@ function resetGame(gameObj){
 });
 
 
+//tile sheet
+//basic tiles
+///new variables
+//game floor
+//game respawn_x, respawn_y
+//build a map editor

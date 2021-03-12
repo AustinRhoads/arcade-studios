@@ -23,7 +23,9 @@ function Player( name, height, width, speed, jumping_height) {
   //  this.y = 0,
     this.x_velocity = 0,
     this.y_velocity = 0,
-    this.jumping = false
+    this.jumping = false,
+    this.x_respawn = 100,
+    this.y_respawn = 330
 }
 
 
