@@ -581,10 +581,18 @@ function resetGame(gameObj){
                                            //                      |      |
                                             
                                             
-                                              if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
+                                          /*    if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
                                                 currentGame.player.x = currentGame.canvas_width; //other side of canvas
                                               } else if (currentGame.player.x > currentGame.canvas_width) { // canvas width
                                                 currentGame.player.x = -currentGame.player.width; //other side of canvas
+                                              }
+                                              */
+
+                                              if(currentGame.player.x <= 0){
+                                                currentGame.player.x = 0;
+                                              } else if(currentGame.player.x >= currentGame.canvas_width - currentGame.player.width){
+                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width ;
+                                                
                                               }
                                             
                                               //fill background with dark grey
