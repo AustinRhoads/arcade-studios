@@ -7,7 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 game_a = Game.create(name: "Super Mario World")
 
-player_a = Player.create(name: "Mario", game: game_a)
+player_a = Player.create(name: "Mario", game: game_a, speed: 1.5, jumping_height: 38)
 
 baddie_a = Baddy.create(name: "Bowser", game: game_a)
 
