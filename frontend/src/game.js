@@ -38,3 +38,9 @@ function Baddy(name, height, width, speed) {
     this.x_velocity = 0,
     this.y_velocity = 0
 }
+
+
+
+
+////count 10
+

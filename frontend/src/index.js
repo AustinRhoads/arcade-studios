@@ -431,7 +431,7 @@ function defaultSettings(){
   let editor = document.getElementById('baddies-box');
   editor.innerHTML = "";
 
-  let defaultGame = new Game(...Array(1), 1.5, 0.9, 1000, 550 );
+  let defaultGame = new Game(...Array(1), 1.5, 0.9, 960, 560 );
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   return defaultGame;
   
@@ -476,6 +476,7 @@ function resetGame(gameObj){
   
  window.addEventListener('DOMContentLoaded',  () => {
 
+ 
 
   
   resetGame();
@@ -483,7 +484,25 @@ function resetGame(gameObj){
 
   controller = new Controller();
 
-
+  document.addEventListener('keydown', function(event){
+    if (game_paused == false || player_editor_paused == false){
+      switch(event.keyCode){
+        case 37:
+          event.preventDefault();
+        break;
+        case 38:
+          event.preventDefault();
+        break;
+        case 39:
+          event.preventDefault();
+        break;
+        case 40:
+          event.preventDefault();
+        break;
+      }
+      
+      }
+    });
   
 
   
@@ -504,6 +523,8 @@ function resetGame(gameObj){
                                             //////////////////////                                                                                                              
  
                                             game_loop = function(){
+                                              
+
                                               if(controller.up && currentGame.player.jumping == false) { 
                                                 currentGame.player.y_velocity -= currentGame.player.jumping_height; 
                                                 currentGame.player.jumping = true;
@@ -540,9 +561,9 @@ function resetGame(gameObj){
                                             
                                             
                                               //if rectangle is below the floor line
-                                              if (currentGame.player.y > currentGame.canvas_height - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+                                              if (currentGame.player.y > currentGame.canvas_height - 80 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height /// floor
                                                 currentGame.player.jumping = false;
-                                                currentGame.player.y = currentGame.canvas_height - 16 - currentGame.player.height;   ///replace 16 with game.canvas_floor
+                                                currentGame.player.y = currentGame.canvas_height - 80 - currentGame.player.height;   ///replace 16 with game.canvas_floor
                                                 currentGame.player.y_velocity = 0;
                                               }
                                             
@@ -567,11 +588,45 @@ function resetGame(gameObj){
                                               }
                                             
                                               //fill background with dark grey
-                                              game_context.fillStyle = '#202020'; //dark grey background
+                                              game_context.fillStyle = '#1696ab'; //teal background
                                               game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
                                             //  let testImg = document.createElement('img')
                                             //  testImg.src = './public/images/grey_checkered_4px.png';
                                             //  game_context.drawImage(testImg, 0, 0);
+                                              let tile_sheet = new TileSheet();
+                                              let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
+                                                0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
+                                                0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                                               ]
+
+                                               function drawMap(map, tile_sheet) {
+                                                for(let x = 0; x < map.length; x++){
+                                                    let img =  imageRef(map[x], tile_sheet)
+                                                    let dest_y = Math.floor((x / 12) * 80);
+                                                    
+                                                    let dest_x = ((x % 12) * 80) ; 
+
+                                                    dest_y = dest_y - ((dest_x / 80) * 6.6666666667)
+                                                    game_context.drawImage(img, dest_x, dest_y);
+                                                }
+                                            }
+
+                                               drawMap(map, tile_sheet);
+                                              //let crate = tile_sheet.crate;
+                                              //game_context.drawImage(crate, 80, 480);
+
+                                              
+                                              //let earth = tile_sheet.earth;
+                                              //game_context.drawImage(earth, 0, 480);
+
+                                              
+                                              //let sky_island = tile_sheet.sky_island;
+                                              //game_context.drawImage(sky_island,  160, 480);
+
                                             
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
@@ -583,8 +638,8 @@ function resetGame(gameObj){
                                               game_context.strokeStyle = '#202830';
                                               game_context.lineWidth = 4;
                                               game_context.beginPath();
-                                              game_context.moveTo(0, currentGame.canvas_height - 16);
-                                              game_context.lineTo(currentGame.canvas_width, currentGame.canvas_height - 16);
+                                              game_context.moveTo(0, currentGame.canvas_height - 80);//floor
+                                              game_context.lineTo(currentGame.canvas_width, currentGame.canvas_height - 80);//.floor
                                               game_context.stroke();
                                             
                                               //calls upon itself
@@ -692,6 +747,7 @@ function resetGame(gameObj){
                         let testImg = document.createElement('img')
                         testImg.src = './public/images/grey_checkered_4px.png';
                         player_editor_context.drawImage(testImg, 0, 0);
+
                       
                         //draw rectangle
                         player_editor_context.fillStyle= "#ff0000" 
@@ -765,6 +821,9 @@ function resetGame(gameObj){
 
   game_play_button.addEventListener("click", function(){
     game_paused = !game_paused;
+
+
+   
 
 console.log(currentGame.player.x_respawn)      
 console.log(currentGame.player.y_respawn)    
