@@ -515,6 +515,14 @@ function resetGame(gameObj){
    
  game_context.canvas.height = currentGame.canvas_height;
  game_context.canvas.width = currentGame.canvas_width;
+ var tile_size = 80;
+
+function setOld(player, x, y){
+player.setOldTop(y);
+player.setOldLeft(x);
+player.setOldBottom(y);
+player.setOldRight(x);
+}
 
 
   
@@ -523,6 +531,8 @@ function resetGame(gameObj){
                                             //////////////////////                                                                                                              
  
                                             game_loop = function(){
+
+                                            setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
                                               
 
                                               if(controller.up && currentGame.player.jumping == false) { 
@@ -561,11 +571,11 @@ function resetGame(gameObj){
                                             
                                             
                                               //if rectangle is below the floor line
-                                              if (currentGame.player.y > currentGame.canvas_height - 80 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height /// floor
-                                                currentGame.player.jumping = false;
-                                                currentGame.player.y = currentGame.canvas_height - 80 - currentGame.player.height;   ///replace 16 with game.canvas_floor
-                                                currentGame.player.y_velocity = 0;
-                                              }
+                                         //     if (currentGame.player.y > currentGame.canvas_height - tile_size - currentGame.player.height){    /// replace :::>>>  1tile_size w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height /// floor
+                                         //       currentGame.player.jumping = false;
+                                         //       currentGame.player.y = currentGame.canvas_height - tile_size - currentGame.player.height;   ///replace 16 with game.canvas_floor
+                                         //       currentGame.player.y_velocity = 0;
+                                         //     }
                                             
                                                ///////////////////                          \\\\\\\\\\\\\\\\\
                                               ///side screen CD//                            \\PACMAN STYLE\\\
@@ -601,39 +611,109 @@ function resetGame(gameObj){
                                             //  let testImg = document.createElement('img')
                                             //  testImg.src = './public/images/grey_checkered_4px.png';
                                             //  game_context.drawImage(testImg, 0, 0);
+
+
+
+                                                          /////////////////////////
+                                                         ///COLLISION DETECTION///
+                                                        /////////////////////////
+
+
+
+                                     let collision_map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
+                                                          0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
+                                                          0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
+                                                          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                                                         ]
+
+
+                                                         ///TOP LEFT BOTTOM RIGHT///
+
+                                             var top, left, bottom, right, val
+
+
+                                              top = Math.floor(currentGame.player.getTop() / tile_size);
+                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
+                                              val = collision_map[top * 12 + left]
+                                              collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
+                                            //  console.log(currentGame.player.getTop() /tile_size);
+
+
+                                              top = Math.floor(currentGame.player.getTop() / tile_size);
+                                              right = Math.floor(currentGame.player.getRight() / tile_size);
+                                              val = collision_map[top * 12 + right]
+                                              collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
+                                              
+                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
+                                              val = collision_map[bottom * 12 + left]
+                                              collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
+                                              
+                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                              right = Math.floor(currentGame.player.getRight() / tile_size);
+                                              val = collision_map[bottom * 12 + right]     
+                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
+                                              
+                                              function collide(val, player, tile_x, tile_y, tile_size){
+                                                
+                                                switch(val){
+                                                  case 0:
+                                                  //sky
+                                                  break;
+                                                  case 1: if(collideTop   (player, tile_y             )) return; //earth
+                                                             collideBottom(player, tile_y + tile_size ); break;
+                                                  case 2: if(collideTop   (player, tile_y             )) return; //crate
+                                                          if(collideLeft  (player, tile_x             )) return;
+                                                          if(collideRight (player, tile_x + tile_size )) return;
+                                                             collideBottom(player, tile_y + tile_size  ); break;
+                                                             
+                                                  case 3: if(collideTop   (player, tile_y             )); break; //sky_island
+                                                                                                                     
+                                                }
+
+                                              } 
+
+
+                                                          ///////////////////
+                                                         /// MAP DRAWING ///
+                                                        ///////////////////
+
                                               let tile_sheet = new TileSheet();
                                               let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
-                                                0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
-                                                0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
-                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-                                               ]
+                                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                         0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
+                                                         0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                         0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
+                                                         0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
+                                                         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                                                        ]
 
                                                function drawMap(map, tile_sheet) {
                                                 for(let x = 0; x < map.length; x++){
                                                     let img =  imageRef(map[x], tile_sheet)
-                                                    let dest_y = Math.floor((x / 12) * 80);
+                                                    let dest_y = Math.floor((x / 12) * tile_size);
                                                     
-                                                    let dest_x = ((x % 12) * 80) ; 
+                                                    let dest_x = ((x % 12) * tile_size) ; 
 
-                                                    dest_y = dest_y - ((dest_x / 80) * 6.6666666667)
+                                                    dest_y = dest_y - ((dest_x / tile_size) * (tile_size / 12))
                                                     game_context.drawImage(img, dest_x, dest_y);
                                                 }
                                             }
 
                                                drawMap(map, tile_sheet);
                                               //let crate = tile_sheet.crate;
-                                              //game_context.drawImage(crate, 80, 480);
+                                              //game_context.drawImage(crate, tile_size, 4tile_size);
 
                                               
                                               //let earth = tile_sheet.earth;
-                                              //game_context.drawImage(earth, 0, 480);
+                                              //game_context.drawImage(earth, 0, 4tile_size);
 
                                               
                                               //let sky_island = tile_sheet.sky_island;
-                                              //game_context.drawImage(sky_island,  160, 480);
+                                              //game_context.drawImage(sky_island,  160, 4tile_size);
 
                                             
                                               //draw rectangle
@@ -643,12 +723,15 @@ function resetGame(gameObj){
                                               game_context.fill();
                                             
                                               //draws the floor
-                                              game_context.strokeStyle = '#202830';
-                                              game_context.lineWidth = 4;
-                                              game_context.beginPath();
-                                              game_context.moveTo(0, currentGame.canvas_height - 80);//floor
-                                              game_context.lineTo(currentGame.canvas_width, currentGame.canvas_height - 80);//.floor
-                                              game_context.stroke();
+                                            //  game_context.strokeStyle = '#202830';
+                                            //  game_context.lineWidth = 4;
+                                            //  game_context.beginPath();
+                                            //  game_context.moveTo(0, currentGame.canvas_height - tile_size);//floor
+                                            //  game_context.lineTo(currentGame.canvas_width, currentGame.canvas_height - tile_size);//.floor
+                                            //  game_context.stroke();
+
+
+                                             
                                             
                                               //calls upon itself
                                               if(game_paused == false){
@@ -723,7 +806,7 @@ function resetGame(gameObj){
                       
                       
                         //if rectangle is below the floor line
-                        if (currentGame.player.edit_y > 180 - 16 - currentGame.player.height){    /// replace :::>>>  180 w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
+                        if (currentGame.player.edit_y > 180 - 16 - currentGame.player.height){    /// replace :::>>>  1tile_size w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height
                           currentGame.player.jumping = false;
                           currentGame.player.edit_y = 180 - 16 - currentGame.player.height;
                           currentGame.player.y_velocity = 0;
@@ -833,10 +916,10 @@ function resetGame(gameObj){
 
    
 
-console.log(currentGame.player.x_respawn)      
-console.log(currentGame.player.y_respawn)    
-    currentGame.player.x = currentGame.player.x_respawn;
-    currentGame.player.y = currentGame.player.y_respawn;
+//console.log(currentGame.player.x_respawn)      
+//console.log(currentGame.player.y_respawn)    
+//    currentGame.player.x = currentGame.player.x_respawn;
+//    currentGame.player.y = currentGame.player.y_respawn;
 
 
     player_editor_paused = true;
