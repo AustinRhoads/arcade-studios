@@ -47,7 +47,6 @@ function collideTop(player, tile_top){
         
         player.y_velocity = 0;
         player.jumping = false;
-        console.log("tops")
         
         return true;
     } return false;
@@ -55,8 +54,8 @@ function collideTop(player, tile_top){
 
 function collideLeft(player, tile_left){
   
-    
     if (player.getRight() > tile_left && player.getOldRight() <= tile_left){
+    
         player.setRight(tile_left - 0.03);
         player.x_velocity = 0;
         return true;
@@ -65,8 +64,15 @@ function collideLeft(player, tile_left){
 }
 
 function collideBottom(player, tile_bottom){
+
+    if(player.getTop() < tile_bottom && player.getOldTop()){
+        console.log(player.getOldTop(), tile_bottom);
+    }
+    
+
     if(player.getTop() < tile_bottom && player.getOldTop() >= tile_bottom){
-        player.setTop(tile_bottom + 0.03);
+      
+        player.setTop(tile_bottom + 0.01);
         player.y_velocity = 0;
         return true;
     } return false;
@@ -74,8 +80,6 @@ function collideBottom(player, tile_bottom){
 
 function collideRight(player, tile_right){
 
-   
-    
     if(player.getLeft() < tile_right && player.getOldLeft() >= tile_right){
         
         player.setLeft(tile_right + 0.03);

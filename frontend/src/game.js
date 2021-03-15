@@ -45,12 +45,12 @@ function Baddy(name, height, width, speed) {
 
 Player.prototype = {
     getBottom: function() {return this.y + this.height},
-    getTop: function(){return this.y},
+    getTop: function(){return this.y },
     getLeft: function(){return this.x},
     getRight: function(){return this.x + this.width},
     getOldBottom: function(){return this.y_old + this.height},
-    getOldTop: function(){return this.y_old},
-    getOldLeft: function(){return this.x_old + this.width},
+    getOldTop: function(){return this.y_old + this.height},//not sure why i had to add this.height
+    getOldLeft: function(){return this.x_old + this.width},//not sure why i had to add this.width
     getOldRight: function(){return this.x_old + this.width},
     setBottom: function(y){this.y = y - this.height},
     setTop: function(y){this.y = y},

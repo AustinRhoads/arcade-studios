@@ -601,7 +601,7 @@ player.setOldRight(x);
                                               if(currentGame.player.x <= 0){
                                                 currentGame.player.x = 0;
                                               } else if(currentGame.player.x >= currentGame.canvas_width - currentGame.player.width){
-                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width ;
+                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width - 0.01 ;
                                                 
                                               }
                                             
@@ -618,16 +618,16 @@ player.setOldRight(x);
                                                          ///COLLISION DETECTION///
                                                         /////////////////////////
 
-
-
-                                     let collision_map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                        let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                           0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
                                                           0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                          0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
-                                                          0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
+                                                          2, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
+                                                          0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0,
                                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                                                          ]
+
+                                     let collision_map = map;
 
 
                                                          ///TOP LEFT BOTTOM RIGHT///
@@ -655,7 +655,37 @@ player.setOldRight(x);
                                               bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                               right = Math.floor(currentGame.player.getRight() / tile_size);
                                               val = collision_map[bottom * 12 + right]     
-                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
+                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size)
+                                              
+                                              
+
+
+                                              /////and again
+                                              
+                                             var top, left, bottom, right, val
+
+
+                                             top = Math.floor(currentGame.player.getTop() / tile_size);
+                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
+                                             val = collision_map[top * 12 + left]
+                                             collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
+                                           //  console.log(currentGame.player.getTop() /tile_size);
+
+
+                                             top = Math.floor(currentGame.player.getTop() / tile_size);
+                                             right = Math.floor(currentGame.player.getRight() / tile_size);
+                                             val = collision_map[top * 12 + right]
+                                             collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
+                                             
+                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
+                                             val = collision_map[bottom * 12 + left]
+                                             collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
+                                             
+                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                             right = Math.floor(currentGame.player.getRight() / tile_size);
+                                             val = collision_map[bottom * 12 + right]     
+                                             collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
                                               
                                               function collide(val, player, tile_x, tile_y, tile_size){
                                                 
@@ -682,14 +712,7 @@ player.setOldRight(x);
                                                         ///////////////////
 
                                               let tile_sheet = new TileSheet();
-                                              let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                         0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
-                                                         0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                         0, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
-                                                         0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0,
-                                                         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-                                                        ]
+                                      
 
                                                function drawMap(map, tile_sheet) {
                                                 for(let x = 0; x < map.length; x++){
