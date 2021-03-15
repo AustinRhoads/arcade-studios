@@ -24,6 +24,7 @@ function imageRef(num, ts){
 switch(num){
  case 0:
      return ts.sky;
+  
  break;
  case 1:
      return ts.earth;
@@ -43,7 +44,7 @@ function collideTop(player, tile_top){
 
     if (player.getBottom() > tile_top && player.getOldBottom() <= tile_top){
       
-        player.setBottom(tile_top - 0.03);
+        player.setBottom(tile_top - 0.01);
         
         player.y_velocity = 0;
         player.jumping = false;
@@ -56,7 +57,7 @@ function collideLeft(player, tile_left){
   
     if (player.getRight() > tile_left && player.getOldRight() <= tile_left){
     
-        player.setRight(tile_left - 0.03);
+        player.setRight(tile_left - 1);
         player.x_velocity = 0;
         return true;
     } return false;
@@ -65,9 +66,7 @@ function collideLeft(player, tile_left){
 
 function collideBottom(player, tile_bottom){
 
-    if(player.getTop() < tile_bottom && player.getOldTop()){
-        console.log(player.getOldTop(), tile_bottom);
-    }
+
     
 
     if(player.getTop() < tile_bottom && player.getOldTop() >= tile_bottom){
@@ -82,7 +81,7 @@ function collideRight(player, tile_right){
 
     if(player.getLeft() < tile_right && player.getOldLeft() >= tile_right){
         
-        player.setLeft(tile_right + 0.03);
+        player.setLeft(tile_right + 1);
         player.x_velocity = 0;
         return true;
     } return false;

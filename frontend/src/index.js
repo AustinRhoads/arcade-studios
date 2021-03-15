@@ -4,7 +4,14 @@ const BASE_URL = "http://localhost:3000";
 const GAMES_URL = BASE_URL + "/games";
 var currentGame;
 var editorToolBox = document.getElementById("editor-toolbox");
-
+const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  
+                       ]
 
 
 
@@ -212,6 +219,8 @@ function saveGame(){
 
   let gameData = new Game(name, gravity, friction)
 
+  gameData.map = DEFAULT_MAP;
+
   let player_name = document.getElementById('player_name').value;
   let player_speed = document.getElementById('player_speed').value;
   let player_jumping_height = document.getElementById('player_jumping_height').value;
@@ -326,9 +335,11 @@ function loadGame(id){
     let friction = gameData.friction;
     let canvas_width = gameData.canvas_width;
     let canvas_height = gameData.canvas_height;
+    let map = gameData.map;
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
     loadedGame.id = id;
+    loadedGame.map = map;
 
 
     //player properties
@@ -432,6 +443,7 @@ function defaultSettings(){
   editor.innerHTML = "";
 
   let defaultGame = new Game(...Array(1), 1.5, 0.9, 960, 560 );
+  defaultGame.map = DEFAULT_MAP;
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   return defaultGame;
   
@@ -599,14 +611,14 @@ player.setOldRight(x);
                                               */
 
                                               if(currentGame.player.x <= 0){
-                                                currentGame.player.x = 0;
+                                                currentGame.player.x = 1;
                                               } else if(currentGame.player.x >= currentGame.canvas_width - currentGame.player.width){
-                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width - 0.01 ;
+                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width - 1 ;
                                                 
                                               }
                                             
-                                              //fill background with dark grey
-                                              game_context.fillStyle = '#1696ab'; //teal background
+                                              //fill background with dark grey #202020
+                                              game_context.fillStyle = '#1696ab' ; //teal background
                                               game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
                                             //  let testImg = document.createElement('img')
                                             //  testImg.src = './public/images/grey_checkered_4px.png';
@@ -618,16 +630,21 @@ player.setOldRight(x);
                                                          ///COLLISION DETECTION///
                                                         /////////////////////////
 
-                                                        let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                    /*    let map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                           0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0,
                                                           0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
                                                           2, 0, 3, 0, 3, 0, 3, 0, 3, 2, 3, 0,
                                                           0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0,
                                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-                                                         ]
+                                                         ] 
 
                                      let collision_map = map;
+
+                                     */
+
+                                     let map = currentGame.map;
+                                     let collision_map = currentGame.map;
 
 
                                                          ///TOP LEFT BOTTOM RIGHT///
@@ -662,8 +679,22 @@ player.setOldRight(x);
 
                                               /////and again
                                               
-                                             var top, left, bottom, right, val
+                                             
 
+                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                             right = Math.floor(currentGame.player.getRight() / tile_size);
+                                             val = collision_map[bottom * 12 + right]     
+                                             collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
+
+                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
+                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
+                                             val = collision_map[bottom * 12 + left]
+                                             collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
+
+                                             top = Math.floor(currentGame.player.getTop() / tile_size);
+                                             right = Math.floor(currentGame.player.getRight() / tile_size);
+                                             val = collision_map[top * 12 + right]
+                                             collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
 
                                              top = Math.floor(currentGame.player.getTop() / tile_size);
                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
@@ -672,20 +703,11 @@ player.setOldRight(x);
                                            //  console.log(currentGame.player.getTop() /tile_size);
 
 
-                                             top = Math.floor(currentGame.player.getTop() / tile_size);
-                                             right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = collision_map[top * 12 + right]
-                                             collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
+
                                              
-                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = collision_map[bottom * 12 + left]
-                                             collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
+                                          
                                              
-                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                             right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = collision_map[bottom * 12 + right]     
-                                             collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
+
                                               
                                               function collide(val, player, tile_x, tile_y, tile_size){
                                                 
@@ -706,6 +728,8 @@ player.setOldRight(x);
 
                                               } 
 
+
+                                              currentGame.player.x = Math.round(currentGame.player.x)
 
                                                           ///////////////////
                                                          /// MAP DRAWING ///
