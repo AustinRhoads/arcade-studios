@@ -6,6 +6,9 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.float :friction, :default => 0.9
       t.integer :canvas_width, :default => 960
       t.integer :canvas_height, :default => 560
+      t.integer :columns, :default => 12
+      t.integer :rows, :default => 7
+      t.string :map
       t.timestamps
     end
   end

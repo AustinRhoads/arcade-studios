@@ -31,6 +31,9 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.float "friction", default: 0.9
     t.integer "canvas_width", default: 960
     t.integer "canvas_height", default: 560
+    t.integer "columns", default: 12
+    t.integer "rows", default: 7
+    t.string "map"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

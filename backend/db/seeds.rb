@@ -5,9 +5,9 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-game_a = Game.create(name: "Super Mario World")
+game_a = Game.create(name: "Super Mario World", gravity: 1.8, friction: 0.77)
 
-player_a = Player.create(name: "Mario", game: game_a, speed: 1.5, jumping_height: 38)
+player_a = Player.create(name: "Mario", game: game_a, speed: 1.8, jumping_height: 38)
 
 baddie_a = Baddy.create(name: "Bowser", game: game_a)
 
