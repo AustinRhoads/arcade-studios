@@ -219,7 +219,7 @@ function saveGame(){
 
   let gameData = new Game(name, gravity, friction)
 
-  gameData.map = DEFAULT_MAP;
+  
 
   let player_name = document.getElementById('player_name').value;
   let player_speed = document.getElementById('player_speed').value;
@@ -335,6 +335,8 @@ function loadGame(id){
     let friction = gameData.friction;
     let canvas_width = gameData.canvas_width;
     let canvas_height = gameData.canvas_height;
+    console.log(gameData)
+    console.log(gameData.map)
     let map = gameData.map;
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
@@ -639,12 +641,13 @@ player.setOldRight(x);
                                                           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                                                          ] 
 
-                                     let collision_map = map;
+                                     let currentGame.map = map;
 
                                      */
 
                                      let map = currentGame.map;
-                                     let collision_map = currentGame.map;
+                                   //  let currentGame.map = currentGame.map;
+                                     
 
 
                                                          ///TOP LEFT BOTTOM RIGHT///
@@ -654,24 +657,25 @@ player.setOldRight(x);
 
                                               top = Math.floor(currentGame.player.getTop() / tile_size);
                                               left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              val = collision_map[top * 12 + left]
+                                              console.log(currentGame.map)
+                                              val = currentGame.map[top * 12 + left]
                                               collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
                                             //  console.log(currentGame.player.getTop() /tile_size);
 
 
                                               top = Math.floor(currentGame.player.getTop() / tile_size);
                                               right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = collision_map[top * 12 + right]
+                                              val = currentGame.map[top * 12 + right]
                                               collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
                                               
                                               bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                               left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              val = collision_map[bottom * 12 + left]
+                                              val = currentGame.map[bottom * 12 + left]
                                               collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
                                               
                                               bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                               right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = collision_map[bottom * 12 + right]     
+                                              val = currentGame.map[bottom * 12 + right]     
                                               collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size)
                                               
                                               
@@ -683,22 +687,22 @@ player.setOldRight(x);
 
                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = collision_map[bottom * 12 + right]     
+                                             val = currentGame.map[bottom * 12 + right]     
                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
 
                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = collision_map[bottom * 12 + left]
+                                             val = currentGame.map[bottom * 12 + left]
                                              collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
 
                                              top = Math.floor(currentGame.player.getTop() / tile_size);
                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = collision_map[top * 12 + right]
+                                             val = currentGame.map[top * 12 + right]
                                              collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
 
                                              top = Math.floor(currentGame.player.getTop() / tile_size);
                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = collision_map[top * 12 + left]
+                                             val = currentGame.map[top * 12 + left]
                                              collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
                                            //  console.log(currentGame.player.getTop() /tile_size);
 
