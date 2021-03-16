@@ -24,3 +24,23 @@ div#game-screen{
     margin-left: 400px;
     top: 0;
 }
+
+div#map-editor{
+    position: absolute;
+    background-color: rgb(109, 105, 105);
+    margin-left: 400px;
+    height: 220px;
+    top: 600px;
+    width: 960px;
+}
+
+div#add-earth{
+    
+    float: right;
+}
+
+button#add-earth-button{
+    height: 50px;
+    width: 75px;
+    font-size: 40;
+}

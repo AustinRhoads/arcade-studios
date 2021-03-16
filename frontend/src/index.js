@@ -12,6 +12,8 @@ const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  
                        ]
+var addEarthButton = document.getElementById('add-earth-button')
+var tile_size = 80;
 
 
 
@@ -335,13 +337,13 @@ function loadGame(id){
     let friction = gameData.friction;
     let canvas_width = gameData.canvas_width;
     let canvas_height = gameData.canvas_height;
-    console.log(gameData)
-    console.log(gameData.map)
     let map = gameData.map;
+    let columns = gameData.columns;
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
     loadedGame.id = id;
     loadedGame.map = map;
+    loadedGame.columns = columns;
 
 
     //player properties
@@ -446,6 +448,7 @@ function defaultSettings(){
 
   let defaultGame = new Game(...Array(1), 1.5, 0.9, 960, 560 );
   defaultGame.map = DEFAULT_MAP;
+  defaultGame.columns = 12;
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   return defaultGame;
   
@@ -467,6 +470,39 @@ function resetGame(gameObj){
    currentGame.player.jumping = true;
    populate_editor(gameObj);
 }
+
+
+function respawnPlayer(){
+  currentGame.player.x = currentGame.player.x_respawn;
+  currentGame.player.y = currentGame.player.y_respawn;
+}
+
+                  ////////////////////////////
+                 ////MAP EDITING FUNCTIONS///
+                ////////////////////////////
+
+function addEarth(){
+ // let map = currentGame.map;
+  let ary = [0, 0, 0, 0, 0, 0, 1]
+  
+  
+  for(let x = 0; x < ary.length; x++){
+    currentGame.map.splice(((x + 1) * currentGame.columns), 0, ary[x])
+  }
+
+
+  currentGame.columns += 1;
+  currentGame.canvas_width += tile_size;
+
+  game_canvas = document.querySelector("#game-canvas");
+  
+  game_canvas.width = currentGame.canvas_width;
+
+  respawnPlayer();
+}
+
+
+
 
 
 
@@ -520,16 +556,16 @@ function resetGame(gameObj){
   
 
   
-
-  game_canvas = document.querySelector("#game-canvas");
-  game_canvas.height = currentGame.canvas_height;
-  game_canvas.width = currentGame.canvas_width;
-
- game_context = document.querySelector("#game-canvas").getContext("2d");
+    game_canvas = document.querySelector("#game-canvas");
+    game_canvas.height = currentGame.canvas_height;
+    game_canvas.width = currentGame.canvas_width;
+  
+   game_context = document.querySelector("#game-canvas").getContext("2d");
+     
+   game_context.canvas.height = currentGame.canvas_height;
+   game_context.canvas.width = currentGame.canvas_width;
    
- game_context.canvas.height = currentGame.canvas_height;
- game_context.canvas.width = currentGame.canvas_width;
- var tile_size = 80;
+
 
 function setOld(player, x, y){
 player.setOldTop(y);
@@ -539,13 +575,15 @@ player.setOldRight(x);
 }
 
 
+
   
                                               //////////////////////
                                              ///GAME ENGINE LOOP///
                                             //////////////////////                                                                                                              
  
                                             game_loop = function(){
-
+                                              
+                                              game_context.canvas.width = currentGame.canvas_width;
                                             setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
                                               
 
@@ -579,38 +617,11 @@ player.setOldRight(x);
                                              currentGame.player.y_velocity *= currentGame.friction; 
                                             
                                             
-                                                   /////////////////////////////////////////////
-                                                  ///BASIC COLLISION DETECTION FOR THE FLOOR///
-                                                 /////////////////////////////////////////////
+                                                   //////////////////////////
+                                                  ///COLLISION DETECTION ///
+                                                 //////////////////////////
                                             
-                                            
-                                              //if rectangle is below the floor line
-                                         //     if (currentGame.player.y > currentGame.canvas_height - tile_size - currentGame.player.height){    /// replace :::>>>  1tile_size w/ game.canvas.height, 16 w/ height of floor from bottom of canvas, 32 w/ player.height /// floor
-                                         //       currentGame.player.jumping = false;
-                                         //       currentGame.player.y = currentGame.canvas_height - tile_size - currentGame.player.height;   ///replace 16 with game.canvas_floor
-                                         //       currentGame.player.y_velocity = 0;
-                                         //     }
-                                            
-                                               ///////////////////                          \\\\\\\\\\\\\\\\\
-                                              ///side screen CD//                            \\PACMAN STYLE\\\
-                                             ///////////////////                              \\\\\\\\\\\\\\\\\
-                                            
-                                            
-                                           //    __________________|      |____________________________________________
-                                           //       ,--.    ,--.          ,--.   ,--.
-                                           //      |oo  | _  \  `.       | oo | |  oo|
-                                           //  o  o|~~  |(_) /   ;       | ~~ | |  ~~|o  o  o  o  o  o  o  o  o  o  o
-                                           //      |/\/\|   '._,'        |/\/\| |/\/\|
-                                           //    __________________        ____________________________________________
-                                           //                      |      |
-                                            
-                                            
-                                          /*    if(currentGame.player.x < - currentGame.player.width) { //32 is player.width
-                                                currentGame.player.x = currentGame.canvas_width; //other side of canvas
-                                              } else if (currentGame.player.x > currentGame.canvas_width) { // canvas width
-                                                currentGame.player.x = -currentGame.player.width; //other side of canvas
-                                              }
-                                              */
+                                    
 
                                               if(currentGame.player.x <= 0){
                                                 currentGame.player.x = 1;
@@ -657,25 +668,24 @@ player.setOldRight(x);
 
                                               top = Math.floor(currentGame.player.getTop() / tile_size);
                                               left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              console.log(currentGame.map)
-                                              val = currentGame.map[top * 12 + left]
+                                              val = currentGame.map[top * currentGame.columns + left]
                                               collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
                                             //  console.log(currentGame.player.getTop() /tile_size);
 
 
                                               top = Math.floor(currentGame.player.getTop() / tile_size);
                                               right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = currentGame.map[top * 12 + right]
+                                              val = currentGame.map[top * currentGame.columns + right]
                                               collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
                                               
                                               bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                               left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              val = currentGame.map[bottom * 12 + left]
+                                              val = currentGame.map[bottom * currentGame.columns + left]
                                               collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
                                               
                                               bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                               right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = currentGame.map[bottom * 12 + right]     
+                                              val = currentGame.map[bottom * currentGame.columns + right]     
                                               collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size)
                                               
                                               
@@ -687,22 +697,22 @@ player.setOldRight(x);
 
                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = currentGame.map[bottom * 12 + right]     
+                                             val = currentGame.map[bottom * currentGame.columns + right]     
                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
 
                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = currentGame.map[bottom * 12 + left]
+                                             val = currentGame.map[bottom * currentGame.columns + left]
                                              collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
 
                                              top = Math.floor(currentGame.player.getTop() / tile_size);
                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = currentGame.map[top * 12 + right]
+                                             val = currentGame.map[top * currentGame.columns + right]
                                              collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
 
                                              top = Math.floor(currentGame.player.getTop() / tile_size);
                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = currentGame.map[top * 12 + left]
+                                             val = currentGame.map[top * currentGame.columns + left]
                                              collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
                                            //  console.log(currentGame.player.getTop() /tile_size);
 
@@ -745,11 +755,11 @@ player.setOldRight(x);
                                                function drawMap(map, tile_sheet) {
                                                 for(let x = 0; x < map.length; x++){
                                                     let img =  imageRef(map[x], tile_sheet)
-                                                    let dest_y = Math.floor((x / 12) * tile_size);
+                                                    let dest_y = Math.floor((x / currentGame.columns) * tile_size);
                                                     
-                                                    let dest_x = ((x % 12) * tile_size) ; 
+                                                    let dest_x = ((x % currentGame.columns) * tile_size) ; 
 
-                                                    dest_y = dest_y - ((dest_x / tile_size) * (tile_size / 12))
+                                                    dest_y = dest_y - ((dest_x / tile_size) * (tile_size / currentGame.columns))
                                                     game_context.drawImage(img, dest_x, dest_y);
                                                 }
                                             }
@@ -932,6 +942,11 @@ player.setOldRight(x);
   //baddies editor
   
   newBadButton.addEventListener("click", () => addBaddy());
+
+  //widen map
+
+  addEarthButton.addEventListener("click", () => addEarth());
+
 
 
               //////////////////////////////////
