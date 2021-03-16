@@ -8,7 +8,7 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.integer :canvas_height, :default => 560
       t.integer :columns, :default => 12
       t.integer :rows, :default => 7
-      t.string :map
+      t.text :map, array: true
       t.timestamps
     end
   end
