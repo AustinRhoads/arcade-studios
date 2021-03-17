@@ -86,3 +86,34 @@ function collideRight(player, tile_right){
         return true;
     } return false;
 }
+
+
+
+
+
+
+function runTileEditor(){
+
+let tileType = document.getElementById('tile-type');
+let tileDisplay = document.querySelector('#tile-display');
+let tile_sheet = new TileSheet();
+
+
+tileDisplay.height = 80;
+tileDisplay.width = 80;
+
+
+tileType.addEventListener("click", function(){
+
+  let testImg = document.createElement('img')
+  testImg.src = './public/images/grey_checkered_4px.png';
+
+  
+  let img = imageRef(parseInt(tileType.value), tile_sheet);
+  let ctx = tileDisplay.getContext('2d');
+
+  ctx.drawImage(testImg, 0, 0);
+  ctx.drawImage(img, 0, 0);
+  
+})
+}

@@ -50,3 +50,37 @@ button#minus-earth-button{
     width: 75px;
     font-size: 40;
 }
+
+div#tile-editor{
+    border: solid black 3px;
+    justify-content: center;
+    width: 250px;
+}
+
+#tile-display{
+    display: block;
+    margin: auto;
+    align-self: center;
+    border: solid black 3px;
+    justify-content: center;
+}
+
+.cursor_img{
+    position: absolute;
+    z-index: 1000;
+}
+
+.sky_cursor{
+    cursor: url(./public/images/sky_block_1.png), auto;
+}
+.earth_cursor{
+    cursor: url(./public/images/earth_1.png), auto;
+}
+.crate_cursor{
+    cursor: url(./public/images/crate_1.png), auto;
+}
+.island_cursor{
+    cursor: url(./public/images/sky_island_1.png), auto;
+}
+
+

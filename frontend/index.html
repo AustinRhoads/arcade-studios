@@ -62,7 +62,7 @@
 
     <div id = "game-screen">
      
-      <canvas id = "game-canvas"></canvas>
+      <canvas id = "game-canvas" ></canvas>
 
       <div id = "game-console">
         <button id= "game-play-button">PLAY</button>
@@ -72,6 +72,15 @@
     </div>
 <br>
 <div id="map-editor">
+  <div id="tile-editor">
+    <button id="tile-placer">Add New Tile</button>
+    <label for="tile-type">Tile Type:</label>
+    <input style="margin: 10px;" type="number" id="tile-type" min="0" max="3" step="1" value = "1">
+    <br>
+    <canvas id="tile-display" ></canvas>
+    <br>
+    <div id = "mouse-x-y"></div>
+  </div>
 
   <div id= "add-earth">
     <button id="minus-earth-button">&#x2190;</button><button id = "add-earth-button">&#8594;</button>
