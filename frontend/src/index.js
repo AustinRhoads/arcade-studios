@@ -14,6 +14,7 @@ const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        ]
 var addEarthButton = document.getElementById('add-earth-button')
 var tile_size = 80;
+var  minusEarthButton = document.getElementById('minus-earth-button');
 
 
 
@@ -339,11 +340,13 @@ function loadGame(id){
     let canvas_height = gameData.canvas_height;
     let map = gameData.map;
     let columns = gameData.columns;
+    let rows = gameData.rows
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
     loadedGame.id = id;
     loadedGame.map = map;
     loadedGame.columns = columns;
+    loadedGame.rows = rows;
 
 
     //player properties
@@ -449,6 +452,7 @@ function defaultSettings(){
   let defaultGame = new Game(...Array(1), 1.5, 0.9, 960, 560 );
   defaultGame.map = DEFAULT_MAP;
   defaultGame.columns = 12;
+  defaultGame.rows = 7;
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   return defaultGame;
   
@@ -501,6 +505,47 @@ function addEarth(){
   respawnPlayer();
 }
 
+function minusEarth(){
+
+  let total = currentGame.rows
+  for(let x = total; x >= 1; --x){
+    currentGame.map.splice((total * currentGame.columns) -1, 1)
+    total -= 1;
+  }
+
+
+  currentGame.columns -= 1;
+  
+  currentGame.canvas_width -= tile_size;
+
+  game_canvas = document.querySelector("#game-canvas");
+  
+  game_canvas.width = currentGame.canvas_width;
+
+  respawnPlayer();
+}
+
+
+
+function minusEarthFromBeginning(){
+
+  let total = currentGame.rows
+  for(let x = total; x >= 1; --x){
+    currentGame.map.splice((total * currentGame.columns), 1)
+    total -= 1;
+  }
+
+currentGame.map[-1] = 1;
+  currentGame.columns -= 1;
+  
+  currentGame.canvas_width -= tile_size;
+
+  game_canvas = document.querySelector("#game-canvas");
+  
+  game_canvas.width = currentGame.canvas_width;
+
+  respawnPlayer();
+}
 
 
 
@@ -631,8 +676,8 @@ player.setOldRight(x);
                                               }
                                             
                                               //fill background with dark grey #202020
-                                              game_context.fillStyle = '#1696ab' ; //teal background
-                                              game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
+                                   //           game_context.fillStyle = '#1696ab' ; //teal background
+                                   //           game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
                                             //  let testImg = document.createElement('img')
                                             //  testImg.src = './public/images/grey_checkered_4px.png';
                                             //  game_context.drawImage(testImg, 0, 0);
@@ -946,6 +991,9 @@ player.setOldRight(x);
   //widen map
 
   addEarthButton.addEventListener("click", () => addEarth());
+
+  //shorten map
+  minusEarthButton.addEventListener("click", () => minusEarth());
 
 
 

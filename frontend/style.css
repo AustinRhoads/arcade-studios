@@ -44,3 +44,9 @@ button#add-earth-button{
     width: 75px;
     font-size: 40;
 }
+
+button#minus-earth-button{
+    height: 50px;
+    width: 75px;
+    font-size: 40;
+}
