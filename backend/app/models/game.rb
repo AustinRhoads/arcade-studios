@@ -1,7 +1,7 @@
 class Game < ApplicationRecord
     has_one :player
     has_many :baddies
-    serialize :map
+    serialize :map, JSON
 
 
 end
