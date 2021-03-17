@@ -487,7 +487,7 @@ function addEarth(){
   
   
   for(let x = 0; x < ary.length; x++){
-    currentGame.map.splice(((x + 1) * currentGame.columns), 0, ary[x])
+    currentGame.map.splice(((x + 1) * currentGame.columns) + x, 0, ary[x])
   }
 
 
