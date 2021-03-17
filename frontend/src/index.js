@@ -241,6 +241,11 @@ function saveGame(){
      });
     
   }
+  gameData.map = currentGame.map;
+  gameData.columns = currentGame.columns;
+  gameData.rows = currentGame.rows;
+  gameData.canvas_width = currentGame.canvas_width;
+  gameData.canvas_height = currentGame.canvas_height;
 
 if(currentGame.id == null){
 
@@ -486,7 +491,7 @@ function respawnPlayer(){
                 ////////////////////////////
 
 function addEarth(){
- // let map = currentGame.map;
+  //let map = currentGame.map;
   let ary = [0, 0, 0, 0, 0, 0, 1]
   
   
@@ -494,7 +499,7 @@ function addEarth(){
     currentGame.map.splice(((x + 1) * currentGame.columns) + x, 0, ary[x])
   }
 
-
+//currentGame.map = map
   currentGame.columns += 1;
   currentGame.canvas_width += tile_size;
 
@@ -503,6 +508,7 @@ function addEarth(){
   game_canvas.width = currentGame.canvas_width;
 
   respawnPlayer();
+  console.log(currentGame.map.length)
 }
 
 function minusEarth(){
@@ -523,6 +529,7 @@ function minusEarth(){
   game_canvas.width = currentGame.canvas_width;
 
   respawnPlayer();
+  console.log(currentGame.map.length)
 }
 
 
@@ -629,6 +636,7 @@ player.setOldRight(x);
                                             game_loop = function(){
                                               
                                               game_context.canvas.width = currentGame.canvas_width;
+
                                             setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
                                               
 
@@ -676,8 +684,8 @@ player.setOldRight(x);
                                               }
                                             
                                               //fill background with dark grey #202020
-                                   //           game_context.fillStyle = '#1696ab' ; //teal background
-                                   //           game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
+                                      //        game_context.fillStyle = '#1696ab' ; //teal background
+                                      //        game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
                                             //  let testImg = document.createElement('img')
                                             //  testImg.src = './public/images/grey_checkered_4px.png';
                                             //  game_context.drawImage(testImg, 0, 0);
@@ -701,7 +709,7 @@ player.setOldRight(x);
 
                                      */
 
-                                     let map = currentGame.map;
+                                   //  let map = currentGame.map;
                                    //  let currentGame.map = currentGame.map;
                                      
 
@@ -740,26 +748,6 @@ player.setOldRight(x);
                                               
                                              
 
-                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                             right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = currentGame.map[bottom * currentGame.columns + right]     
-                                             collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size) 
-
-                                             bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = currentGame.map[bottom * currentGame.columns + left]
-                                             collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
-
-                                             top = Math.floor(currentGame.player.getTop() / tile_size);
-                                             right = Math.floor(currentGame.player.getRight() / tile_size);
-                                             val = currentGame.map[top * currentGame.columns + right]
-                                             collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
-
-                                             top = Math.floor(currentGame.player.getTop() / tile_size);
-                                             left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                             val = currentGame.map[top * currentGame.columns + left]
-                                             collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
-                                           //  console.log(currentGame.player.getTop() /tile_size);
 
 
 
@@ -788,28 +776,31 @@ player.setOldRight(x);
                                               } 
 
 
-                                              currentGame.player.x = Math.round(currentGame.player.x)
+                                         //     currentGame.player.x = Math.round(currentGame.player.x)
 
                                                           ///////////////////
                                                          /// MAP DRAWING ///
                                                         ///////////////////
 
+                                                        
+
                                               let tile_sheet = new TileSheet();
-                                      
+                                              let mappy = currentGame.map;
 
-                                               function drawMap(map, tile_sheet) {
-                                                for(let x = 0; x < map.length; x++){
-                                                    let img =  imageRef(map[x], tile_sheet)
-                                                    let dest_y = Math.floor((x / currentGame.columns) * tile_size);
-                                                    
-                                                    let dest_x = ((x % currentGame.columns) * tile_size) ; 
+                                            function drawMap(map, tile_sheet) {
+                                              for(let x = map.length - 1; x >=0; --x){
+                                                  let img =  imageRef(map[x], tile_sheet)
+                                                
+                                                  let dest_y = Math.floor((x / currentGame.columns) * tile_size);
+                                                  
+                                                  let dest_x = ((x % currentGame.columns) * tile_size) ; 
 
-                                                    dest_y = dest_y - ((dest_x / tile_size) * (tile_size / currentGame.columns))
-                                                    game_context.drawImage(img, dest_x, dest_y);
-                                                }
-                                            }
+                                                  dest_y = dest_y - ((dest_x / tile_size) * (tile_size / currentGame.columns))
+                                                  game_context.drawImage(img, dest_x, dest_y);
+                                              }
+                                          }
 
-                                               drawMap(map, tile_sheet);
+                                               drawMap(mappy, tile_sheet);
                                               //let crate = tile_sheet.crate;
                                               //game_context.drawImage(crate, tile_size, 4tile_size);
 
