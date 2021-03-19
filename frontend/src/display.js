@@ -90,6 +90,25 @@ function collideRight(player, tile_right){
 
 
 
+const Viewport = function(x, y, w, h){
+
+
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+}
+
+Viewport.prototype = {
+    scrollTo: function(x, y){
+        this.x = x - (this.w * 0.5);// + 336;
+       // this.y = y - (this.w * 0.5);// + 32;
+      this.y = 0;
+    }
+};
+
+
+
 
 
 function runTileEditor(){
@@ -117,3 +136,5 @@ tileType.addEventListener("click", function(){
   
 })
 }
+
+

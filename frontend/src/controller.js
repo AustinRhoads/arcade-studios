@@ -64,20 +64,20 @@
 
     
 
-     switch(event.keyCode){
-       case 37: //left
+     switch(event.key){
+       case "ArrowLeft": //left 37
          controller.left = key_state;
          
        break;
-       case 38: //up
+       case "ArrowUp": //up 38
          controller.up = key_state;
          
        break;
-       case 39: //right
+       case "ArrowRight": //right 39
          controller.right = key_state;
          
        break;
-       case 40: //down
+       case "ArrowDown": //down 40
          controller.down = key_state;
          
        break;

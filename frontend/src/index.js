@@ -18,7 +18,8 @@ var  minusEarthButton = document.getElementById('minus-earth-button');
 var tileButton = document.getElementById('tile-placer');
 var xy = document.getElementById('mouse-x-y')
 var tile_selector = document.getElementById('tile-type');
-
+var tile_sheet;
+var viewport;
 
 
 function populate_load_list(){
@@ -582,7 +583,7 @@ function mapTraverse(e){
       setCursor()
      
      
-      
+     // viewport.scrollTo(e.offsetX, 0);
 
       
           let column = Math.floor(e.offsetX / tile_size);
@@ -598,7 +599,7 @@ function mapTraverse(e){
 
   function placeTile(){
     let tileType = document.getElementById('tile-type');
-    let tile_sheet = new TileSheet();
+   // let tile_sheet = new TileSheet();
     let img = imageRef(parseInt(tileType.value), tile_sheet);
     let val = parseInt(tileType.value);
     let index = row * currentGame.columns + column;
@@ -678,26 +679,9 @@ function setCursor(){
   
 
   controller = new Controller();
+  tile_sheet = new TileSheet();
+  viewport = new Viewport(0, 0, 900, 500);
 
-  document.addEventListener('keydown', function(event){
-    if (game_paused == false || player_editor_paused == false){
-      switch(event.keyCode){
-        case 37:
-          event.preventDefault();
-        break;
-        case 38:
-          event.preventDefault();
-        break;
-        case 39:
-          event.preventDefault();
-        break;
-        case 40:
-          event.preventDefault();
-        break;
-      }
-      
-      }
-    });
   
 
   
@@ -709,6 +693,8 @@ function setCursor(){
      
    game_context.canvas.height = currentGame.canvas_height;
    game_context.canvas.width = currentGame.canvas_width;
+
+ 
    
 
 
@@ -727,8 +713,17 @@ player.setOldRight(x);
                                             //////////////////////                                                                                                              
  
                                             game_loop = function(){
+
+                                              var height = document.documentElement.clientHeight;
+                                              var width = document.documentElement.clientWidth;
+
+                                           //   viewport.x ++;
+                                             // console.log(currentGame.canvas_width - viewport.w)
+                                             // console.log(" viewport.x: " + viewport.x, "player.x: " + currentGame.player.x)
                                               
                                               game_context.canvas.width = currentGame.canvas_width;
+                                            //  game_context.canvas.height = height;
+                                            //  game_context.canvas.width = width;
 
                                             setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
                                               
@@ -820,7 +815,7 @@ player.setOldRight(x);
                                               
 
 
-                                              /////and again
+                                             
                                               
                                              
 
@@ -854,16 +849,39 @@ player.setOldRight(x);
 
                                               currentGame.player.x = Math.round(currentGame.player.x)
 
+
+
+                                               //////////////
+                                              ///VIEWPORT///
+                                             //////////////
+
+                                             viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
+                                              
+                                           //   viewport.x ++;
+
+                                           if(viewport.x > currentGame.canvas_width - viewport.w){viewport.x = currentGame.canvas_width - viewport.w};
+                                           if(viewport.x < 0){viewport.x = 0};
+
+                                              var x_min = Math.floor(viewport.x / tile_size);
+                                              var y_min = Math.floor(viewport.y / tile_size);
+                                              var x_max = Math.ceil((viewport.x + viewport.w) / tile_size);
+                                              var y_max = Math.ceil((viewport.y + viewport.h) / tile_size);
+
+                                              if(x_min < 0){x_min = 0;};
+                                              if(x_max > width){x_min = width;};
+                                              if(y_min < 0){y_min = 0;};
+                                              if(y_max > height){y_min = height;};
+
                                                           ///////////////////
                                                          /// MAP DRAWING ///
                                                         ///////////////////
 
                                                         
 
-                                              let tile_sheet = new TileSheet();
+                                       //       let tile_sheet = new TileSheet();
                                               
 
-                                            function drawMap(map, tile_sheet) {
+                                        /*    function drawMap(map, tile_sheet) {
                                               for(let x = map.length - 1; x >=0; --x){
                                                   let img =  imageRef(map[x], tile_sheet)
                                                 
@@ -877,17 +895,66 @@ player.setOldRight(x);
                                           }
 
                                                drawMap(currentGame.map, tile_sheet);
-    
+                                               */
+
+ 
+  
+                                             //    drawMap(currentGame.map, tile_sheet);
+
+
+
+                                         //  viewport.x = currentGame.player.x;
+
+                                          
+                                         
+                                                for(let x = x_max - 1; x >= x_min; --x){
+
+                                                  for(let y =  y_max - 1; y >= y_min; --y){
+                                            
+                                                    
+                                                    let val = currentGame.map[y * currentGame.columns + x];
+                                            
+                                                    let img =  imageRef(val, tile_sheet)
+                                                    let tile_x = Math.floor(x * tile_size - viewport.x );
+                                                    let tile_y = Math.floor(y * tile_size - viewport.y);
+                                                    game_context.drawImage(img, tile_x, tile_y);
+                                                  }
+
+                                                }
+                                       //  currentGame.player.x = Math.round(currentGame.player.x + viewport.x - width * 0.5 + viewport.w * 0.5);
+
+
+                                         /*        for(let x = x_max - 1; x >= x_min; --x){
+
+                                                  for(let y =  y_max - 1; y >= y_min; --y){
+                                            
+                                                    
+                                                    let val = currentGame.map[y * currentGame.columns + x];
+                                            
+                                                    let img =  imageRef(val, tile_sheet)
+                                                    let tile_x = Math.floor(x * tile_size - viewport.x + game_context.canvas.width * 0.5 - viewport.w * 0.5);
+                                                    let tile_y = Math.floor(y * tile_size - viewport.y + game_context.canvas.height * 0.5 - viewport.h * 0.5);
+                                                    game_context.drawImage(img, tile_x, tile_y);
+                                                  }
+
+                                                 }
+                                                 */
 
                                             
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
                                               game_context.beginPath();
-                                              game_context.rect(currentGame.player.x, currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
+                                              game_context.rect(Math.round(currentGame.player.x - viewport.x), currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
+                                           //  console.log("X: " + Math.round(currentGame.player.x - viewport.x + width * 0.5 - viewport.w *0.5));
+                                           //  console.log("y: " +  Math.round(currentGame.player.y - viewport.y + height * 0.5 - viewport.h * 0.5));
                                               game_context.fill();
 
-                                             
                                             
+                                              game_context.strokeStyle = "#ff0000";
+                                              game_context.rect(0, 0, viewport.w, viewport.h)
+                                              game_context.stroke()
+
+
                                               //calls upon itself
                                               if(game_paused == false){
 
@@ -922,6 +989,29 @@ player.setOldRight(x);
                                   ///////////////////////////////                                                                                                              
  
                        player_editor_loop = function(){
+
+
+                        document.addEventListener('keydown', function(event){
+                          if (game_paused == false || player_editor_paused == false){
+                            switch(event.key){
+                              case "ArrowLeft":
+                                event.preventDefault();
+                              break;
+                              case "ArrowUp":
+                                event.preventDefault();
+                              break;
+                              case "ArrowRight":
+                                event.preventDefault();
+                              break;
+                              case "ArrowDown":
+                                event.preventDefault();
+                              break;
+                            }
+                            
+                            }
+                          });
+
+
                         if(controller.up && currentGame.player.jumping == false) { 
                           currentGame.player.y_velocity -= currentGame.player.jumping_height; 
                           currentGame.player.jumping = true;
@@ -987,9 +1077,7 @@ player.setOldRight(x);
                           currentGame.player.edit_x = -currentGame.player.width; //other side of canvas
                         }
                       
-                        //fill background with dark grey
-                       // context.fillStyle = '#202020'; //dark grey background
-                       // context.fillRect(0, 0, canvas.width, canvas.height); //fill in the size of the game.canvas_width/height
+
                         let testImg = document.createElement('img')
                         testImg.src = './public/images/grey_checkered_4px.png';
                         player_editor_context.drawImage(testImg, 0, 0);
@@ -1087,6 +1175,7 @@ player.setOldRight(x);
   let game_play_button = document.getElementById('game-play-button');
 
   let game_paused = true;
+  
 
   game_play_button.addEventListener("click", function(){
     game_paused = !game_paused;
@@ -1104,6 +1193,8 @@ player.setOldRight(x);
     
     window.requestAnimationFrame(game_loop);  
   })
+
+  game_play_button.click()
   
 
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
@@ -1113,9 +1204,4 @@ player.setOldRight(x);
 });
 
 
-//tile sheet
-//basic tiles
-///new variables
-//game floor
-//game respawn_x, respawn_y
-//build a map editor
+
