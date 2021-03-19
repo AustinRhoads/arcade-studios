@@ -138,3 +138,13 @@ tileType.addEventListener("click", function(){
 }
 
 
+
+
+
+function scrollLeft(viewport){
+viewport.x -= 6;
+}
+
+function scrollRight(viewport){
+viewport.x += 6;
+}

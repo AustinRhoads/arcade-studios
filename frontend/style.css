@@ -14,7 +14,7 @@
 }
 
 #game-canvas{
- /*   border: solid black 3px;
+ /*  border: solid black 3px;
     border-radius: 25px;   */
     
 }
@@ -24,13 +24,31 @@ div#game-screen{
     margin-left: 400px;
     top: 0;
 }
+div#border-div{
+    position: absolute;
+    margin-left: 0px;
+    top: -40px;
+    width: 820px;
+    height: 500px;
+    border: solid black 80px;
+    border-radius: 25px; 
+    z-index: 3000;
+}
 
+div#game-console{
+    height: 40px;
+    margin-top: 60px;
+    border: solid black 6px;
+    border-radius: 25px; 
+    width: 330px;
+  
+}
 div#map-editor{
     position: absolute;
     background-color: rgb(109, 105, 105);
     margin-left: 400px;
     height: 220px;
-    top: 600px;
+    top: 700px;
     width: 960px;
 }
 
@@ -72,15 +90,19 @@ div#tile-editor{
 
 .sky_cursor{
     cursor: url(./public/images/sky_block_1.png), auto;
+ z-index: 4000;
 }
 .earth_cursor{
     cursor: url(./public/images/earth_1.png), auto;
+ z-index: 4000;
 }
 .crate_cursor{
     cursor: url(./public/images/crate_1.png), auto;
+ z-index: 4000;
 }
 .island_cursor{
     cursor: url(./public/images/sky_island_1.png), auto;
+     z-index: 4000;
 }
 
 

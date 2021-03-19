@@ -20,6 +20,9 @@ var xy = document.getElementById('mouse-x-y')
 var tile_selector = document.getElementById('tile-type');
 var tile_sheet;
 var viewport;
+var borderDiv = document.getElementById("border-div");
+//var traversing = false;
+var map_edit_mode = false;
 
 
 function populate_load_list(){
@@ -474,12 +477,14 @@ function resetGame(gameObj){
    populate_load_list();
    gameObj ||= defaultSettings();
    currentGame = gameObj;
+   map_edit_mode = false;
    currentGame.player.x = currentGame.player.x_respawn;//add currentGame.x_respawn 
    currentGame.player.y = currentGame.player.y_respawn;//add currentGame.y_respawn
    currentGame.player.edit_x = 144;
    currentGame.player.edit_y = 0; 
    currentGame.player.jumping = true;
    populate_editor(gameObj);
+   
 }
 
 
@@ -560,30 +565,34 @@ game_canvas = document.querySelector("#game-canvas");
 g_canvas = document.getElementById("game-canvas");
 
 
-let traversing = false;
+
 
 function mapTraverse(e){
-  g_canvas.classList.remove("sky_cursor");
-  g_canvas.classList.remove("earth_cursor");
-  g_canvas.classList.remove("crate_cursor");
-  g_canvas.classList.remove("island_cursor");
- 
-  traversing = !traversing;
+  borderDiv.classList.remove("sky_cursor");
+  borderDiv.classList.remove("earth_cursor");
+  borderDiv.classList.remove("crate_cursor");
+  borderDiv.classList.remove("island_cursor");
   
+ 
+ // traversing = !traversing;
+  map_edit_mode = !map_edit_mode;
 
-  if(traversing == true){
+  if(map_edit_mode == true){
 
     
     tile_selector.click();
+    
+      borderDiv.onmousemove = function(e){
+        
 
-      game_canvas.onmousemove = function(e){
-
-
-      tile_selector.addEventListener("click", () => setCursor())
+      tile_selector.addEventListener("click", () => setCursor());
       setCursor()
+      
+
+   
+   
      
-     
-     // viewport.scrollTo(e.offsetX, 0);
+    
 
       
           let column = Math.floor(e.offsetX / tile_size);
@@ -592,7 +601,7 @@ function mapTraverse(e){
         
 
           var coor = "column: " + column + ", row: " + row;
-          xy.innerHTML = coor;
+          xy.innerHTML = e.offsetX;
 
 
   game_canvas.onclick = placeTile;
@@ -612,9 +621,10 @@ function mapTraverse(e){
 
       }
   }else{
+    clearTraverse();
     xy.innerHTML = "";
-    game_canvas.onmousemove = null;
-    game_canvas.onclick = null;
+    borderDiv.onmousemove = null;
+    borderDiv.onclick = null;
   }
 
 
@@ -623,32 +633,49 @@ function mapTraverse(e){
 
 
 function setCursor(){
+ 
   let tileType = document.getElementById('tile-type');
  
-  g_canvas.classList.remove("sky_cursor");
-  g_canvas.classList.remove("earth_cursor");
-  g_canvas.classList.remove("crate_cursor");
-  g_canvas.classList.remove("island_cursor");
+  borderDiv.classList.remove("sky_cursor");
+  borderDiv.classList.remove("earth_cursor");
+  borderDiv.classList.remove("crate_cursor");
+  borderDiv.classList.remove("island_cursor");
   
 
     switch(parseInt(tileType.value)){
       case 0:
-        g_canvas.classList.add("sky_cursor");
+        borderDiv.classList.add("sky_cursor");
       break;
       case 1:
-        g_canvas.classList.add("earth_cursor");
+        borderDiv.classList.add("earth_cursor");
+       
       break;
       case 2:
-        g_canvas.classList.add("crate_cursor");
+        borderDiv.classList.add("crate_cursor");
       break;
       case 3:
-        g_canvas.classList.add("island_cursor");
+        borderDiv.classList.add("island_cursor");
       break;
 
 
 
     }
  
+}
+
+
+function clearTraverse(){
+
+//traversing = false;
+//scrolling = false;
+map_edit_mode= false;
+
+  borderDiv.classList.remove("sky_cursor");
+  borderDiv.classList.remove("earth_cursor");
+  borderDiv.classList.remove("crate_cursor");
+  borderDiv.classList.remove("island_cursor");
+  borderDiv.onmousemove = null;
+  borderDiv.onclick = null;
 }
 
 
@@ -704,6 +731,8 @@ player.setOldLeft(x);
 player.setOldBottom(y);
 player.setOldRight(x);
 }
+
+
 
 
 
@@ -773,7 +802,7 @@ player.setOldRight(x);
                                             
                                               //fill background with dark grey #202020
                                               game_context.fillStyle = '#1696ab' ; //teal background
-                                              game_context.fillRect(0, 0, game_canvas.width, game_canvas.height); //fill in the size of the game.canvas_width/height
+                                              game_context.fillRect(0, 0, viewport.w, viewport.h); //fill in the size of the game.canvas_width/height
 
 
 
@@ -812,18 +841,6 @@ player.setOldRight(x);
                                               val = currentGame.map[bottom * currentGame.columns + right]     
                                               collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size)
                                               
-                                              
-
-
-                                             
-                                              
-                                             
-
-
-
-
-                                             
-                                          
                                              
 
                                               
@@ -854,8 +871,11 @@ player.setOldRight(x);
                                                //////////////
                                               ///VIEWPORT///
                                              //////////////
+                                             if(map_edit_mode == false){
+                                              viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
+                                             }
 
-                                             viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
+                                             
                                               
                                            //   viewport.x ++;
 
@@ -949,10 +969,11 @@ player.setOldRight(x);
                                            //  console.log("y: " +  Math.round(currentGame.player.y - viewport.y + height * 0.5 - viewport.h * 0.5));
                                               game_context.fill();
 
-                                            
-                                              game_context.strokeStyle = "#ff0000";
-                                              game_context.rect(0, 0, viewport.w, viewport.h)
-                                              game_context.stroke()
+                                            //the viewport border
+                                            /*  game_context.strokeStyle = "#ff0000";
+                                              
+                                              game_context.rect(0, 40, viewport.w, viewport.h)
+                                              game_context.stroke() */
 
 
                                               //calls upon itself
@@ -1135,14 +1156,23 @@ player.setOldRight(x);
   //tile editor
 
   tileButton.addEventListener("click", function() {
- //   game_paused = true;
- //   player_editor_paused = true;
+  //  game_paused = true;
+    player_editor_paused = true;
     mapTraverse();
   });
 
   //tile editor
 
   runTileEditor();
+
+  //scrollers
+
+  var scrollLeftBtn = document.getElementById("scroll-left");
+  var scrollRightBtn = document.getElementById("scroll-right");
+  
+
+  scrollLeftBtn.addEventListener("click", ()=> {map_edit_mode = true; scrollLeft(viewport)});
+  scrollRightBtn.addEventListener("click", ()=> {map_edit_mode = true; scrollRight(viewport)});
 
 
 
@@ -1179,6 +1209,8 @@ player.setOldRight(x);
 
   game_play_button.addEventListener("click", function(){
     game_paused = !game_paused;
+    map_edit_mode = false;
+    clearTraverse()
 
 
    
@@ -1190,8 +1222,19 @@ player.setOldRight(x);
 
 
     player_editor_paused = true;
+let img_1 = new Image();
+img_1.src = "./public/images/crate_1.png";
+    img_1.addEventListener('load', function(){
+      let img_2 =new Image();
+      img_2.src = "./public/images/earth_1.png";
+
+      img_2.addEventListener('load', function(){
+
+      window.requestAnimationFrame(game_loop);  
+      })
+    })
     
-    window.requestAnimationFrame(game_loop);  
+    
   })
 
   game_play_button.click()
