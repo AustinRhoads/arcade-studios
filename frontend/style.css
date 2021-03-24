@@ -49,13 +49,16 @@ div#game-console{
     overflow: hidden;
   
 }
-div#map-editor{
+#map-editor{
     position: absolute;
+    vertical-align: top;
+    display: inline-block;
     background-color: rgb(109, 105, 105);
     margin-left: 400px;
     height: 220px;
     top: 740px;
     width: 960px;
+
 }
 
 div#add-earth{
@@ -79,6 +82,8 @@ div#tile-editor{
     border: solid black 3px;
     justify-content: center;
     width: 250px;
+    vertical-align: top;
+    display: inline-block;
 }
 
 #tile-display{
@@ -87,6 +92,13 @@ div#tile-editor{
     align-self: center;
     border: solid black 3px;
     justify-content: center;
+}
+#coin-editor{
+    border: solid black 3px;
+    justify-content: center;
+    width: 250px;
+    vertical-align: top;
+    display: inline-block;
 }
 
 .cursor_img{
@@ -109,6 +121,11 @@ div#tile-editor{
 .island_cursor{
     cursor: url(./public/images/sky_island_1.png), auto;
      z-index: 4000;
+}
+
+.coin_cursor{
+    cursor: url(./public/images/mario_coin_80px.png), auto;
+    z-index: 4000;
 }
 
 #coin-counter{

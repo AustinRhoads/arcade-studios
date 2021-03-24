@@ -28,6 +28,8 @@ var tile_selector_y;
 var tile_selector_on = false;
 var coin_count = 0;
 var coin_counter = document.getElementById('coin-counter');
+var add_coin_btn = document.getElementById('add-coin-button');
+var remove_coin_btn =  document.getElementById('remove-coin-button');
 
 
 
@@ -259,6 +261,13 @@ function saveGame(){
   gameData.rows = currentGame.rows;
   gameData.canvas_width = currentGame.canvas_width;
   gameData.canvas_height = currentGame.canvas_height;
+  gameData.coins = [];
+
+  for(let i = currentGame.coins.length -1; i >=0; --i){
+    gameData.coins.push([currentGame.coins[i].column, currentGame.coins[i].row]);
+    console.log([currentGame.coins[i].column, currentGame.coins[i].row])
+  }
+  
 
 if(currentGame.id == null){
 
@@ -503,6 +512,7 @@ function resetGame(gameObj){
    currentGame.player.jumping = true;
    currentGame.coins = gameObj.coins;
    populate_editor(gameObj);
+   coin_count = 0;
    
 }
 
@@ -586,7 +596,7 @@ g_canvas = document.getElementById("game-canvas");
 
 
 
-function mapTraverse(e){
+function mapEdit(e){
   borderDiv.classList.remove("sky_cursor");
   borderDiv.classList.remove("earth_cursor");
   borderDiv.classList.remove("crate_cursor");
@@ -601,19 +611,19 @@ function mapTraverse(e){
     
     tile_selector.click();
     
-      borderDiv.onmousemove = function(e){
+   //   borderDiv.onmousemove = function(e){
         
 
-      tile_selector.addEventListener("click", () => setCursor());
-      setCursor()
+    tile_selector.addEventListener("click", () => setCursor());
+    setCursor();
       
-
+    mapSelectEdit(e);
    
    
      
     
 
-      
+/*      
           let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
           let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
 
@@ -630,26 +640,11 @@ function mapTraverse(e){
 
           var coor = "column: " + column + ", row: " + row ;
           xy.innerHTML =viewport.x % tile_size;
+*/
 
 
-          borderDiv.onclick = placeTile;
-
-  function placeTile(){
-    let tileType = document.getElementById('tile-type');
-   // let tile_sheet = new TileSheet();
-  //  let img = imageRef(parseInt(tileType.value), tile_sheet);
-    let val = parseInt(tileType.value);
-    let index = row * currentGame.columns + column;
-
-    currentGame.map[index] = val;
-
-  }
-
-
-
-      }
   }else{
-    clearTraverse();
+    clearMapEdit();
     xy.innerHTML = "";
     borderDiv.onmousemove = null;
     borderDiv.onclick = null;
@@ -660,18 +655,41 @@ function mapTraverse(e){
 }
 
 
+var coin_edit_mode = false;
+
+function coinAdder(e){
+  console.log("yup")
+  coin_edit_mode = !coin_edit_mode;
+  setCursor();
+
+  mapSelectEdit(e)
+
+
+}
+
+function coinRemover(){
+
+}
+
 
 function setCursor(){
- 
-  let tileType = document.getElementById('tile-type');
+
+  var cursorType;
+  if(map_edit_mode == true){
+     cursorType = document.getElementById('tile-type').value;
+  } else if(coin_edit_mode == true){
+     cursorType = 9;
+  }
+  
  
   borderDiv.classList.remove("sky_cursor");
   borderDiv.classList.remove("earth_cursor");
   borderDiv.classList.remove("crate_cursor");
   borderDiv.classList.remove("island_cursor");
+  borderDiv.classList.remove("coin_cursor");
   
 
-    switch(parseInt(tileType.value)){
+    switch(parseInt(cursorType)){
       case 0:
         borderDiv.classList.add("sky_cursor");
       break;
@@ -685,19 +703,69 @@ function setCursor(){
       case 3:
         borderDiv.classList.add("island_cursor");
       break;
-
+      case 9:
+        borderDiv.classList.add("coin_cursor");
+      break
 
 
     }
  
 }
 
+function mapSelectEdit(e){
 
-function clearTraverse(){
+  borderDiv.onmousemove = function(e){
 
-//traversing = false;
-//scrolling = false;
-map_edit_mode = false;
+
+
+  let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
+  let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
+
+  tile_selector_on = true;
+  tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
+  tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
+
+
+  if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
+  if(tile_selector_y <= 0){tile_selector_y = 0};
+
+  
+
+  var coor = "column: " + column + ", row: " + row ;
+  xy.innerHTML = coor;
+
+
+  borderDiv.onclick = () => placeTile(column, row);
+  }
+  
+
+function placeTile(column, row){
+  if(map_edit_mode == true){
+    let tileType = document.getElementById('tile-type');
+     let val = parseInt(tileType.value);
+     let index = row * currentGame.columns + column;
+ 
+     currentGame.map[index] = val;
+  } else if(coin_edit_mode == true){
+    currentGame.coins.push(new Coin(column, row));
+  }
+
+
+ 
+
+
+
+      }
+
+
+  
+
+}
+
+
+function clearMapEdit(){
+
+  map_edit_mode = false;
 
   borderDiv.classList.remove("sky_cursor");
   borderDiv.classList.remove("earth_cursor");
@@ -1158,8 +1226,10 @@ map_edit_mode = false;
   tileButton.addEventListener("click", function() {
   //  game_paused = true;
     player_editor_paused = true;
-    mapTraverse();
+    mapEdit();
   });
+
+
 
   //tile editor
 
@@ -1169,6 +1239,17 @@ map_edit_mode = false;
 
   var scrollLeftBtn = document.getElementById("scroll-left");
   var scrollRightBtn = document.getElementById("scroll-right");
+
+  //coin editor
+add_coin_btn.addEventListener("click", function(){
+  player_editor_paused = true;
+ 
+  coinAdder();
+})
+
+remove_coin_btn.addEventListener("click", function(){
+  coinRemover();
+})
   
 
   scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport)};
@@ -1213,7 +1294,7 @@ map_edit_mode = false;
       game_paused = true;
     }
     map_edit_mode = false;
-    clearTraverse()
+    clearMapEdit()
 
 
 
