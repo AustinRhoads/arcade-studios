@@ -142,9 +142,47 @@ tileType.addEventListener("click", function(){
 
 
 function scrollLeft(viewport){
-viewport.x -= 6;
+viewport.x -= 80;
 }
 
 function scrollRight(viewport){
-viewport.x += 6;
+viewport.x += 80;
 }
+
+
+function placeCoins(coins, vp, ctx){
+
+    
+      
+       for (let i = coins.length - 1; i >= 0; --i){
+         
+         let coin_img = document.createElement('img')
+         coin_img.src = "./public/images/mario_coin_80px.png";
+
+           let x = (coins[i].x - vp.x) - 22;
+           let y = coins[i].y;
+           ctx.drawImage(coin_img, x, y);
+         
+        
+
+        }
+      
+   }
+
+   function coinCollide(coin, player , vp){
+       
+    let coin_x = (coin.x - vp.x) - 22;
+    let coin_y = coin.y;
+   // console.log("player: " + player.x + ", coin: " + coin_x)
+   // if(player.x >= coin_x && player.y >= coin_y){
+   //     return true
+   // } else {return false}
+   let rightOver = player.getRight() <= coin.getRight() - 11 && player.getRight() >= coin.getLeft() + 11;
+   let leftOver = player.getLeft() >= coin.getLeft() + 11 && player.getLeft() <= coin.getRight() - 11;
+   let topOver = player.getTop() <= coin.getBottom() && player.getTop() >= coin.getTop();
+   let bottomOver = player.getBottom() >= coin.getTop() && player.getBottom() <= coin.getBottom();
+   
+    if( (rightOver || leftOver) && (bottomOver || topOver) ){
+        return true;
+    };
+   }

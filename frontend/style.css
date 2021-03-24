@@ -13,24 +13,29 @@
     color: seashell;
 }
 
-#game-canvas{
+canvas#game-canvas{
  /*  border: solid black 3px;
     border-radius: 25px;   */
+ /*   width: 900px;*/
     
+    overflow-x: hidden;
 }
 
 div#game-screen{
     position: absolute;
-    margin-left: 400px;
+    margin-left: 480px;
+    margin-top: 60px;
+    
+   
     top: 0;
 }
 div#border-div{
     position: absolute;
-    margin-left: 0px;
-    top: -40px;
-    width: 820px;
-    height: 500px;
-    border: solid black 80px;
+    margin-left: -80px;
+    top: -70px;
+    width: 900px;
+    height: 530px;
+    border: solid rgba(0, 0, 0, 1) 80px;
     border-radius: 25px; 
     z-index: 3000;
 }
@@ -41,6 +46,7 @@ div#game-console{
     border: solid black 6px;
     border-radius: 25px; 
     width: 330px;
+    overflow: hidden;
   
 }
 div#map-editor{
@@ -48,7 +54,7 @@ div#map-editor{
     background-color: rgb(109, 105, 105);
     margin-left: 400px;
     height: 220px;
-    top: 700px;
+    top: 740px;
     width: 960px;
 }
 
@@ -105,4 +111,10 @@ div#tile-editor{
      z-index: 4000;
 }
 
+#coin-counter{
+position: absolute;
+top: 30;
+color: blanchedalmond;
+font-size: 33px;
+}
 

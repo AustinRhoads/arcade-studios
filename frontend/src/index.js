@@ -23,6 +23,12 @@ var viewport;
 var borderDiv = document.getElementById("border-div");
 //var traversing = false;
 var map_edit_mode = false;
+var tile_selector_x;
+var tile_selector_y;
+var tile_selector_on = false;
+var coin_count = 0;
+var coin_counter = document.getElementById('coin-counter');
+
 
 
 function populate_load_list(){
@@ -176,6 +182,8 @@ let p_speed = document.getElementById('player_speed');
 p_speed.addEventListener("click", function() {
   currentGame.player.speed = parseFloat(p_speed.value);
 })
+
+
 
 let p_jumping_height = document.getElementById('player_jumping_height');
 
@@ -350,13 +358,19 @@ function loadGame(id){
     let canvas_height = gameData.canvas_height;
     let map = gameData.map;
     let columns = gameData.columns;
-    let rows = gameData.rows
+    let rows = gameData.rows;
+    let coins = gameData.coins;
 
     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
     loadedGame.id = id;
     loadedGame.map = map;
     loadedGame.columns = columns;
     loadedGame.rows = rows;
+    loadedGame.coins = [];
+
+    for(let x = coins.length - 1; x >= 0; --x){
+      loadedGame.coins.push(new Coin(coins[x][0], coins[x][1]));
+    } 
 
 
     //player properties
@@ -375,8 +389,11 @@ function loadGame(id){
       loadedGame.baddies.push(new Baddy(el.name, el.height, el.width, el.speed))
     )
 
+    
+
 
     currentGame = loadedGame;
+   
     resetGame(currentGame);
   
    })
@@ -464,6 +481,7 @@ function defaultSettings(){
   defaultGame.columns = 12;
   defaultGame.rows = 7;
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
+  defaultGame.coins = []
   return defaultGame;
   
 
@@ -483,6 +501,7 @@ function resetGame(gameObj){
    currentGame.player.edit_x = 144;
    currentGame.player.edit_y = 0; 
    currentGame.player.jumping = true;
+   currentGame.coins = gameObj.coins;
    populate_editor(gameObj);
    
 }
@@ -595,21 +614,30 @@ function mapTraverse(e){
     
 
       
-          let column = Math.floor(e.offsetX / tile_size);
-          let row = Math.floor(e.offsetY / tile_size);
-        
-        
-
-          var coor = "column: " + column + ", row: " + row;
-          xy.innerHTML = e.offsetX;
+          let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
+          let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
 
 
-  game_canvas.onclick = placeTile;
+
+          tile_selector_on = true;
+          tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
+          tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
+          if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
+         // if(tile_selector_x >= 0){ = 0};
+          if(tile_selector_y <= 0){tile_selector_y = 0};
+        //  if(tile_selector_y <= 0){tile_selector_y = 0};
+          
+
+          var coor = "column: " + column + ", row: " + row ;
+          xy.innerHTML =viewport.x % tile_size;
+
+
+          borderDiv.onclick = placeTile;
 
   function placeTile(){
     let tileType = document.getElementById('tile-type');
    // let tile_sheet = new TileSheet();
-    let img = imageRef(parseInt(tileType.value), tile_sheet);
+  //  let img = imageRef(parseInt(tileType.value), tile_sheet);
     let val = parseInt(tileType.value);
     let index = row * currentGame.columns + column;
 
@@ -625,6 +653,7 @@ function mapTraverse(e){
     xy.innerHTML = "";
     borderDiv.onmousemove = null;
     borderDiv.onclick = null;
+    tile_selector_on = false;
   }
 
 
@@ -668,7 +697,7 @@ function clearTraverse(){
 
 //traversing = false;
 //scrolling = false;
-map_edit_mode= false;
+map_edit_mode = false;
 
   borderDiv.classList.remove("sky_cursor");
   borderDiv.classList.remove("earth_cursor");
@@ -709,28 +738,26 @@ map_edit_mode= false;
   tile_sheet = new TileSheet();
   viewport = new Viewport(0, 0, 900, 500);
 
-  
-
-  
+ 
     game_canvas = document.querySelector("#game-canvas");
     game_canvas.height = currentGame.canvas_height;
-    game_canvas.width = currentGame.canvas_width;
+  //  game_canvas.width = currentGame.canvas_width;
   
    game_context = document.querySelector("#game-canvas").getContext("2d");
      
    game_context.canvas.height = currentGame.canvas_height;
-   game_context.canvas.width = currentGame.canvas_width;
+  // game_context.canvas.width = currentGame.canvas_width;
 
  
    
 
 
-function setOld(player, x, y){
-player.setOldTop(y);
-player.setOldLeft(x);
-player.setOldBottom(y);
-player.setOldRight(x);
-}
+  function setOld(player, x, y){
+  player.setOldTop(y);
+  player.setOldLeft(x);
+  player.setOldBottom(y);
+  player.setOldRight(x);
+  }
 
 
 
@@ -743,16 +770,17 @@ player.setOldRight(x);
  
                                             game_loop = function(){
 
+                                              coin_counter.innerHTML = "COINS: " + coin_count;
+
                                               var height = document.documentElement.clientHeight;
                                               var width = document.documentElement.clientWidth;
 
-                                           //   viewport.x ++;
-                                             // console.log(currentGame.canvas_width - viewport.w)
-                                             // console.log(" viewport.x: " + viewport.x, "player.x: " + currentGame.player.x)
+                                          
                                               
-                                              game_context.canvas.width = currentGame.canvas_width;
-                                            //  game_context.canvas.height = height;
-                                            //  game_context.canvas.width = width;
+                                            //  game_context.canvas.width = currentGame.canvas_width;
+                                              game_context.canvas.width = 900;
+                                             
+                                      
 
                                             setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
                                               
@@ -875,9 +903,7 @@ player.setOldRight(x);
                                               viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
                                              }
 
-                                             
-                                              
-                                           //   viewport.x ++;
+
 
                                            if(viewport.x > currentGame.canvas_width - viewport.w){viewport.x = currentGame.canvas_width - viewport.w};
                                            if(viewport.x < 0){viewport.x = 0};
@@ -892,38 +918,13 @@ player.setOldRight(x);
                                               if(y_min < 0){y_min = 0;};
                                               if(y_max > height){y_min = height;};
 
+
+
                                                           ///////////////////
                                                          /// MAP DRAWING ///
                                                         ///////////////////
 
                                                         
-
-                                       //       let tile_sheet = new TileSheet();
-                                              
-
-                                        /*    function drawMap(map, tile_sheet) {
-                                              for(let x = map.length - 1; x >=0; --x){
-                                                  let img =  imageRef(map[x], tile_sheet)
-                                                
-                                                  let dest_y = Math.floor((x / currentGame.columns) * tile_size);
-                                                  
-                                                  let dest_x = ((x % currentGame.columns) * tile_size) ; 
-
-                                                  dest_y = dest_y - ((dest_x / tile_size) * (tile_size / currentGame.columns))
-                                                  game_context.drawImage(img, dest_x, dest_y);
-                                              }
-                                          }
-
-                                               drawMap(currentGame.map, tile_sheet);
-                                               */
-
- 
-  
-                                             //    drawMap(currentGame.map, tile_sheet);
-
-
-
-                                         //  viewport.x = currentGame.player.x;
 
                                           
                                          
@@ -941,39 +942,38 @@ player.setOldRight(x);
                                                   }
 
                                                 }
-                                       //  currentGame.player.x = Math.round(currentGame.player.x + viewport.x - width * 0.5 + viewport.w * 0.5);
 
 
-                                         /*        for(let x = x_max - 1; x >= x_min; --x){
+                                                 if(currentGame.coins.length != 0){
+                                                     placeCoins(currentGame.coins, viewport, game_context);
 
-                                                  for(let y =  y_max - 1; y >= y_min; --y){
-                                            
-                                                    
-                                                    let val = currentGame.map[y * currentGame.columns + x];
-                                            
-                                                    let img =  imageRef(val, tile_sheet)
-                                                    let tile_x = Math.floor(x * tile_size - viewport.x + game_context.canvas.width * 0.5 - viewport.w * 0.5);
-                                                    let tile_y = Math.floor(y * tile_size - viewport.y + game_context.canvas.height * 0.5 - viewport.h * 0.5);
-                                                    game_context.drawImage(img, tile_x, tile_y);
-                                                  }
+                                                     for(let i = currentGame.coins.length - 1; i >= 0; --i){
 
+                                                       if( coinCollide(currentGame.coins[i], currentGame.player, viewport)){
+                                                         currentGame.coins.splice( i, 1);
+                                                         coin_count += 1;
+                                                       }
+
+                                                     }  
                                                  }
-                                                 */
-
-                                            
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
                                               game_context.beginPath();
                                               game_context.rect(Math.round(currentGame.player.x - viewport.x), currentGame.player.y, currentGame.player.width, currentGame.player.height); ///change to player. height/width etc
-                                           //  console.log("X: " + Math.round(currentGame.player.x - viewport.x + width * 0.5 - viewport.w *0.5));
-                                           //  console.log("y: " +  Math.round(currentGame.player.y - viewport.y + height * 0.5 - viewport.h * 0.5));
                                               game_context.fill();
 
-                                            //the viewport border
-                                            /*  game_context.strokeStyle = "#ff0000";
+
+                                              if(tile_selector_on = true){
+                                                game_context.beginPath();
+                                                game_context.strokeStyle = 'rgba(' + [200, 200, 200, 0.5] + ')';
+                                                game_context.lineWidth = "10";
+                                                game_context.rect(tile_selector_x, tile_selector_y, tile_size, tile_size);
+                                                game_context.stroke()
+                                              }
                                               
-                                              game_context.rect(0, 40, viewport.w, viewport.h)
-                                              game_context.stroke() */
+
+
+
 
 
                                               //calls upon itself
@@ -1171,8 +1171,8 @@ player.setOldRight(x);
   var scrollRightBtn = document.getElementById("scroll-right");
   
 
-  scrollLeftBtn.addEventListener("click", ()=> {map_edit_mode = true; scrollLeft(viewport)});
-  scrollRightBtn.addEventListener("click", ()=> {map_edit_mode = true; scrollRight(viewport)});
+  scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport)};
+  scrollRightBtn.onmousedown = function () { map_edit_mode = true; scrollRight(viewport)};
 
 
 
@@ -1209,16 +1209,14 @@ player.setOldRight(x);
 
   game_play_button.addEventListener("click", function(){
     game_paused = !game_paused;
+    if(map_edit_mode == true){
+      game_paused = true;
+    }
     map_edit_mode = false;
     clearTraverse()
 
 
-   
 
-//console.log(currentGame.player.x_respawn)      
-//console.log(currentGame.player.y_respawn)    
-//    currentGame.player.x = currentGame.player.x_respawn;
-//    currentGame.player.y = currentGame.player.y_respawn;
 
 
     player_editor_paused = true;
@@ -1230,7 +1228,7 @@ img_1.src = "./public/images/crate_1.png";
 
       img_2.addEventListener('load', function(){
 
-      window.requestAnimationFrame(game_loop);  
+         window.requestAnimationFrame(game_loop);  
       })
     })
     

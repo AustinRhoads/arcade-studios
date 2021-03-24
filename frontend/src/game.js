@@ -12,6 +12,8 @@ function Game( name, gravity, friction, canvas_width, canvas_height ) {
 
 
 
+
+
 function Player( name, height, width, speed, jumping_height) {
     
     this.name = name,
@@ -62,5 +64,21 @@ Player.prototype = {
     setOldRight: function(x){this.x_old = x - this.width}
 }
 
+
+function Coin(column, row){
+    this.column = column,
+    this.row = row,
+    this.x = this.column * tile_size,
+    this.y = this.row * tile_size,
+    this.height = 80,
+    this.width = 80
+}
+
+Coin.prototype = {
+    getBottom: function() {return this.y + this.height},
+    getTop: function(){return this.y },
+    getLeft: function(){return this.x},
+    getRight: function(){return this.x + this.width},
+}
 
 
