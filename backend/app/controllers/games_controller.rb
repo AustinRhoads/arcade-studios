@@ -37,8 +37,10 @@ class GamesController < ApplicationController
         game = Game.find_by(:id => params[:id])
         game.player.update(player_params)
         game.player.save
+        game.coins = params['coins']
          #do same for baddies here
         game.update(game_params)
+      #  binding.pry
         game.save
 
         render json: GameSerializer.new(game)
@@ -52,7 +54,7 @@ class GamesController < ApplicationController
 
 
     def game_params
-        params.require(:game).permit( :name, :player, :gravity, :friction, :canvas_width, :canvas_height, :columns, :rows, map: [], coins: [])
+        params.require(:game).permit( :name, :player, :gravity, :friction, :canvas_width, :canvas_height, :columns, :rows, coins: [], map: [])
     end
 
     def player_params
