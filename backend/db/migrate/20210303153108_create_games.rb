@@ -9,6 +9,7 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.integer :columns, :default => 12
       t.integer :rows, :default => 7
       t.text :map, array: true
+      t.text :coins, array: true
       t.timestamps
     end
   end

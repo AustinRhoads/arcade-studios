@@ -31,7 +31,7 @@ game_a.map = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  
                ]
 
-
+game_a.coins = [[3, 4], [6, 1], [ 7, 1], [8, 1], [9, 1], [10, 1], [12, 3]]
 game_a.save
 
 
@@ -42,3 +42,7 @@ player_b =Player.create(name: "Feather Fast", speed: 27, jumping_height:33, game
 
 game_b.map = DEFAULT_MAP 
 game_b.save
+
+
+
+
