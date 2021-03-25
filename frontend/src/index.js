@@ -21,7 +21,6 @@ var tile_selector = document.getElementById('tile-type');
 var tile_sheet;
 var viewport;
 var borderDiv = document.getElementById("border-div");
-//var traversing = false;
 var map_edit_mode = false;
 var tile_selector_x;
 var tile_selector_y;
@@ -518,6 +517,7 @@ function resetGame(gameObj){
    populate_editor(gameObj);
    coin_count = 0;
    coin_list = currentGame.coins.slice();
+   set_game_canvas()
    
 }
 
@@ -609,20 +609,16 @@ function mapEdit(e){
   borderDiv.classList.remove("island_cursor");
   borderDiv.classList.remove("coin_cursor");
   
- 
- // traversing = !traversing;
   map_edit_mode = !map_edit_mode;
 
   if(map_edit_mode == true){
-    clearMapEdit("tiles")
 
-    
-    tile_selector.click();
-    
-   
-        
+    clearMapEdit("tiles");
+
+    tile_selector.click();    
 
     tile_selector.addEventListener("click", () => setCursor());
+
     setCursor();
       
     mapSelectEdit(e);
@@ -709,15 +705,9 @@ function mapSelectEdit(e){
   let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
   let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
 
- // tile_selector_on = true;
- // tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
- // tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
-  //tile_selector_x = tile_selector_x - (viewport.x % tile_size)
-//this one is soooooo close
-//  tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
   tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
-
   tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
+
   if(e.offsetX >= tile_selector_x + (tile_size * 0.5)){
     tile_selector_x += tile_size
   }
@@ -731,34 +721,27 @@ function mapSelectEdit(e){
   var coor = "column: " + column + ", row: " + row  + "  vp.x: " + viewport.x % tile_size;
   var ts_coor = "tile_selector_x: " +  tile_selector_x + "   tile_selector_y: " +  tile_selector_y;
   var testing_coor = "mouse: " + e.offsetX + "  selector: " +  tile_selector_x 
+
+
   xy.innerHTML = testing_coor;
 
-
-  borderDiv.onclick = () => placeTile(column, row);
+  borderDiv.onclick = () => placeTile(currentGame, column, row);
   }
-  
 
-function placeTile(column, row){
+}
+
+function placeTile(game, column, row){
   if(map_edit_mode == true){
-    let tileType = document.getElementById('tile-type');
+     let tileType = document.getElementById('tile-type');
      let val = parseInt(tileType.value);
-     let index = row * currentGame.columns + column;
- 
-     currentGame.map[index] = val;
-  } else if(coin_edit_mode == true){
-    currentGame.coins.push(new Coin(column, row));
-    coin_list = currentGame.coins.slice()
-  }
-
-
- 
-
-
-
-      }
-
-
+     let index = row * game.columns + column;
   
+     currentGame.map[index] = val;
+  }else if(coin_edit_mode == true){
+      game.coins.push(new Coin(column, row));
+      coin_list = game.coins.slice()
+      coin_count = 0;
+  }
 
 }
 
@@ -782,7 +765,6 @@ switch(safe_mode){
 }
 
 
-  let modes = [map_edit_mode, coin_edit_mode, tile_selector_on]
 
   
 
@@ -803,13 +785,6 @@ switch(safe_mode){
    //// SIMPLY GAME BUILD///
   /////////////////////////
   
-  
-
-
-
-   //////////////////////             ////////////////////////////   
-  ///CONTROLLER LOGIC///             ///moved to controller.js/// 
- //////////////////////             ////////////////////////////   
 
 
 
@@ -828,27 +803,7 @@ switch(safe_mode){
   tile_sheet = new TileSheet();
   viewport = new Viewport(0, 0, 900, 500);
 
- 
-    game_canvas = document.querySelector("#game-canvas");
-    game_canvas.height = currentGame.canvas_height;
-  //  game_canvas.width = currentGame.canvas_width;
-  
-   game_context = document.querySelector("#game-canvas").getContext("2d");
-     
-   game_context.canvas.height = currentGame.canvas_height;
-  // game_context.canvas.width = currentGame.canvas_width;
-
- 
-   
-
-
-  function setOld(player, x, y){
-  player.setOldTop(y);
-  player.setOldLeft(x);
-  player.setOldBottom(y);
-  player.setOldRight(x);
-  }
-
+  set_game_canvas()
 
 
 
@@ -860,135 +815,42 @@ switch(safe_mode){
  
                                             game_loop = function(){
 
+
+                                              
                                               coin_counter.innerHTML = "COINS: " + coin_count;
 
                                               var height = document.documentElement.clientHeight;
                                               var width = document.documentElement.clientWidth;
 
-                                          
+                                            setOld(currentGame);
                                               
-                                            //  game_context.canvas.width = currentGame.canvas_width;
-                                              game_context.canvas.width = 900;
-                                             
-                                      
+                                                          
+                                                          
+                                                          
 
-                                            setOld(currentGame.player, currentGame.player.x, currentGame.player.y);
+                                                               
+                                                               
+                                //////////////////             /////////////////////////
+                               ///GAME PHYSICS///  ///AND///  ///COLLISION DETECTION///
+                              //////////////////             /////////////////////////
+                                         
+                                            velocity_controll(currentGame);
+                                            collision_detection(currentGame); 
+                                            currentGame.player.x = Math.round(currentGame.player.x)
+                                            
                                               
-
-                                              if(controller.up && currentGame.player.jumping == false) { 
-                                                currentGame.player.y_velocity -= currentGame.player.jumping_height; 
-                                                currentGame.player.jumping = true;
-                                              }
-                                            
-                                              if(controller.left){
-                                                currentGame.player.x_velocity -= currentGame.player.speed; 
-                                             
-                                              }
-                                            
-                                              if(controller.right){
-                                                currentGame.player.x_velocity += currentGame.player.speed; 
-                                            
-                                              }
-                                              if(controller.down && currentGame.player.jumping == true){
-                                               currentGame.player.y_velocity += currentGame.player.speed
-                                              }
-                                               
-                                                                 //////////////////
-                                                                ///GAME PHYSICS///
-                                                               //////////////////
-                     
-                                             currentGame.player.y_velocity += currentGame.gravity;
-                                             currentGame.player.x += currentGame.player.x_velocity;
-                     
-                                             currentGame.player.y += currentGame.player.y_velocity;
-                                             currentGame.player.x_velocity *= currentGame.friction; 
-                                             currentGame.player.y_velocity *= currentGame.friction; 
-                                            
-                                            
-                                                   //////////////////////////
-                                                  ///COLLISION DETECTION ///
-                                                 //////////////////////////
-                                            
-                                    
-
-                                              if(currentGame.player.x <= 0){
-                                                currentGame.player.x = 1;
-                                              } else if(currentGame.player.x >= currentGame.canvas_width - currentGame.player.width){
-                                                currentGame.player.x = currentGame.canvas_width - currentGame.player.width - 1 ;
-                                                
-                                              }
-                                            
-                                              //fill background with dark grey #202020
-                                              game_context.fillStyle = '#1696ab' ; //teal background
-                                              game_context.fillRect(0, 0, viewport.w, viewport.h); //fill in the size of the game.canvas_width/height
-
-
-
-                                                          /////////////////////////
-                                                         ///COLLISION DETECTION///
-                                                        /////////////////////////
-
-                                                
-                                     
-
-
-                                                         ///TOP LEFT BOTTOM RIGHT///
-
-                                             var top, left, bottom, right, val
-
-
-                                              top = Math.floor(currentGame.player.getTop() / tile_size);
-                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              val = currentGame.map[top * currentGame.columns + left]
-                                              collide(val, currentGame.player, left * tile_size, top * tile_size, tile_size);
-                                            //  console.log(currentGame.player.getTop() /tile_size);
-
-
-                                              top = Math.floor(currentGame.player.getTop() / tile_size);
-                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = currentGame.map[top * currentGame.columns + right]
-                                              collide(val, currentGame.player, right * tile_size, top * tile_size, tile_size)
-                                              
-                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                              left = Math.floor(currentGame.player.getLeft() / tile_size);
-                                              val = currentGame.map[bottom * currentGame.columns + left]
-                                              collide(val, currentGame.player, left * tile_size, bottom * tile_size, tile_size)
-                                              
-                                              bottom = Math.floor(currentGame.player.getBottom() / tile_size);
-                                              right = Math.floor(currentGame.player.getRight() / tile_size);
-                                              val = currentGame.map[bottom * currentGame.columns + right]     
-                                              collide(val, currentGame.player, right * tile_size, bottom * tile_size, tile_size)
-                                              
-                                             
-
-                                              
-                                              function collide(val, player, tile_x, tile_y, tile_size){
-                                                
-                                                switch(val){
-                                                  case 0:
-                                                  //sky
-                                                  break;
-                                                  case 1: if(collideTop   (player, tile_y             )); break;   // return; //earth
-                                                       //      collideBottom(player, tile_y + tile_size ); break;
-                                                  case 2: if(collideTop   (player, tile_y             )) return; //crate
-                                                          if(collideLeft  (player, tile_x             )) return;
-                                                          if(collideRight (player, tile_x + tile_size )) return;
-                                                             collideBottom(player, tile_y + tile_size  ); break;
-                                                             
-                                                  case 3: if(collideTop   (player, tile_y             )); break; //sky_island
-                                                                                                                     
-                                                }
-
-                                              } 
-
-
-                                              currentGame.player.x = Math.round(currentGame.player.x)
-
 
 
                                                //////////////
                                               ///VIEWPORT///
                                              //////////////
+
+
+                                             //fill background with dark grey #202020
+                                             game_context.fillStyle = '#1696ab' ; //teal background
+                                             game_context.fillRect(0, 0, viewport.w, viewport.h); //fill in the size of the game.canvas_width/height
+
+
                                              if(map_edit_mode == false){
                                               viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
                                              }
@@ -1034,22 +896,6 @@ switch(safe_mode){
                                                 }
 
 
-                                   /*              if(currentGame.coins.length != 0){
-                                                     placeCoins(currentGame.coins, viewport, game_context);
-
-                                                     for(let i = currentGame.coins.length - 1; i >= 0; --i){
-
-                                                       if( coinCollide(currentGame.coins[i], currentGame.player, viewport)){
-                                                         currentGame.coins.splice( i, 1);
-                                                         coin_count += 1;
-                                                       }
-
-                                                     }  
-                                                 }
-
-
-
-                                      */
 
                                      if(coin_list.length != 0){
                                       placeCoins(coin_list, viewport, game_context);
@@ -1077,11 +923,7 @@ switch(safe_mode){
                                                 game_context.rect(tile_selector_x, tile_selector_y, tile_size, tile_size);
                                                 game_context.stroke()
                                               }
-                                              
-
-
-
-
+                              
 
                                               //calls upon itself
                                               if(game_paused == false){

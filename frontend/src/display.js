@@ -111,6 +111,34 @@ Viewport.prototype = {
 
 
 
+
+
+
+function set_game_canvas(){
+    game_canvas = document.querySelector("#game-canvas");
+    game_canvas.height = currentGame.canvas_height;
+    
+    
+    game_context = document.querySelector("#game-canvas").getContext("2d");
+     
+    game_context.canvas.height = currentGame.canvas_height;
+    
+    game_context.canvas.width = 900;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function runTileEditor(){
 
 let tileType = document.getElementById('tile-type');
@@ -171,12 +199,7 @@ function placeCoins(coins, vp, ctx){
 
    function coinCollide(coin, player , vp){
        
-    let coin_x = (coin.x - vp.x) - 22;
-    let coin_y = coin.y;
-   // console.log("player: " + player.x + ", coin: " + coin_x)
-   // if(player.x >= coin_x && player.y >= coin_y){
-   //     return true
-   // } else {return false}
+
    let rightOver = player.getRight() <= coin.getRight() - 11 && player.getRight() >= coin.getLeft() + 11;
    let leftOver = player.getLeft() >= coin.getLeft() + 11 && player.getLeft() <= coin.getRight() - 11;
    let topOver = player.getTop() <= coin.getBottom() && player.getTop() >= coin.getTop();
@@ -186,3 +209,60 @@ function placeCoins(coins, vp, ctx){
         return true;
     };
    }
+
+
+
+
+
+
+
+
+   
+
+function collision_detection(game){
+
+   var top, left, bottom, right, val
+
+
+  top = Math.floor(game.player.getTop() / tile_size);
+   left = Math.floor(game.player.getLeft() / tile_size);
+   val = game.map[top * game.columns + left]
+   collide(val, game.player, left * tile_size, top * tile_size, tile_size);
+ //  console.log(currentGame.player.getTop() /tile_size);
+
+
+   top = Math.floor(game.player.getTop() / tile_size);
+   right = Math.floor(game.player.getRight() / tile_size);
+   val = game.map[top * game.columns + right]
+   collide(val, game.player, right * tile_size, top * tile_size, tile_size)
+   
+   bottom = Math.floor(game.player.getBottom() / tile_size);
+   left = Math.floor(game.player.getLeft() / tile_size);
+   val = game.map[bottom * game.columns + left]
+   collide(val, game.player, left * tile_size, bottom * tile_size, tile_size)
+   
+   bottom = Math.floor(game.player.getBottom() / tile_size);
+   right = Math.floor(game.player.getRight() / tile_size);
+   val = game.map[bottom * game.columns + right]     
+   collide(val, game.player, right * tile_size, bottom * tile_size, tile_size)
+}
+
+                                                 
+  function collide(val, player, tile_x, tile_y, tile_size){
+    
+    switch(val){
+      case 0:
+      //sky
+      break;
+      case 1: if(collideTop   (player, tile_y             )); break;   // return; //earth
+           //      collideBottom(player, tile_y + tile_size ); break;
+      case 2: if(collideTop   (player, tile_y             )) return; //crate
+              if(collideLeft  (player, tile_x             )) return;
+              if(collideRight (player, tile_x + tile_size )) return;
+                 collideBottom(player, tile_y + tile_size  ); break;
+                 
+      case 3: if(collideTop   (player, tile_y             )); break; //sky_island
+                                                                         
+
+  } 
+}
