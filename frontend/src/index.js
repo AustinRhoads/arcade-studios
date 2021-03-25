@@ -30,6 +30,10 @@ var coin_count = 0;
 var coin_counter = document.getElementById('coin-counter');
 var add_coin_btn = document.getElementById('add-coin-button');
 var remove_coin_btn =  document.getElementById('remove-coin-button');
+var coin_list = [];
+
+
+
 
 
 
@@ -265,7 +269,7 @@ function saveGame(){
 
   for(let i = currentGame.coins.length -1; i >=0; --i){
     gameData.coins.push([currentGame.coins[i].column, currentGame.coins[i].row]);
-    console.log([currentGame.coins[i].column, currentGame.coins[i].row])
+    
   }
   
 
@@ -513,6 +517,7 @@ function resetGame(gameObj){
    currentGame.coins = gameObj.coins;
    populate_editor(gameObj);
    coin_count = 0;
+   coin_list = currentGame.coins.slice();
    
 }
 
@@ -543,7 +548,8 @@ function addEarth(){
   
   game_canvas.width = currentGame.canvas_width;
 
-  respawnPlayer();
+  currentGame.player.x = currentGame.canvas_width - tile_size;
+  // respawnPlayer();
   
 }
 
@@ -563,8 +569,8 @@ function minusEarth(){
   game_canvas = document.querySelector("#game-canvas");
   
   game_canvas.width = currentGame.canvas_width;
-
-  respawnPlayer();
+ currentGame.player.x = currentGame.canvas_width - tile_size;
+ // respawnPlayer();
   console.log(currentGame.map.length)
 }
 
@@ -601,54 +607,33 @@ function mapEdit(e){
   borderDiv.classList.remove("earth_cursor");
   borderDiv.classList.remove("crate_cursor");
   borderDiv.classList.remove("island_cursor");
+  borderDiv.classList.remove("coin_cursor");
   
  
  // traversing = !traversing;
   map_edit_mode = !map_edit_mode;
 
   if(map_edit_mode == true){
+    clearMapEdit("tiles")
 
     
     tile_selector.click();
     
-   //   borderDiv.onmousemove = function(e){
+   
         
 
     tile_selector.addEventListener("click", () => setCursor());
     setCursor();
       
     mapSelectEdit(e);
-   
-   
-     
-    
-
-/*      
-          let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
-          let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
-
-
-
-          tile_selector_on = true;
-          tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
-          tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
-          if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
-         // if(tile_selector_x >= 0){ = 0};
-          if(tile_selector_y <= 0){tile_selector_y = 0};
-        //  if(tile_selector_y <= 0){tile_selector_y = 0};
-          
-
-          var coor = "column: " + column + ", row: " + row ;
-          xy.innerHTML =viewport.x % tile_size;
-*/
 
 
   }else{
     clearMapEdit();
-    xy.innerHTML = "";
-    borderDiv.onmousemove = null;
-    borderDiv.onclick = null;
-    tile_selector_on = false;
+   
+  //  borderDiv.onmousemove = null;
+  //  borderDiv.onclick = null;
+    //tile_selector_on = false;
   }
 
 
@@ -658,12 +643,19 @@ function mapEdit(e){
 var coin_edit_mode = false;
 
 function coinAdder(e){
-  console.log("yup")
+  
   coin_edit_mode = !coin_edit_mode;
-  setCursor();
 
-  mapSelectEdit(e)
+  if(coin_edit_mode == true){
+    clearMapEdit("coins")
 
+    tile_selector_on = true;
+    setCursor();
+    mapSelectEdit(e);
+
+  } else {
+    clearMapEdit()
+  }
 
 }
 
@@ -721,7 +713,7 @@ function mapSelectEdit(e){
   let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
   let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
 
-  tile_selector_on = true;
+ // tile_selector_on = true;
   tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
   tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
 
@@ -748,6 +740,7 @@ function placeTile(column, row){
      currentGame.map[index] = val;
   } else if(coin_edit_mode == true){
     currentGame.coins.push(new Coin(column, row));
+    coin_list = currentGame.coins.slice()
   }
 
 
@@ -763,16 +756,38 @@ function placeTile(column, row){
 }
 
 
-function clearMapEdit(){
+function clearMapEdit(safe_mode){
 
-  map_edit_mode = false;
+switch(safe_mode){
+  case "coins":
+    map_edit_mode = false;
+    tile_selector_on = false;
+  break;
+  case "tiles":
+    coin_edit_mode = false;
+    tile_selector_on = false;
+  break;
+  default:
+    map_edit_mode = false;
+    coin_edit_mode = false;
+    tile_selector_on = false;
+  break;
+}
+
+
+  let modes = [map_edit_mode, coin_edit_mode, tile_selector_on]
+
+  
 
   borderDiv.classList.remove("sky_cursor");
   borderDiv.classList.remove("earth_cursor");
   borderDiv.classList.remove("crate_cursor");
   borderDiv.classList.remove("island_cursor");
+  borderDiv.classList.remove("coin_cursor");
+
   borderDiv.onmousemove = null;
   borderDiv.onclick = null;
+  xy.innerHTML = "";
 }
 
 
@@ -1012,7 +1027,7 @@ function clearMapEdit(){
                                                 }
 
 
-                                                 if(currentGame.coins.length != 0){
+                                   /*              if(currentGame.coins.length != 0){
                                                      placeCoins(currentGame.coins, viewport, game_context);
 
                                                      for(let i = currentGame.coins.length - 1; i >= 0; --i){
@@ -1024,6 +1039,23 @@ function clearMapEdit(){
 
                                                      }  
                                                  }
+
+
+
+                                      */
+
+                                     if(coin_list.length != 0){
+                                      placeCoins(coin_list, viewport, game_context);
+
+                                      for(let i = coin_list.length - 1; i >= 0; --i){
+
+                                        if( coinCollide(coin_list[i], currentGame.player, viewport)){
+                                          coin_list.splice( i, 1);
+                                          coin_count += 1;
+                                        }
+
+                                      }  
+                                  }
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
                                               game_context.beginPath();
