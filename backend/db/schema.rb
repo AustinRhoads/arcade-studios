@@ -19,6 +19,11 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.integer "width", default: 32
     t.integer "x_velocity", default: 0
     t.integer "y_velocity", default: 0
+    t.integer "x_respawn", default: 300
+    t.integer "y_respawn", default: 300
+    t.integer "d"
+    t.integer "range", default: 20
+    t.string "type_of_baddy", default: "back and forth"
     t.integer "game_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

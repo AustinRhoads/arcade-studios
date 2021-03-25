@@ -11,6 +11,8 @@ class GamesController < ApplicationController
     def create
         game = Game.create(game_params)
         player = game.build_player(player_params)
+        game.coins = params['coins']
+        game.save
         if player.valid?
          player.save
         end
@@ -38,7 +40,16 @@ class GamesController < ApplicationController
         game.player.update(player_params)
         game.player.save
         game.coins = params['coins']
-         #do same for baddies here
+         
+
+         baddy_params[:baddies].each do |bad|
+            
+            baddy = Baddy.find_by(:id => bad['id'])
+            if baddy.valid?
+                baddy.update(bad)
+                baddy.save
+           end
+        end
         game.update(game_params)
       #  binding.pry
         game.save
@@ -62,7 +73,7 @@ class GamesController < ApplicationController
     end
 
     def baddy_params
-        params.permit(baddies: [:name, :speed])
+        params.permit(baddies: [:id, :name, :speed, :height, :width, :d, :range, :x_velocity, :y_velocity, :x_respawn, :y_respawn, :type_of_baddy])
        
     end
 
