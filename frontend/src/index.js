@@ -630,10 +630,6 @@ function mapEdit(e){
 
   }else{
     clearMapEdit();
-   
-  //  borderDiv.onmousemove = null;
-  //  borderDiv.onclick = null;
-    //tile_selector_on = false;
   }
 
 
@@ -714,8 +710,17 @@ function mapSelectEdit(e){
   let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
 
  // tile_selector_on = true;
-  tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
+ // tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
+ // tile_selector_x = (Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) * tile_size) + (viewport.x % tile_size);
+  //tile_selector_x = tile_selector_x - (viewport.x % tile_size)
+//this one is soooooo close
+//  tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
+  tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
+
   tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
+  if(e.offsetX >= tile_selector_x + (tile_size * 0.5)){
+    tile_selector_x += tile_size
+  }
 
 
   if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
@@ -723,8 +728,10 @@ function mapSelectEdit(e){
 
   
 
-  var coor = "column: " + column + ", row: " + row ;
-  xy.innerHTML = coor;
+  var coor = "column: " + column + ", row: " + row  + "  vp.x: " + viewport.x % tile_size;
+  var ts_coor = "tile_selector_x: " +  tile_selector_x + "   tile_selector_y: " +  tile_selector_y;
+  var testing_coor = "mouse: " + e.offsetX + "  selector: " +  tile_selector_x 
+  xy.innerHTML = testing_coor;
 
 
   borderDiv.onclick = () => placeTile(column, row);
