@@ -34,17 +34,43 @@ function Player( name, height, width, speed, jumping_height) {
 }
 
 
-function Baddy(name, height, width, speed) {
+function Baddy(name, height, width, speed, typ_of_baddy) {
    
     this.name = name,
     this.height = height,
     this.width = width,
     this.speed = speed,
+    this.type_of_baddy = typ_of_baddy,
     this.x_velocity = 0,
-    this.y_velocity = 0
+    this.y_velocity = 0,
+    this.x_respawn = 300,
+    this.y_respawn = 330
+    
+    
 }
 
 
+Baddy.prototype = {
+    getBottom: function() {return this.y + this.height},
+    getTop: function(){return this.y },
+    getLeft: function(){return this.x},
+    getRight: function(){return this.x + this.width},
+    getOldBottom: function(){return this.y_old + this.height},
+    getOldTop: function(){return this.y_old + this.height},//not sure why i had to add this.height
+    getOldLeft: function(){return this.x_old + this.width},//not sure why i had to add this.width
+    getOldRight: function(){return this.x_old + this.width},
+    setBottom: function(y){this.y = y - this.height},
+    setTop: function(y){this.y = y},
+    setLeft: function(x){this.x = x},
+    setRight: function(x){this.x = x - this.width},
+    setOldBottom: function(y){this.y_old = y - this.height},
+    setOldTop: function(y){this.y_old = y},
+    setOldLeft: function(x){this.x_old = x },
+    setOldRight: function(x){this.x_old = x - this.width},
+    behave: function(){this.behavior(this)}
+}
+
+//
 Player.prototype = {
     getBottom: function() {return this.y + this.height},
     getTop: function(){return this.y },

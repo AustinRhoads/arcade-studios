@@ -67,6 +67,7 @@ function populate_load_list(){
 
     //populate the select list
      dataArray = obj['data'];
+   
     for(const game of dataArray){
 
       let opt = document.createElement('option');
@@ -106,6 +107,10 @@ function populate_editor(obj){
 
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_name"]').value = obj.baddies[x].name;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = obj.baddies[x].speed;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_d"]').value = obj.baddies[x].d;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_range"]').value = obj.baddies[x].range;
+     // allBaddies[allBaddies.length -1].querySelector('input[name="baddy_type_of_baddy"]').value = obj.baddies[x].type_of_baddy;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_id"]').value = obj.baddies[x].id;
   }
  }
 }
@@ -145,6 +150,9 @@ function addBaddy(){
   speedLabel.for = "baddy_speed";
   speedLabel.textContent = "Baddy's Running speed (0.5-2):";
 
+
+ 
+
   let speedInput = document.createElement("input");
   speedInput.style = "margin: 10px;";
   speedInput.type = "number";
@@ -154,12 +162,63 @@ function addBaddy(){
   speedInput.step = "0.1";
   speedInput.value = "0.5";
 
+  let dLabel = document.createElement('label');
+  dLabel.for = "baddy_d";
+  dLabel.textContent = "Baddy's Running distance (0.5-2):";
+
+  let dInput = document.createElement("input");
+  dInput.style = "margin: 10px;";
+  dInput.type = "number";
+  dInput.name = "baddy_d";
+  dInput.min = "0.1";
+  dInput.max = "2";
+  dInput.step = "0.1";
+  dInput.value = "0.5";
+
+  let rangeLabel = document.createElement('label');
+  rangeLabel.for = "baddy_range";
+  rangeLabel.textContent = "Baddy's Range of Movement:";
+
+  let rangeInput = document.createElement("input");
+  rangeInput.style = "margin: 10px;";
+  rangeInput.type = "number";
+  rangeInput.name = "baddy_range";
+  rangeInput.min = "1";
+  rangeInput.max = "20";
+  rangeInput.step = "1";
+  rangeInput.value = "10";
+
+  let type_of_baddyLabel = document.createElement('label');
+  type_of_baddyLabel.for = "baddy_type_of_baddy";
+  type_of_baddyLabel.textContent = "Type of Baddy";
+
+  let type_of_baddyInput = document.createElement("SELECT");
+//  type_of_baddyInput.style = "margin: 10px;";
+//  type_of_baddyInput.type = "number";
+  type_of_baddyInput.name = "baddy_type_of_baddy";
+//  type_of_baddyInput.min = "1";
+//  type_of_baddyInput.max = "20";
+//  type_of_baddyInput.step = "1";
+  type_of_baddyInput.value = "back and forth";
+
+  let idInput =  document.createElement("input");
+  idInput.type = "hidden";
+  idInput.name = "baddy_id"
+ // idInput.style.visibility = false;
+
   
   div.appendChild(nameInput);
   div.appendChild(removeBaddyButton);
   div.appendChild(br);
   div.appendChild(speedLabel);
   div.appendChild(speedInput);
+  div.appendChild(dLabel);
+  div.appendChild(dInput);
+  div.appendChild(rangeLabel);
+  div.appendChild(rangeInput);
+  div.appendChild(type_of_baddyLabel);
+  div.appendChild(type_of_baddyInput);
+  div.appendChild(idInput);
   editor.appendChild(div)
   editor.appendChild(br2);
 
@@ -254,8 +313,15 @@ function saveGame(){
 
   for(let x = 0; x < allBaddies.length; x++){
     gameData.baddies.push({
+      id: allBaddies[x].querySelector('input[name="baddy_id"]').value,
       name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-      speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value
+      speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value,
+   //   id: allBaddies[x].querySelector('input[name="baddy_name"]').value,.id,
+      d: allBaddies[x].querySelector('input[name="baddy_d"]').value,
+      range: allBaddies[x].querySelector('input[name="baddy_range"]').value,
+   //   x_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+   //   y_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+  //    type_of_baddy: allBaddies[x].querySelector('input[name="baddy_type_of_baddy"]').value,
      });
     
   }
@@ -397,9 +463,16 @@ function loadGame(id){
 
     //baddy properties
     loadedGame.baddies = [];
-    gameData.baddies.forEach((el) => 
-      loadedGame.baddies.push(new Baddy(el.name, el.height, el.width, el.speed))
-    )
+    gameData.baddies.forEach(function(el){
+      let new_b = new Baddy(el.name, el.height, el.width, el.speed);
+      new_b.id = el.id;
+      new_b.d = el.d;
+      new_b.range = el.range;
+      new_b.x_respawn = el.x_respawn;
+      new_b.y_respawn = el.y_respawn;
+      new_b.type_of_baddy = el.type_of_baddy;
+      loadedGame.baddies.push(new_b)
+    })
 
     
 
