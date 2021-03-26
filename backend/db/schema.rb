@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.integer "y_respawn", default: 300
     t.integer "d"
     t.integer "range", default: 20
-    t.string "type_of_baddy", default: "back and forth"
+    t.integer "type_of_baddy", default: 1
     t.integer "game_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

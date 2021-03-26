@@ -11,7 +11,7 @@ class CreateBaddies < ActiveRecord::Migration[6.0]
       t.integer :y_respawn, :default => 300
       t.integer :d
       t.integer :range, :default => 20
-      t.string :type_of_baddy, :default => "back and forth"
+      t.integer :type_of_baddy, :default => 1
 
       t.references :game, foreign_key: true
       t.timestamps
