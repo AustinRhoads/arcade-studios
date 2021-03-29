@@ -11,7 +11,17 @@ function TileSheet(){
     this.crate = new Image(),
     this.crate.src = './public/images/crate_1.png',
     this.sky_island = new Image(),
-    this.sky_island.src = './public/images/sky_island_1.png'
+    this.sky_island.src = './public/images/sky_island_1.png',
+    this.block_head = new Image(),
+    this.block_head.src = './public/images/block_head.png',
+    this.back_and_forth = new Image(),
+    this.back_and_forth.src = './public/images/follow_cube.png',//change these images
+    this.follower = new Image(),
+    this.follower.src = './public/images/follow_cube.png',
+    this.spikes = new Image(),
+    this.spikes.src = './public/images/follow_cube.png',//change these images
+    this.jumper = new Image()
+    this.jumper.src = './public/images/follow_cube.png'//change these images
     
 }
 
@@ -176,6 +186,13 @@ viewport.x -= 80;
 function scrollRight(viewport){
 viewport.x += 80;
 }
+
+
+
+
+    ///////////
+   ///COINS///
+  ///////////
 
 
 function placeCoins(coins, vp, ctx){

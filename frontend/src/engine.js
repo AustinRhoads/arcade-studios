@@ -6,6 +6,21 @@ function setOld(game){
     player.setOldLeft(x);
     player.setOldBottom(y);
     player.setOldRight(x);
+
+
+    if(currentGame.alive_baddies){
+      currentGame.alive_baddies.forEach(function(el){
+
+        let b_x = el.x;
+        let b_y = el.y;
+        el.setOldTop(b_y);
+        el.setOldLeft(b_x);
+        el.setOldBottom(b_y);
+        el.setOldRight(b_x);
+      })
+    }
+
+
     }
 
 
@@ -50,32 +65,32 @@ function velocity_controll(game){
 
 
   
-function collision_detection(game){
+function collision_detection(game, player){
 
     var top, left, bottom, right, val
  
  
-   top = Math.floor(game.player.getTop() / tile_size);
-    left = Math.floor(game.player.getLeft() / tile_size);
+   top = Math.floor(player.getTop() / tile_size);
+    left = Math.floor(player.getLeft() / tile_size);
     val = game.map[top * game.columns + left]
-    collide(val, game.player, left * tile_size, top * tile_size, tile_size);
+    collide(val, player, left * tile_size, top * tile_size, tile_size);
   //  console.log(currentGame.player.getTop() /tile_size);
  
  
-    top = Math.floor(game.player.getTop() / tile_size);
-    right = Math.floor(game.player.getRight() / tile_size);
+    top = Math.floor(player.getTop() / tile_size);
+    right = Math.floor(player.getRight() / tile_size);
     val = game.map[top * game.columns + right]
-    collide(val, game.player, right * tile_size, top * tile_size, tile_size)
+    collide(val, player, right * tile_size, top * tile_size, tile_size)
     
-    bottom = Math.floor(game.player.getBottom() / tile_size);
-    left = Math.floor(game.player.getLeft() / tile_size);
+    bottom = Math.floor(player.getBottom() / tile_size);
+    left = Math.floor(player.getLeft() / tile_size);
     val = game.map[bottom * game.columns + left]
-    collide(val, game.player, left * tile_size, bottom * tile_size, tile_size)
+    collide(val, player, left * tile_size, bottom * tile_size, tile_size)
     
-    bottom = Math.floor(game.player.getBottom() / tile_size);
-    right = Math.floor(game.player.getRight() / tile_size);
+    bottom = Math.floor(player.getBottom() / tile_size);
+    right = Math.floor(player.getRight() / tile_size);
     val = game.map[bottom * game.columns + right]     
-    collide(val, game.player, right * tile_size, bottom * tile_size, tile_size)
+    collide(val, player, right * tile_size, bottom * tile_size, tile_size)
  }
  
                                                   
@@ -96,4 +111,26 @@ function collision_detection(game){
                                                                           
  
    } 
+ }
+
+
+ function spawn_baddy(bad){
+  bad.x = bad.x_respawn;
+  bad.y = bad.y_respawn;
+ }
+
+
+ function spawn_all_baddies(baddies){
+  baddies.forEach((b) => spawn_baddy(b))
+ }
+
+ function draw_baddy(bad, ctx, vp){
+  let x = (bad.x - vp.x);
+  let y = bad.y;
+  ctx.drawImage(bad.image, x, y);
+ 
+ }
+
+ function draw_all_baddies(baddies, ctx, vp){
+  baddies.forEach((b) => draw_baddy(b, ctx, vp))
  }

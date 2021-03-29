@@ -84,20 +84,27 @@ function populate_load_list(){
 
 
 function populate_editor(obj){
+
+let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton");
+
   if (obj.name){
     document.getElementById('game_name').value = obj.name;
+  } else if (!obj.name){
+    document.getElementById('game_name').value = "";
   }
   document.getElementById('game_world_gravity').value = obj.gravity;
   document.getElementById('game_world_friction').value = obj.friction;
   if (obj.player.name){
     document.getElementById('player_name').value = obj.player.name;
+  } else if(!obj.player.name){
+    document.getElementById('player_name').value = "";
   }
   document.getElementById('player_speed').value = obj.player.speed;
   document.getElementById('player_jumping_height').value = obj.player.jumping_height;
 
   if(obj.baddies){
  
-    for(let x =0; x < obj.baddies.length; x++){
+    for(let x = obj.baddies.length - 1; x >= 0; --x){
 
 
       newBadButton.click();
@@ -109,7 +116,12 @@ function populate_editor(obj){
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = obj.baddies[x].speed;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_d"]').value = obj.baddies[x].d;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_range"]').value = obj.baddies[x].range;
-     // allBaddies[allBaddies.length -1].querySelector('input[name="baddy_type_of_baddy"]').value = obj.baddies[x].type_of_baddy;
+
+   let type_options = allBaddies[allBaddies.length -1].getElementsByTagName('option');
+      for(let t = type_options.length - 1; t >= 0; --t){
+        if(type_options[t].value == obj.baddies[x].type_of_baddy){ type_options[t].selected = true;}
+      }
+   
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_id"]').value = obj.baddies[x].id;
   }
  }
@@ -145,6 +157,10 @@ function addBaddy(){
 
   let br = document.createElement('br');
   let br2 = document.createElement('br');
+  let br3 = document.createElement('br');
+  let br4 = document.createElement('br');
+  let br5 = document.createElement('br');
+  let br6 = document.createElement('br');
 
   let speedLabel = document.createElement('label');
   speedLabel.for = "baddy_speed";
@@ -157,10 +173,11 @@ function addBaddy(){
   speedInput.style = "margin: 10px;";
   speedInput.type = "number";
   speedInput.name = "baddy_speed";
-  speedInput.min = "0.5";
-  speedInput.max = "2";
-  speedInput.step = "0.1";
-  speedInput.value = "0.5";
+  speedInput.min = "1";
+  speedInput.max = "70";
+  speedInput.step = "1";
+  speedInput.value = "2";
+  speedInput.addEventListener("click",() => updateBaddySpeed())
 
   let dLabel = document.createElement('label');
   dLabel.for = "baddy_d";
@@ -193,13 +210,48 @@ function addBaddy(){
   type_of_baddyLabel.textContent = "Type of Baddy";
 
   let type_of_baddyInput = document.createElement("SELECT");
-//  type_of_baddyInput.style = "margin: 10px;";
-//  type_of_baddyInput.type = "number";
   type_of_baddyInput.name = "baddy_type_of_baddy";
-//  type_of_baddyInput.min = "1";
-//  type_of_baddyInput.max = "20";
-//  type_of_baddyInput.step = "1";
-  type_of_baddyInput.value = "back and forth";
+  type_of_baddyInput.style = "margin: 10px;";
+  type_of_baddyInput.type = "number";
+type_of_baddyInput.addEventListener("click", function(){
+  ///fix this for new baddies
+  let bad_boy = currentGame.baddies.find(bad => bad.id == this.parentElement.querySelector('input[name="baddy_id').value);
+  bad_boy.type_of_baddy = this.value;
+  bad_boy.set_image_and_behavior(new TileSheet());
+  currentGame.alive_baddies = currentGame.baddies.slice()
+  spawn_baddy(bad_boy)
+})
+let block_head_option = document.createElement('option');
+block_head_option.value = 1;
+block_head_option.innerHTML = "Block Head";
+
+let back_and_forth_option = document.createElement('option');
+back_and_forth_option.value = 2;
+back_and_forth_option.innerHTML = "Back and forth";
+
+let follower_option = document.createElement('option');
+follower_option.value = 3;
+follower_option.innerHTML = "Follower";
+
+let spikes_option = document.createElement('option');
+spikes_option.value = 4;
+spikes_option.innerHTML = "Spikes";
+
+let jumper_option = document.createElement('option');
+jumper_option.value = 5;
+jumper_option.innerHTML = "Jumper";
+
+
+type_of_baddyInput.appendChild(block_head_option);  
+type_of_baddyInput.appendChild(back_and_forth_option);
+type_of_baddyInput.appendChild(follower_option);
+type_of_baddyInput.appendChild(spikes_option);
+type_of_baddyInput.appendChild(jumper_option);
+
+
+
+
+
 
   let idInput =  document.createElement("input");
   idInput.type = "hidden";
@@ -216,6 +268,7 @@ function addBaddy(){
   div.appendChild(dInput);
   div.appendChild(rangeLabel);
   div.appendChild(rangeInput);
+  div.appendChild(br3);
   div.appendChild(type_of_baddyLabel);
   div.appendChild(type_of_baddyInput);
   div.appendChild(idInput);
@@ -267,6 +320,13 @@ game_friction.addEventListener("click", function() {
   currentGame.friction = parseFloat(game_friction.value);
 })
 
+function updateBaddySpeed(){
+  console.log("real time update functions for baddy later")
+}
+
+
+
+
 
 
 
@@ -280,7 +340,8 @@ game_friction.addEventListener("click", function() {
 
 
 document.getElementById('reset_game_button').addEventListener("click", function(){
-  resetGame();
+  currentGame = defaultSettings();
+  resetGame(currentGame);
 });
 
 
@@ -312,6 +373,7 @@ function saveGame(){
   let allBaddies = document.getElementsByClassName('baddy');
 
   for(let x = 0; x < allBaddies.length; x++){
+    console.log(allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value)
     gameData.baddies.push({
       id: allBaddies[x].querySelector('input[name="baddy_id"]').value,
       name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
@@ -321,7 +383,9 @@ function saveGame(){
       range: allBaddies[x].querySelector('input[name="baddy_range"]').value,
    //   x_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
    //   y_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-  //    type_of_baddy: allBaddies[x].querySelector('input[name="baddy_type_of_baddy"]').value,
+   
+     type_of_baddy: allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value
+
      });
     
   }
@@ -354,6 +418,8 @@ if(currentGame.id == null){
   .then(function(obj){
 
      loadGame(obj.id)
+     //loadGame(currentGame.id)
+   //  resetGame(currentGame);
 
      populate_load_list()
 
@@ -381,6 +447,8 @@ console.log(currentGame.id + "updated");
     .then(resp => resp.json())
     .then(function(obj){
       // loadGame(obj['data'].id)
+      //loadGame(currentGame.id)
+     // resetGame(currentGame);
        populate_load_list()
       })
     .catch(function(error){
@@ -390,7 +458,6 @@ console.log(currentGame.id + "updated");
     })
 }
 
-  
 }
 
 
@@ -464,15 +531,20 @@ function loadGame(id){
     //baddy properties
     loadedGame.baddies = [];
     gameData.baddies.forEach(function(el){
-      let new_b = new Baddy(el.name, el.height, el.width, el.speed);
+      let new_b = new Baddy(el.name, el.height, el.width, el.speed, el.type_of_baddy);
       new_b.id = el.id;
       new_b.d = el.d;
       new_b.range = el.range;
       new_b.x_respawn = el.x_respawn;
       new_b.y_respawn = el.y_respawn;
-      new_b.type_of_baddy = el.type_of_baddy;
+    //  new_b.type_of_baddy = el.type_of_baddy;
       loadedGame.baddies.push(new_b)
     })
+
+    for(let i = loadedGame.baddies.length -1; i >= 0; --i){
+      loadedGame.baddies[i].set_image_and_behavior(tile_sheet);
+     }
+     
 
     
 
@@ -488,6 +560,8 @@ function loadGame(id){
    
 
 }
+
+
 
 
 
@@ -592,6 +666,10 @@ function resetGame(gameObj){
    coin_list = currentGame.coins.slice();
    set_game_canvas()
    
+   if(currentGame.baddies){
+    currentGame.alive_baddies = currentGame.baddies.slice();
+     spawn_all_baddies(currentGame.alive_baddies)}
+
 }
 
 
@@ -725,7 +803,16 @@ function coinAdder(e){
 }
 
 function coinRemover(){
+  if(coin_edit_mode == true){
+    clearMapEdit("coins")
 
+    tile_selector_on = true;
+    setCursor();
+    mapSelectEdit(e);
+
+  } else {
+    clearMapEdit()
+  }
 }
 
 
@@ -906,9 +993,22 @@ switch(safe_mode){
                                 //////////////////             /////////////////////////
                                ///GAME PHYSICS///  ///AND///  ///COLLISION DETECTION///
                               //////////////////             /////////////////////////
+
+                              if(currentGame.alive_baddies){
+                                for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
+                                  currentGame.alive_baddies[b].behave();
+                                  collision_detection(currentGame, currentGame.alive_baddies[b]); 
+                                }
+                              }
                                          
                                             velocity_controll(currentGame);
-                                            collision_detection(currentGame); 
+                                            collision_detection(currentGame, currentGame.player); 
+                                            
+
+
+                                          
+
+
                                             currentGame.player.x = Math.round(currentGame.player.x)
                                             
                                               
@@ -982,6 +1082,12 @@ switch(safe_mode){
 
                                       }  
                                   }
+
+
+                                  if(currentGame.alive_baddies){draw_all_baddies(currentGame.alive_baddies, game_context, viewport)}
+                                  
+
+
                                               //draw rectangle
                                               game_context.fillStyle= "#ff0000" 
                                               game_context.beginPath();
@@ -1013,7 +1119,7 @@ switch(safe_mode){
                      
                      
                                       
-                                                         ///////////////////////////
+                                                         ////////////////////////////
                                                         //END OF GAME ENGINE LOOP///
                                                        ////////////////////////////
 
@@ -1165,22 +1271,22 @@ switch(safe_mode){
 
 
   //baddies editor
-  
   newBadButton.addEventListener("click", () => addBaddy());
 
   //widen map
-
   addEarthButton.addEventListener("click", () => addEarth());
 
   //shorten map
   minusEarthButton.addEventListener("click", () => minusEarth());
 
   //tile editor
-
   tileButton.addEventListener("click", function() {
-  //  game_paused = true;
+
+  //game_paused = true;
     player_editor_paused = true;
     mapEdit();
+
+
   });
 
 
