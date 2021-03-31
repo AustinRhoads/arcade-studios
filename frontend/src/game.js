@@ -45,6 +45,7 @@ function Baddy(name, height, width, speed, type_of_baddy) {
     this.y_velocity = 0,
     this.x_respawn = 300,
     this.y_respawn = 330,
+    this.range = 10,
     this.mode = "waiting"
    
     
@@ -76,24 +77,25 @@ Baddy.prototype = {
             case 1:
                this.image = tile_sheet.block_head;
                this.behavior = block_head_behavior;
-               this.x_respawn = 300;
-               this.y_respawn = 80;
+             //  this.x_respawn = 300;
+             //  this.y_respawn = 80;
                this.width = 80;
                this.height = 80;
             break;
             case 2:
                 this.image = tile_sheet.back_and_forth;
                 this.behavior = back_and_forth_behavior;
-                this.x_respawn = 380;
-                this.y_respawn = 300;
+                this.width = 32;
+                this.height = 32;
+                this.paces = 0;
+                this.facing_left = true;
             break;
             case 3:
                 this.image = tile_sheet.follower
                 this.behavior = follower_behavior
-                this.x_respawn = 460;
-                this.y_respawn = 300;
                 this.width = 32;
                 this.height = 32;
+
             break;
             case 4:
                 this.image = tile_sheet.spikes
@@ -108,6 +110,10 @@ Baddy.prototype = {
                 this.y_respawn = 300;
             break;
         }
+    },
+    respawn: function(){
+        this.x = this.x_respawn; 
+        this.y = this.y_respawn;
     }
 }
 
@@ -164,9 +170,9 @@ function block_head_behavior(baddy){
             let t_v = Math.sqrt(this.y_velocity * this.y_velocity )
             this.y_velocity = t_v
            
-            if(this.y_velocity <= 0.9){
+            if(this.y_velocity <= this.speed * 0.9){
                 
-                 retrieve_in_x_seconds(this, 2.5)   
+                 retrieve_in_x_seconds(this, 2)   
             } 
           
         break;
@@ -194,20 +200,120 @@ function block_head_behavior(baddy){
 }
 
 function back_and_forth_behavior(baddy){
-    console.log("this naddy's x: " + baddy.x + " b n f")
+
+    switch(this.mode){
+        case "waiting":
+
+        this.x = this.x_respawn;
+        this.y = this.y_respawn;
+            if(currentGame.player.x <= this.x + 600 && currentGame.player.x >= this.x - 600){
+                this.mode = "patrolling";
+            }
+        break;
+        case "patrolling":
+          
+         
+            if(this.x_velocity == 0 || this.paces >= this.range){
+                
+                this.paces = 0;
+                this.facing_left = !this.facing_left;
+
+            }
+            
+            if(this.facing_left == true){
+
+
+                this.x_velocity = this.speed
+                this.x -= this.x_velocity;
+                this.paces = Math.sqrt((this.x - this.x_respawn) * (this.x - this.x_respawn));
+
+               }else if(this.facing_left == false){
+                this.x_velocity = this.speed
+                this.x += this.x_velocity; 
+
+                this.paces = Math.sqrt((this.x - this.x_respawn) * (this.x - this.x_respawn));
+               }
+
+
+
+
+               if(currentGame.player.x > this.x + 600 && currentGame.player.x < this.x - 600){
+                this.mode = "waiting";
+            }
+               
+        break;
+    }
+
+    this.y += currentGame.gravity + this.speed;
 // baddy.x ++
 }
 
 function follower_behavior(baddy){
-    console.log("this naddy's x: " + baddy.x + " follow")
+  //  console.log("this naddy's x: " + baddy.x + " follow")
+  switch(this.mode){
+      case "waiting":
+        this.x = this.x_respawn;
+        this.y = this.y_respawn;
+          if(currentGame.player.x <= this.x + 600 && currentGame.player.x >= this.x - 600){
+              this.mode = "chasing"
+
+          }
+      break;
+      case "chasing":
+          let destination_x = currentGame.player.x
+          let distance = destination_x - this.x
+          this.x_velocity += distance * (0.0005 * this.speed);
+          this.x += this.x_velocity;
+
+    /*   if(destination_x > this.x){
+        this.x_velocity = this.speed * 0.96
+        this.x += this.x_velocity;
+        this.x = Math.round(this.x)
+       }else if(destination_x < this.x){
+        this.x_velocity = this.speed * 0.96
+        this.x -= this.x_velocity; 
+        this.x = Math.round(this.x)
+       }
+
+       */
+
+       this.x_velocity *= 0.98;
+
+     /*  if((currentGame.player.getBottom() >= this.getTop() && currentGame.player.getOldBottom() < this.getTop()) && (currentGame.player.getLeft() >= this.getLeft() && currentGame.player.getLeft() <= this.getRight())){
+
+          let dead_index = currentGame.alive_baddies.indexOf(this);
+           currentGame.alive_baddies.splice(dead_index, 1);
+           dead_baddies_count ++
+
+       }else if((currentGame.player.getLeft() >= this.getLeft() && currentGame.player.getLeft() <= this.getRight())){
+           console.log("you dead")
+       }*/
+
+    //   if((currentGame.player.getLeft() >= this.getLeft() && currentGame.player.getLeft() <= this.getRight()){
+        // ( collideLeft(currentGame.player, this.getLeft()) || collideRight(currentGame.player, this.getRight()) || collideBottom(currentGame.player, this.getBottom()) ) && collideTop(currentGame.player, this.getTop()) 
+
+        if((currentGame.player.getBottom() >= this.getTop() && currentGame.player.getOldBottom() < this.getTop()) && (currentGame.player.getLeft() >= this.getLeft() && currentGame.player.getLeft() <= this.getRight())){
+            let dead_index = currentGame.alive_baddies.indexOf(this);
+            currentGame.alive_baddies.splice(dead_index, 1);
+            dead_baddies_count ++
+           }
+    //   }
+
+    if(currentGame.player.x > this.x + 900 && currentGame.player.x < this.x - 900){
+        this.mode = "waiting";
+    }
+       
+      break;
+  }
+  this.y += currentGame.gravity + this.speed;
 }
 
 function spikes_behavior(baddy){
-    console.log("this naddy's x: " + baddy.x + " spikes")
+    
 }
 
 function jumper_behavior(baddy){
-    console.log("this baddy's x: " + baddy.x + " jumper")
+    
 }
 
 function retrieve_in_x_seconds(baddy, seconds){

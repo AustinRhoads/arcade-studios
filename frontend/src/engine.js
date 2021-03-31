@@ -101,7 +101,6 @@ function collision_detection(game, player){
        //sky
        break;
        case 1: if(collideTop   (player, tile_y             )); break;   // return; //earth
-            //      collideBottom(player, tile_y + tile_size ); break;
        case 2: if(collideTop   (player, tile_y             )) return; //crate
                if(collideLeft  (player, tile_x             )) return;
                if(collideRight (player, tile_x + tile_size )) return;

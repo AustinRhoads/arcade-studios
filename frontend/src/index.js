@@ -30,6 +30,7 @@ var coin_counter = document.getElementById('coin-counter');
 var add_coin_btn = document.getElementById('add-coin-button');
 var remove_coin_btn =  document.getElementById('remove-coin-button');
 var coin_list = [];
+var dead_baddies_count = 0;
 
 
 
@@ -85,7 +86,7 @@ function populate_load_list(){
 
 function populate_editor(obj){
 
-let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton");
+//let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton");
 
   if (obj.name){
     document.getElementById('game_name').value = obj.name;
@@ -107,8 +108,8 @@ let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton")
     for(let x = obj.baddies.length - 1; x >= 0; --x){
 
 
-      newBadButton.click();
-
+    //  newBadButton.click();
+      addBaddy(obj.baddies[x])
       let allBaddies = document.getElementsByClassName('baddy');
 
 
@@ -116,8 +117,11 @@ let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton")
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = obj.baddies[x].speed;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_d"]').value = obj.baddies[x].d;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_range"]').value = obj.baddies[x].range;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_x_respawn"]').value = obj.baddies[x].x_respawn;
+      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_y_respawn"]').value = obj.baddies[x].y_respawn;
 
    let type_options = allBaddies[allBaddies.length -1].getElementsByTagName('option');
+
       for(let t = type_options.length - 1; t >= 0; --t){
         if(type_options[t].value == obj.baddies[x].type_of_baddy){ type_options[t].selected = true;}
       }
@@ -133,9 +137,24 @@ let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton")
 
 var newBadButton = document.getElementById('add-baddy');
 
-function addBaddy(){
+function default_baddy(){
+  let new_baddy = new Baddy("", 80, 80, 2, 1);
+  new_baddy.d = 0.5;
+  new_baddy.range = 10;
+  new_baddy.set_image_and_behavior(new TileSheet())
+  currentGame.baddies.push(new_baddy)
+  reset_alive_baddies()
+ // currentGame.alive_baddies = currentGame.baddies.slice();
+  //right here
+  new_baddy.respawn();
+  return new_baddy;
+}
 
- 
+function addBaddy(new_baddy){
+//name, height, width, speed, type_of_baddy
+
+  new_baddy ||= default_baddy()
+
   let editor = document.getElementById('baddies-box');
 
   let div = document.createElement('div');
@@ -146,6 +165,12 @@ function addBaddy(){
   removeBaddyButton.textContent = "remove";
   removeBaddyButton.addEventListener("click", function(){
     removeMe(this);
+    let index = currentGame.baddies.indexOf(new_baddy)
+    console.log(index);
+    currentGame.baddies.splice(index, 1);
+    reset_alive_baddies()
+   // currentGame.alive_baddies = currentGame.baddies.slice()
+
    // currentGame.baddies.remove(this);
   });
 
@@ -154,6 +179,7 @@ function addBaddy(){
   nameInput.type = "text";
   nameInput.name = "baddy_name";
   nameInput.placeholder = "--Name of baddy--";
+  nameInput.value = new_baddy.name;
 
   let br = document.createElement('br');
   let br2 = document.createElement('br');
@@ -161,6 +187,48 @@ function addBaddy(){
   let br4 = document.createElement('br');
   let br5 = document.createElement('br');
   let br6 = document.createElement('br');
+
+  let x_respawnLabel = document.createElement('label');
+  x_respawnLabel.for = "baddy_x_respawn";
+  x_respawnLabel.textContent = "Baddy's respawn X postion: ";
+
+  let x_respawnInput = document.createElement("input");
+  x_respawnInput.style = "margin: 10px;";
+  x_respawnInput.type = "number";
+  x_respawnInput.name = "baddy_x_respawn";
+  x_respawnInput.min = "0";
+  x_respawnInput.max = currentGame.canvas_width;
+  x_respawnInput.step = "1";
+  x_respawnInput.value = new_baddy.x_respawn;
+  x_respawnInput.addEventListener("click", function(){
+    new_baddy.x_respawn = parseInt(this.value);
+    new_baddy.x = parseInt(this.value);
+  })
+
+  let y_respawnLabel = document.createElement('label');
+  y_respawnLabel.for = "baddy_y_respawn";
+  y_respawnLabel.textContent = "Baddy's respawn Y postion: ";
+
+  let y_respawnInput = document.createElement("input");
+  y_respawnInput.style = "margin: 10px;";
+  y_respawnInput.type = "number";
+  y_respawnInput.name = "baddy_y_respawn";
+  y_respawnInput.addEventListener("click", function(){
+    new_baddy.y_respawn = parseInt(this.value);
+  })
+  y_respawnInput.min = "0";
+  y_respawnInput.max = currentGame.canvas_height;
+  y_respawnInput.step = "1";
+  y_respawnInput.value = new_baddy.y_respawn;
+
+  let respawn_button = document.createElement('button');
+  respawn_button.textContent = "Respawn"
+  respawn_button.addEventListener("click", function(){
+    reset_alive_baddies()
+   // currentGame.alive_baddies = currentGame.baddies.slice();
+    new_baddy.respawn();
+  })
+
 
   let speedLabel = document.createElement('label');
   speedLabel.for = "baddy_speed";
@@ -176,8 +244,13 @@ function addBaddy(){
   speedInput.min = "1";
   speedInput.max = "70";
   speedInput.step = "1";
-  speedInput.value = "2";
-  speedInput.addEventListener("click",() => updateBaddySpeed())
+  speedInput.value = new_baddy.speed;
+  speedInput.addEventListener("click", function(){
+   
+    new_baddy.speed = parseInt(this.value);
+    
+    
+  })
 
   let dLabel = document.createElement('label');
   dLabel.for = "baddy_d";
@@ -190,7 +263,7 @@ function addBaddy(){
   dInput.min = "0.1";
   dInput.max = "2";
   dInput.step = "0.1";
-  dInput.value = "0.5";
+  dInput.value = new_baddy.d;
 
   let rangeLabel = document.createElement('label');
   rangeLabel.for = "baddy_range";
@@ -201,9 +274,14 @@ function addBaddy(){
   rangeInput.type = "number";
   rangeInput.name = "baddy_range";
   rangeInput.min = "1";
-  rangeInput.max = "20";
+  rangeInput.max = currentGame.canvas_width;
   rangeInput.step = "1";
-  rangeInput.value = "10";
+  rangeInput.value = new_baddy.range;
+
+  rangeInput.addEventListener("click", function(){
+    
+    new_baddy.range = parseInt(this.value);
+  })
 
   let type_of_baddyLabel = document.createElement('label');
   type_of_baddyLabel.for = "baddy_type_of_baddy";
@@ -214,12 +292,24 @@ function addBaddy(){
   type_of_baddyInput.style = "margin: 10px;";
   type_of_baddyInput.type = "number";
 type_of_baddyInput.addEventListener("click", function(){
-  ///fix this for new baddies
-  let bad_boy = currentGame.baddies.find(bad => bad.id == this.parentElement.querySelector('input[name="baddy_id').value);
-  bad_boy.type_of_baddy = this.value;
-  bad_boy.set_image_and_behavior(new TileSheet());
-  currentGame.alive_baddies = currentGame.baddies.slice()
-  spawn_baddy(bad_boy)
+  let init_id = this.parentElement.querySelector('input[name="baddy_id').value;
+  
+  if(init_id){
+    let bad_boy = currentGame.baddies.find(bad => bad.id == init_id);
+    bad_boy.type_of_baddy = this.value;
+    bad_boy.set_image_and_behavior(new TileSheet());
+    reset_alive_baddies()
+    //currentGame.alive_baddies = currentGame.baddies.slice()
+    spawn_baddy(bad_boy)
+  }else{
+   
+    new_baddy.type_of_baddy = this.value;
+    
+    new_baddy.set_image_and_behavior(new TileSheet());
+    new_baddy.respawn();
+    
+  }
+
 })
 let block_head_option = document.createElement('option');
 block_head_option.value = 1;
@@ -262,6 +352,12 @@ type_of_baddyInput.appendChild(jumper_option);
   div.appendChild(nameInput);
   div.appendChild(removeBaddyButton);
   div.appendChild(br);
+  div.appendChild(x_respawnLabel);
+  div.appendChild(x_respawnInput);
+  div.appendChild(y_respawnLabel);
+  div.appendChild(y_respawnInput);
+  div.appendChild(respawn_button);
+  div.appendChild(br4);
   div.appendChild(speedLabel);
   div.appendChild(speedInput);
   div.appendChild(dLabel);
@@ -283,6 +379,9 @@ function removeMe(el){
   baddyEl.parentElement.removeChild(baddyEl);
 }
 
+function reset_alive_baddies(){
+  currentGame.alive_baddies = currentGame.baddies.slice()
+}
 
 
 
@@ -320,9 +419,10 @@ game_friction.addEventListener("click", function() {
   currentGame.friction = parseFloat(game_friction.value);
 })
 
-function updateBaddySpeed(){
-  console.log("real time update functions for baddy later")
-}
+//function updateBaddySpeed(num){
+// // console.log("real time update functions for baddy later")
+// 
+//}
 
 
 
@@ -378,11 +478,11 @@ function saveGame(){
       id: allBaddies[x].querySelector('input[name="baddy_id"]').value,
       name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
       speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value,
-   //   id: allBaddies[x].querySelector('input[name="baddy_name"]').value,.id,
+   //   id: allBaddies[x].querySelector('input[name="baddy_id"]').value,.id,
       d: allBaddies[x].querySelector('input[name="baddy_d"]').value,
       range: allBaddies[x].querySelector('input[name="baddy_range"]').value,
-   //   x_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-   //   y_respawn: allBaddies[x].querySelector('input[name="baddy_name"]').value,
+      x_respawn: allBaddies[x].querySelector('input[name="baddy_x_respawn"]').value,
+      y_respawn: allBaddies[x].querySelector('input[name="baddy_y_respawn"]').value,
    
      type_of_baddy: allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value
 
@@ -418,8 +518,6 @@ if(currentGame.id == null){
   .then(function(obj){
 
      loadGame(obj.id)
-     //loadGame(currentGame.id)
-   //  resetGame(currentGame);
 
      populate_load_list()
 
@@ -446,9 +544,6 @@ console.log(currentGame.id + "updated");
     fetch(GAMES_URL + `/${currentGame.id}`, patchGameObject)
     .then(resp => resp.json())
     .then(function(obj){
-      // loadGame(obj['data'].id)
-      //loadGame(currentGame.id)
-     // resetGame(currentGame);
        populate_load_list()
       })
     .catch(function(error){
@@ -641,6 +736,7 @@ function defaultSettings(){
   defaultGame.rows = 7;
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   defaultGame.coins = []
+  defaultGame.baddies = []
   return defaultGame;
   
 
@@ -667,7 +763,8 @@ function resetGame(gameObj){
    set_game_canvas()
    
    if(currentGame.baddies){
-    currentGame.alive_baddies = currentGame.baddies.slice();
+    reset_alive_baddies()
+  //  currentGame.alive_baddies = currentGame.baddies.slice();
      spawn_all_baddies(currentGame.alive_baddies)}
 
 }
@@ -997,7 +1094,13 @@ switch(safe_mode){
                               if(currentGame.alive_baddies){
                                 for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
                                   currentGame.alive_baddies[b].behave();
+                                }
+                              }
+
+                              if(currentGame.alive_baddies){
+                                for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
                                   collision_detection(currentGame, currentGame.alive_baddies[b]); 
+                                  currentGame.alive_baddies[b].x = Math.round(currentGame.alive_baddies[b].x)
                                 }
                               }
                                          
