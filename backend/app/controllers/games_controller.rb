@@ -43,15 +43,19 @@ class GamesController < ApplicationController
          
 
          baddy_params[:baddies].each do |bad|
-            
-            baddy = Baddy.find_by(:id => bad['id'])
-            if baddy.valid?
-                baddy.update(bad)
+           
+            if bad['id'] == ""
+                baddy = Baddy.create(bad)
+                baddy.game = game
                 baddy.save
-           end
+            else
+               baddy = Baddy.find_by(:id => bad['id'])
+               baddy.update(bad)
+               baddy.save
+            end
         end
         game.update(game_params)
-      #  binding.pry
+      
         game.save
 
         render json: GameSerializer.new(game)
