@@ -135,3 +135,7 @@ color: blanchedalmond;
 font-size: 33px;
 }
 
+.facing_left{
+    transform: scaleX(-1);
+}
+

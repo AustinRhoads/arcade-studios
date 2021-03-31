@@ -31,6 +31,8 @@ var add_coin_btn = document.getElementById('add-coin-button');
 var remove_coin_btn =  document.getElementById('remove-coin-button');
 var coin_list = [];
 var dead_baddies_count = 0;
+var current_x = document.getElementById('current-x');
+var current_y = document.getElementById('current-y');
 
 
 
@@ -200,7 +202,7 @@ function addBaddy(new_baddy){
   x_respawnInput.max = currentGame.canvas_width;
   x_respawnInput.step = "1";
   x_respawnInput.value = new_baddy.x_respawn;
-  x_respawnInput.addEventListener("click", function(){
+  x_respawnInput.addEventListener("change", function(){
     new_baddy.x_respawn = parseInt(this.value);
     new_baddy.x = parseInt(this.value);
   })
@@ -213,7 +215,7 @@ function addBaddy(new_baddy){
   y_respawnInput.style = "margin: 10px;";
   y_respawnInput.type = "number";
   y_respawnInput.name = "baddy_y_respawn";
-  y_respawnInput.addEventListener("click", function(){
+  y_respawnInput.addEventListener("change", function(){
     new_baddy.y_respawn = parseInt(this.value);
   })
   y_respawnInput.min = "0";
@@ -245,7 +247,7 @@ function addBaddy(new_baddy){
   speedInput.max = "70";
   speedInput.step = "1";
   speedInput.value = new_baddy.speed;
-  speedInput.addEventListener("click", function(){
+  speedInput.addEventListener("change", function(){
    
     new_baddy.speed = parseInt(this.value);
     
@@ -278,7 +280,7 @@ function addBaddy(new_baddy){
   rangeInput.step = "1";
   rangeInput.value = new_baddy.range;
 
-  rangeInput.addEventListener("click", function(){
+  rangeInput.addEventListener("change", function(){
     
     new_baddy.range = parseInt(this.value);
   })
@@ -395,7 +397,7 @@ function reset_alive_baddies(){
 //real time parameter changes
 let p_speed = document.getElementById('player_speed');
 
-p_speed.addEventListener("click", function() {
+p_speed.addEventListener("change", function() {
   currentGame.player.speed = parseFloat(p_speed.value);
 })
 
@@ -403,19 +405,19 @@ p_speed.addEventListener("click", function() {
 
 let p_jumping_height = document.getElementById('player_jumping_height');
 
-p_jumping_height.addEventListener("click", function() {
+p_jumping_height.addEventListener("change", function() {
   currentGame.player.jumping_height = p_jumping_height.value;
 })
 
 let game_gravity = document.getElementById('game_world_gravity');
 
-game_gravity.addEventListener("click", function() {
+game_gravity.addEventListener("change", function() {
   currentGame.gravity = parseFloat(game_gravity.value);
 })
 
 let game_friction = document.getElementById('game_world_friction');
 
-game_friction.addEventListener("click", function() {
+game_friction.addEventListener("change", function() {
   currentGame.friction = parseFloat(game_friction.value);
 })
 
@@ -1064,7 +1066,6 @@ switch(safe_mode){
 
 
 
-
   
                                               //////////////////////
                                              ///GAME ENGINE LOOP///
@@ -1072,7 +1073,8 @@ switch(safe_mode){
  
                                             game_loop = function(){
 
-
+                                              current_x.textContent = "X: " + Math.round(currentGame.player.x);
+                                              current_y.textContent = "Y: " + Math.round(currentGame.player.y);
                                               
                                               coin_counter.innerHTML = "COINS: " + coin_count;
 
@@ -1099,6 +1101,13 @@ switch(safe_mode){
 
                               if(currentGame.alive_baddies){
                                 for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
+
+                                  if(currentGame.alive_baddies[b].x <= 0){
+                                    currentGame.alive_baddies[b].x = 1;
+                                  } else if(currentGame.alive_baddies[b].x >= currentGame.canvas_width - currentGame.alive_baddies[b].width){
+                                    currentGame.alive_baddies[b].x = currentGame.canvas_width - currentGame.alive_baddies[b].width - 1 ;  
+                                  }
+
                                   collision_detection(currentGame, currentGame.alive_baddies[b]); 
                                   currentGame.alive_baddies[b].x = Math.round(currentGame.alive_baddies[b].x)
                                 }

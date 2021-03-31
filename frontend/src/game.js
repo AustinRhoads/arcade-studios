@@ -46,7 +46,8 @@ function Baddy(name, height, width, speed, type_of_baddy) {
     this.x_respawn = 300,
     this.y_respawn = 330,
     this.range = 10,
-    this.mode = "waiting"
+    this.mode = "waiting",
+    this.facing_left = false
    
     
     
@@ -84,9 +85,10 @@ Baddy.prototype = {
             break;
             case 2:
                 this.image = tile_sheet.back_and_forth;
+                this.second_image = tile_sheet.back_and_forth_flipped
                 this.behavior = back_and_forth_behavior;
-                this.width = 32;
-                this.height = 32;
+                this.width = 60;
+                this.height = 40;
                 this.paces = 0;
                 this.facing_left = true;
             break;
@@ -177,7 +179,7 @@ function block_head_behavior(baddy){
           
         break;
         case "retrieving":
-            this.y_velocity -= this.speed * 0.9;
+            this.y_velocity -= 0.5 * 0.9;
             if(this.y <= this.y_respawn){this.y = this.y_respawn}
             if(this.y <= this.y_respawn){this.mode = "waiting"}
         break;
@@ -221,13 +223,13 @@ function back_and_forth_behavior(baddy){
             }
             
             if(this.facing_left == true){
-
-
+                
                 this.x_velocity = this.speed
                 this.x -= this.x_velocity;
                 this.paces = Math.sqrt((this.x - this.x_respawn) * (this.x - this.x_respawn));
 
                }else if(this.facing_left == false){
+                
                 this.x_velocity = this.speed
                 this.x += this.x_velocity; 
 

@@ -15,7 +15,9 @@ function TileSheet(){
     this.block_head = new Image(),
     this.block_head.src = './public/images/block_head.png',
     this.back_and_forth = new Image(),
-    this.back_and_forth.src = './public/images/follow_cube.png',//change these images
+    this.back_and_forth.src = './public/images/back_and_forth.png',
+    this.back_and_forth_flipped = new Image(),
+    this.back_and_forth_flipped.src = './public/images/back_and_forth_flipped.png',
     this.follower = new Image(),
     this.follower.src = './public/images/follow_cube.png',
     this.spikes = new Image(),
@@ -233,6 +235,6 @@ function placeCoins(coins, vp, ctx){
 
 
 
-
+   
    
 

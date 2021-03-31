@@ -126,7 +126,13 @@ function collision_detection(game, player){
  function draw_baddy(bad, ctx, vp){
   let x = (bad.x - vp.x);
   let y = bad.y;
-  ctx.drawImage(bad.image, x, y);
+  
+  
+  if(bad.type_of_baddy == 2){
+    if(bad.facing_left == true){
+      ctx.drawImage(bad.second_image, x, y);
+    }else{ctx.drawImage(bad.image, x, y)}
+  } else {ctx.drawImage(bad.image, x, y)}
  
  }
 
