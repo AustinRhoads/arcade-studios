@@ -19,7 +19,7 @@ function TileSheet(){
     this.back_and_forth_flipped = new Image(),
     this.back_and_forth_flipped.src = './public/images/back_and_forth_flipped.png',
     this.follower = new Image(),
-    this.follower.src = './public/images/follow_cube.png',
+    this.follower.src = './public/images/follower_40px.png',
     this.spikes = new Image(),
     this.spikes.src = './public/images/follow_cube.png',//change these images
     this.jumper = new Image()
@@ -51,54 +51,6 @@ switch(num){
 
 
 }
-
-function collideTop(player, tile_top){
-
-    if (player.getBottom() > tile_top && player.getOldBottom() <= tile_top){
-      
-        player.setBottom(tile_top - 0.01);
-        
-        player.y_velocity = 0;
-        player.jumping = false;
-        
-        return true;
-    } return false;
-}
-
-function collideLeft(player, tile_left){
-  
-    if (player.getRight() > tile_left && player.getOldRight() <= tile_left){
-    
-        player.setRight(tile_left - 1);
-        player.x_velocity = 0;
-        return true;
-    } return false;
-    
-}
-
-function collideBottom(player, tile_bottom){
-
-
-    
-
-    if(player.getTop() < tile_bottom && player.getOldTop() >= tile_bottom){
-      
-        player.setTop(tile_bottom + 0.01);
-        player.y_velocity = 0;
-        return true;
-    } return false;
-}
-
-function collideRight(player, tile_right){
-
-    if(player.getLeft() < tile_right && player.getOldLeft() >= tile_right){
-        
-        player.setLeft(tile_right + 1);
-        player.x_velocity = 0;
-        return true;
-    } return false;
-}
-
 
 
 
@@ -216,18 +168,6 @@ function placeCoins(coins, vp, ctx){
       
    }
 
-   function coinCollide(coin, player , vp){
-       
-
-   let rightOver = player.getRight() <= coin.getRight() - 11 && player.getRight() >= coin.getLeft() + 11;
-   let leftOver = player.getLeft() >= coin.getLeft() + 11 && player.getLeft() <= coin.getRight() - 11;
-   let topOver = player.getTop() <= coin.getBottom() && player.getTop() >= coin.getTop();
-   let bottomOver = player.getBottom() >= coin.getTop() && player.getBottom() <= coin.getBottom();
-   
-    if( (rightOver || leftOver) && (bottomOver || topOver) ){
-        return true;
-    };
-   }
 
 
 

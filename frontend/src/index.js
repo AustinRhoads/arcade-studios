@@ -112,15 +112,17 @@ function populate_editor(obj){
 
     //  newBadButton.click();
       addBaddy(obj.baddies[x])
+      
       let allBaddies = document.getElementsByClassName('baddy');
 
-
+/*
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_name"]').value = obj.baddies[x].name;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = obj.baddies[x].speed;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_d"]').value = obj.baddies[x].d;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_range"]').value = obj.baddies[x].range;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_x_respawn"]').value = obj.baddies[x].x_respawn;
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_y_respawn"]').value = obj.baddies[x].y_respawn;
+      */
 
    let type_options = allBaddies[allBaddies.length -1].getElementsByTagName('option');
 
@@ -146,8 +148,6 @@ function default_baddy(){
   new_baddy.set_image_and_behavior(new TileSheet())
   currentGame.baddies.push(new_baddy)
   reset_alive_baddies()
- // currentGame.alive_baddies = currentGame.baddies.slice();
-  //right here
   new_baddy.respawn();
   return new_baddy;
 }
@@ -295,19 +295,20 @@ function addBaddy(new_baddy){
   type_of_baddyInput.type = "number";
 type_of_baddyInput.addEventListener("click", function(){
   let init_id = this.parentElement.querySelector('input[name="baddy_id').value;
-  
+  console.log()
   if(init_id){
     let bad_boy = currentGame.baddies.find(bad => bad.id == init_id);
     bad_boy.type_of_baddy = this.value;
     bad_boy.set_image_and_behavior(new TileSheet());
+    bad_boy.mode = "waiting";
     reset_alive_baddies()
-    //currentGame.alive_baddies = currentGame.baddies.slice()
     spawn_baddy(bad_boy)
   }else{
    
     new_baddy.type_of_baddy = this.value;
     
     new_baddy.set_image_and_behavior(new TileSheet());
+    new_baddy.mode = "waiting"
     new_baddy.respawn();
     
   }
@@ -472,7 +473,7 @@ function saveGame(){
 
   gameData.baddies = [];
 
-  let allBaddies = document.getElementsByClassName('baddy');
+ /* let allBaddies = document.getElementsByClassName('baddy');
 
   for(let x = 0; x < allBaddies.length; x++){
     console.log(allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value)
@@ -491,6 +492,10 @@ function saveGame(){
      });
     
   }
+  */
+
+  gameData.baddies = currentGame.baddies;
+
   gameData.map = currentGame.map;
   gameData.columns = currentGame.columns;
   gameData.rows = currentGame.rows;
@@ -1096,6 +1101,7 @@ switch(safe_mode){
                               if(currentGame.alive_baddies){
                                 for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
                                   currentGame.alive_baddies[b].behave();
+                                //  baddies_collision_detection(currentGame, currentGame.player, currentGame.alive_baddies[b]);
                                 }
                               }
 
@@ -1110,13 +1116,20 @@ switch(safe_mode){
 
                                   collision_detection(currentGame, currentGame.alive_baddies[b]); 
                                   currentGame.alive_baddies[b].x = Math.round(currentGame.alive_baddies[b].x)
+
                                 }
                               }
                                          
                                             velocity_controll(currentGame);
                                             collision_detection(currentGame, currentGame.player); 
-                                            
 
+                                            if(currentGame.alive_baddies){
+                                              for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
+                                                
+                                              }
+                                            }
+                                          
+                                        //    baddies_collision_detection( currentGame.player, currentGame.alive_baddies)
 
                                           
 
