@@ -219,21 +219,21 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
              if(baddyCollideTop       (player, bad  )) return; //blockhead
              if(baddyCollideLeft      (player, bad  )) return;
              if(baddyCollideBottom    (player, bad  )) return;
-                baddyCollideRight     (player, bad  ); break;
+                baddyCollideRight     (player, bad  );  break;
       
       case 2: //back and forth
-        if(baddyCollideTopMortal (player, bad  )) return;
-        if(baddyCollideRight     (player, bad  )) return;
-           baddyCollideLeft       (player, bad   ); break;
+            if(baddyCollideTopMortal ( player, bad  )) return;
+            if(baddyCollideRight     ( player, bad  )) return;
+               baddyCollideLeft      ( player, bad  );  break;
        
 
      
    
       
       case 3://follower
-      if(baddyCollideTopMortal (player, bad  )) return;
-      if(baddyCollideRight     (player, bad  )) return;
-         baddyCollideLeft       (player, bad   ); break;
+            if(baddyCollideTopMortal ( player, bad  )) return;
+            if(baddyCollideRight     ( player, bad  )) return;
+               baddyCollideLeft      ( player, bad  );  break;
 
            
      
@@ -262,7 +262,7 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
       
         player.setBottom(bad.getTop() - 0.01);
         
-        player.y_velocity = 0;
+        player.y_velocity = -27;
         player.jumping = false;
         let dead_index = currentGame.alive_baddies.indexOf(bad);
         currentGame.alive_baddies.splice(dead_index, 1);
@@ -295,14 +295,14 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
   }
   
   function baddyCollideBottom(player, bad){
-   // console.log("bottom")
+   
   //    if(player.getTop() <= bad.getBottom() && player.getOldTop() >= bad.getBottom()){
         player.setTop(bad.getBottom() + 0.01);
         player.y_velocity = 0;
         
         bad.setBottom(player.getTop() - 10);
         bad.y_velocity = 0;
-      //  console.log("bottom")
+        console.log("dead")
         return true;
      // } return false;
    

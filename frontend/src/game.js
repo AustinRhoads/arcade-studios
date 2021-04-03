@@ -91,13 +91,15 @@ Baddy.prototype = {
                 this.width = 60;
                 this.height = 40;
                 this.paces = 0;
-                this.facing_left = true;
+                this.facing_left = false;
+                this.mode = "waiting"
             break;
             case 3:
                 this.image = tile_sheet.follower
                 this.behavior = follower_behavior
                 this.width = 40;
                 this.height = 40;
+                this.mode = "waiting"
 
             break;
             case 4:

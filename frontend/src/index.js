@@ -152,6 +152,44 @@ function default_baddy(){
   return new_baddy;
 }
 
+
+function type_of_baddy_name(bad){
+  switch(bad.type_of_baddy){
+    case 1: 
+    return "Block Head";
+    case 2:
+      return "Back and Forth";
+      case 3:
+       return "Follower";
+    
+  }
+}
+
+function create_baddy_dropdown_button(bad){
+  let dropdown_button = document.createElement('button');
+  set_drp_down_btn_title(bad, dropdown_button)
+  dropdown_button.classList.add("baddy_dropdown_button");
+  dropdown_button.addEventListener("click", function(){
+
+    collapse_baddy_div(this);
+
+  })
+  return dropdown_button
+}
+
+function set_drp_down_btn_title(bad, btn){
+  btn.textContent = bad.name + " - " + type_of_baddy_name(bad);
+}
+
+function collapse_baddy_div(btn){
+let baddy_div = btn.nextElementSibling;
+if(baddy_div.style.display === "block"){
+  baddy_div.style.display = "none"
+} else {baddy_div.style.display = "block"}
+}
+
+
+
 function addBaddy(new_baddy){
 //name, height, width, speed, type_of_baddy
 
@@ -182,6 +220,9 @@ function addBaddy(new_baddy){
   nameInput.name = "baddy_name";
   nameInput.placeholder = "--Name of baddy--";
   nameInput.value = new_baddy.name;
+  nameInput.addEventListener("change", function(){
+    new_baddy.name = this.value;
+  })
 
   let br = document.createElement('br');
   let br2 = document.createElement('br');
@@ -348,8 +389,10 @@ type_of_baddyInput.appendChild(jumper_option);
 
   let idInput =  document.createElement("input");
   idInput.type = "hidden";
-  idInput.name = "baddy_id"
- // idInput.style.visibility = false;
+  idInput.name = "baddy_id";
+
+ //let drp_down_button = create_baddy_dropdown_button(new_baddy);
+
 
   
   div.appendChild(nameInput);
@@ -371,6 +414,7 @@ type_of_baddyInput.appendChild(jumper_option);
   div.appendChild(type_of_baddyLabel);
   div.appendChild(type_of_baddyInput);
   div.appendChild(idInput);
+ // editor.appendChild(drp_down_button)
   editor.appendChild(div)
   editor.appendChild(br2);
 
