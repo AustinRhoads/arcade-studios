@@ -41,19 +41,32 @@ class GamesController < ApplicationController
         game.player.save
         game.coins = params['coins']
          
-
+        current_baddies = []
          baddy_params[:baddies].each do |bad|
            
-            if bad['id'] == ""
+            if bad['id'] == "" || bad['id'] == nil
+                
                 baddy = Baddy.create(bad)
                 baddy.game = game
                 baddy.save
+                current_baddies << baddy
             else
+                
                baddy = Baddy.find_by(:id => bad['id'])
                baddy.update(bad)
                baddy.save
+               current_baddies << baddy
             end
         end
+
+      
+        if game.baddies.length > current_baddies.length
+            old_baddies = game.baddies - current_baddies
+            old_baddies.each do |bad|
+                bad.delete
+            end
+        end
+
         game.update(game_params)
       
         game.save
