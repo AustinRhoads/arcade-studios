@@ -79,14 +79,13 @@ Baddy.prototype = {
             case 1:
                this.image = tile_sheet.block_head;
                this.behavior = block_head_behavior;
-             //  this.x_respawn = 300;
-             //  this.y_respawn = 80;
                this.width = 80;
                this.height = 80;
             break;
             case 2:
                 this.image = tile_sheet.back_and_forth;
-                this.second_image = tile_sheet.back_and_forth_flipped
+                this.first_image = tile_sheet.back_and_forth;
+                this.second_image = tile_sheet.back_and_forth_flipped;
                 this.behavior = back_and_forth_behavior;
                 this.width = 60;
                 this.height = 40;
@@ -251,13 +250,14 @@ function back_and_forth_behavior(baddy){
                 this.x_velocity = baddy_speed
                 this.x -= this.x_velocity;
                 this.paces = Math.sqrt((this.x - baddy_x_respawn) * (this.x - baddy_x_respawn));
-
+                this.image = this.second_image;
                }else if(this.facing_left == false){
                 
                 this.x_velocity = baddy_speed
                 this.x += this.x_velocity; 
 
                 this.paces = Math.sqrt((this.x - baddy_x_respawn) * (this.x - baddy_x_respawn));
+                this.image = this.first_image;
                }
 
                //calling collision_destection

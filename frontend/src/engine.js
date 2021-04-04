@@ -324,12 +324,15 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
   let y = bad.y;
   
   
-  if(bad.type_of_baddy == 2){
+ /* if(bad.type_of_baddy == 2){
     if(bad.facing_left == true){
       ctx.drawImage(bad.second_image, x, y);
     }else{ctx.drawImage(bad.image, x, y)}
   } else {ctx.drawImage(bad.image, x, y)}
- 
+ */
+
+  ctx.drawImage(bad.image, x, y)
+
  }
 
  function draw_all_baddies(baddies, ctx, vp){

@@ -22,6 +22,7 @@ var tile_sheet;
 var viewport;
 var borderDiv = document.getElementById("border-div");
 var map_edit_mode = false;
+var erase_coins_mode = false;
 var tile_selector_x;
 var tile_selector_y;
 var tile_selector_on = false;
@@ -204,14 +205,17 @@ function addBaddy(new_baddy){
   removeBaddyButton.classList.add("removeBaddyButton");
   removeBaddyButton.textContent = "remove";
   removeBaddyButton.addEventListener("click", function(){
-    removeMe(this);
-    let index = currentGame.baddies.indexOf(new_baddy)
-    console.log(index);
-    currentGame.baddies.splice(index, 1);
-    reset_alive_baddies()
-   // currentGame.alive_baddies = currentGame.baddies.slice()
 
-   // currentGame.baddies.remove(this);
+    let confirmation = confirm("Are you sure you want to delete the bad guy?");
+    if(confirmation == true){
+
+      removeMe(this);
+      let index = currentGame.baddies.indexOf(new_baddy)
+      currentGame.baddies.splice(index, 1);
+      reset_alive_baddies()
+
+    }
+
   });
 
   let nameInput = document.createElement('input')
@@ -516,27 +520,6 @@ function saveGame(){
   gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
 
   gameData.baddies = [];
-
- /* let allBaddies = document.getElementsByClassName('baddy');
-
-  for(let x = 0; x < allBaddies.length; x++){
-    console.log(allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value)
-    gameData.baddies.push({
-      id: allBaddies[x].querySelector('input[name="baddy_id"]').value,
-      name: allBaddies[x].querySelector('input[name="baddy_name"]').value,
-      speed: allBaddies[x].querySelector('input[name="baddy_speed"]').value,
-   //   id: allBaddies[x].querySelector('input[name="baddy_id"]').value,.id,
-      d: allBaddies[x].querySelector('input[name="baddy_d"]').value,
-      range: allBaddies[x].querySelector('input[name="baddy_range"]').value,
-      x_respawn: allBaddies[x].querySelector('input[name="baddy_x_respawn"]').value,
-      y_respawn: allBaddies[x].querySelector('input[name="baddy_y_respawn"]').value,
-   
-     type_of_baddy: allBaddies[x].querySelector('select[name="baddy_type_of_baddy"]').value
-
-     });
-    
-  }
-  */
 
   gameData.baddies = currentGame.baddies;
 
@@ -950,6 +933,20 @@ function coinAdder(e){
 
 }
 
+function remove_coin(e, game){
+
+  erase_coins_mode = !erase_coins_mode;
+  if(erase_coins_mode == true){
+    clearMapEdit("erase-coins");
+    mapSelectEdit(e);
+  } else {
+    clearMapEdit();
+  }
+
+
+}
+
+
 function coinRemover(){
   if(coin_edit_mode == true){
     clearMapEdit("coins")
@@ -1049,9 +1046,16 @@ function placeTile(game, column, row){
       game.coins.push(new Coin(column, row));
       coin_list = game.coins.slice()
       coin_count = 0;
+  }else if(erase_coins_mode == true){
+    let coin = new Coin(column, row)
+    let i = game.coins.indexOf(coin)
+    game.coins.splice( i, 1);
+    coin_list = game.coins.slice()
   }
 
 }
+
+
 
 
 function clearMapEdit(safe_mode){
@@ -1060,8 +1064,16 @@ switch(safe_mode){
   case "coins":
     map_edit_mode = false;
     tile_selector_on = false;
+    erase_coins_mode = false;
   break;
   case "tiles":
+    coin_edit_mode = false;
+    tile_selector_on = false;
+    erase_coins_mode = false;
+  break;
+  case "erase-coins":
+    erase_coins_mode = true;
+    map_edit_mode = false;
     coin_edit_mode = false;
     tile_selector_on = false;
   break;
@@ -1069,6 +1081,7 @@ switch(safe_mode){
     map_edit_mode = false;
     coin_edit_mode = false;
     tile_selector_on = false;
+    erase_coins_mode = false;
   break;
 }
 
@@ -1476,8 +1489,8 @@ add_coin_btn.addEventListener("click", function(){
   coinAdder();
 })
 
-remove_coin_btn.addEventListener("click", function(){
-  coinRemover();
+remove_coin_btn.addEventListener("click", function(e){
+  remove_coin(e, currentGame)
 })
   
 
