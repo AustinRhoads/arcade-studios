@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_03_181826) do
+ActiveRecord::Schema.define(version: 2021_04_07_162649) do
 
   create_table "baddies", force: :cascade do |t|
     t.string "name"
@@ -28,6 +28,18 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["game_id"], name: "index_baddies_on_game_id"
+  end
+
+  create_table "game_overs", force: :cascade do |t|
+    t.integer "x_pos"
+    t.integer "y_pos"
+    t.integer "coin_min"
+    t.integer "player_lives", default: 1
+    t.integer "game_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "has_coin_min", default: false
+    t.index ["game_id"], name: "index_game_overs_on_game_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -62,5 +74,6 @@ ActiveRecord::Schema.define(version: 2021_03_03_181826) do
   end
 
   add_foreign_key "baddies", "games"
+  add_foreign_key "game_overs", "games"
   add_foreign_key "players", "games"
 end

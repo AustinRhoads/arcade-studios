@@ -94,5 +94,9 @@ class GamesController < ApplicationController
        
     end
 
+    def game_over_params
+        params.require(:game_over).permit(:x_pos, :y_pos, :coin_min, :has_coin_min, :player_lives)
+    end
+
 
 end
