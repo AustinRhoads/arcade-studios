@@ -23,7 +23,10 @@ function TileSheet(){
     this.spikes = new Image(),
     this.spikes.src = './public/images/follow_cube.png',//change these images
     this.jumper = new Image()
-    this.jumper.src = './public/images/follow_cube.png'//change these images
+    this.jumper.src = './public/images/follow_cube.png',//change these images
+    this.game_over_door = new Image(),
+    this.game_over_door.src =  './public/images/game_over_door.png'
+    
     
 }
 
@@ -133,12 +136,14 @@ tileType.addEventListener("click", function(){
 
 
 
-function scrollLeft(viewport){
+function scrollLeft(viewport, player){
 viewport.x -= 80;
+player.x -= 80;
 }
 
-function scrollRight(viewport){
+function scrollRight(viewport, player){
 viewport.x += 80;
+player.x += 80;
 }
 
 

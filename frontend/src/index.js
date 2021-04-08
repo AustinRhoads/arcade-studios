@@ -3,6 +3,7 @@
 const BASE_URL = "http://localhost:3000";
 const GAMES_URL = BASE_URL + "/games";
 var currentGame;
+
 var editorToolBox = document.getElementById("editor-toolbox");
 const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -78,10 +79,24 @@ function populate_load_list(){
       opt.value = game.id;
       opt.textContent = game.attributes.name;
       game_load_list.appendChild(opt);
+
+
+      if(currentGame != undefined){
+        if(currentGame.id){
+          if(currentGame.id == opt.value){
+            opt.selected = true;
+          }
+        }
+       }
       
+  
+
     }
 
    });   
+
+
+
 }
 
 
@@ -106,13 +121,17 @@ function populate_editor(obj){
   document.getElementById('player_speed').value = obj.player.speed;
   document.getElementById('player_jumping_height').value = obj.player.jumping_height;
 
-  if(obj.baddies){
+  if(obj.baddies.length > 0){
+
+    create_baddies_drop_down_list(obj.baddies);
  
     for(let x = obj.baddies.length - 1; x >= 0; --x){
 
 
     //  newBadButton.click();
-      addBaddy(obj.baddies[x])
+
+    ///ANOTHER TEST HERE
+   //   addBaddy(obj.baddies[x])
       
       let allBaddies = document.getElementsByClassName('baddy');
 
@@ -125,13 +144,10 @@ function populate_editor(obj){
       allBaddies[allBaddies.length -1].querySelector('input[name="baddy_y_respawn"]').value = obj.baddies[x].y_respawn;
       */
 
-   let type_options = allBaddies[allBaddies.length -1].getElementsByTagName('option');
 
-      for(let t = type_options.length - 1; t >= 0; --t){
-        if(type_options[t].value == obj.baddies[x].type_of_baddy){ type_options[t].selected = true;}
-      }
-   
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_id"]').value = obj.baddies[x].id;
+
+      ///////JUST TESTING MOVING THIS/////
+
   }
  }
 }
@@ -143,7 +159,7 @@ function populate_editor(obj){
 var newBadButton = document.getElementById('add-baddy');
 
 function default_baddy(){
-  let new_baddy = new Baddy("", 80, 80, 2, 1);
+  let new_baddy = new Baddy("Baddy #" + (currentGame.baddies.length + 1), 80, 80, 2, 1);
   new_baddy.d = 0.5;
   new_baddy.range = 10;
   new_baddy.set_image_and_behavior(new TileSheet())
@@ -159,14 +175,14 @@ function type_of_baddy_name(bad){
     case 1: 
     return "Block Head";
     case 2:
-      return "Back and Forth";
-      case 3:
-       return "Follower";
+    return "Back and Forth";
+    case 3:
+    return "Follower";
     
   }
 }
 
-function create_baddy_dropdown_button(bad){
+/*function create_baddy_dropdown_button(bad){
   let dropdown_button = document.createElement('button');
   set_drp_down_btn_title(bad, dropdown_button)
   dropdown_button.classList.add("baddy_dropdown_button");
@@ -183,12 +199,40 @@ function set_drp_down_btn_title(bad, btn){
 }
 
 function collapse_baddy_div(btn){
-let baddy_div = btn.nextElementSibling;
+let baddy_div = btn.parentElement;
 if(baddy_div.style.display === "block"){
   baddy_div.style.display = "none"
 } else {baddy_div.style.display = "block"}
 }
 
+*/
+
+
+function create_baddies_drop_down_list(all_baddies){
+
+  let editor = document.getElementById('baddies-box');
+
+  let select_list = document.createElement('SELECT');
+
+  select_list.id = "baddy_select_list";
+
+  for(let bad of all_baddies){
+    let opt = document.createElement('option');
+    opt.textContent = bad.name + " - " + type_of_baddy_name(bad);
+    opt.value = bad.name;
+    select_list.appendChild(opt);
+
+  }
+
+  select_list.addEventListener("change", function(){
+    let found = currentGame.baddies.find(el => el.name == this.value)
+    addBaddy(found)
+  })
+  editor.appendChild(select_list);
+
+
+
+}
 
 
 function addBaddy(new_baddy){
@@ -203,7 +247,7 @@ function addBaddy(new_baddy){
 
   let removeBaddyButton = document.createElement('button');
   removeBaddyButton.classList.add("removeBaddyButton");
-  removeBaddyButton.textContent = "remove";
+  removeBaddyButton.textContent = "DELETE";
   removeBaddyButton.addEventListener("click", function(){
 
     let confirmation = confirm("Are you sure you want to delete the bad guy?");
@@ -219,11 +263,13 @@ function addBaddy(new_baddy){
   });
 
   let nameInput = document.createElement('input')
+  nameInput.required = true;
   nameInput.style = "margin: 10px;";
   nameInput.type = "text";
   nameInput.name = "baddy_name";
-  nameInput.placeholder = "--Name of baddy--";
+  nameInput.placeholder = "--Name of baddy required--";
   nameInput.value = new_baddy.name;
+
   nameInput.addEventListener("change", function(){
     new_baddy.name = this.value;
   })
@@ -362,29 +408,47 @@ type_of_baddyInput.addEventListener("click", function(){
 let block_head_option = document.createElement('option');
 block_head_option.value = 1;
 block_head_option.innerHTML = "Block Head";
+block_head_option.classList.add("type_option");
+if(block_head_option.value == new_baddy.type_of_baddy){
+  block_head_option.selected = true;
+}
+
 
 let back_and_forth_option = document.createElement('option');
 back_and_forth_option.value = 2;
 back_and_forth_option.innerHTML = "Back and forth";
+back_and_forth_option.classList.add("type_option");
+if(back_and_forth_option.value == new_baddy.type_of_baddy){
+  back_and_forth_option.selected = true;
+}
+
 
 let follower_option = document.createElement('option');
 follower_option.value = 3;
 follower_option.innerHTML = "Follower";
+follower_option.classList.add("type_option");
+if(follower_option.value == new_baddy.type_of_baddy){
+  follower_option.selected = true;
+}
 
+
+/*
 let spikes_option = document.createElement('option');
 spikes_option.value = 4;
 spikes_option.innerHTML = "Spikes";
 
+
 let jumper_option = document.createElement('option');
 jumper_option.value = 5;
 jumper_option.innerHTML = "Jumper";
+*/
 
 
 type_of_baddyInput.appendChild(block_head_option);  
 type_of_baddyInput.appendChild(back_and_forth_option);
 type_of_baddyInput.appendChild(follower_option);
-type_of_baddyInput.appendChild(spikes_option);
-type_of_baddyInput.appendChild(jumper_option);
+//type_of_baddyInput.appendChild(spikes_option);
+//type_of_baddyInput.appendChild(jumper_option);
 
 
 
@@ -395,7 +459,27 @@ type_of_baddyInput.appendChild(jumper_option);
   idInput.type = "hidden";
   idInput.name = "baddy_id";
 
+     
+ if(new_baddy.id){
+  idInput.value = new_baddy.id;
+ }
+ 
+
  //let drp_down_button = create_baddy_dropdown_button(new_baddy);
+
+
+
+
+//   let type_options = div.getElementsByClassName('type_option');
+//console.log(type_options.length)
+//      for(const t of type_options){
+//        console.log(t)
+//        if(t.value == new_baddy.type_of_baddy){ t.selected = true;}
+//      }
+//
+
+
+
 
 
   
@@ -470,294 +554,293 @@ game_friction.addEventListener("change", function() {
   currentGame.friction = parseFloat(game_friction.value);
 })
 
-//function updateBaddySpeed(num){
-// // console.log("real time update functions for baddy later")
-// 
-//}
 
+        ////////////////////////////////
+       //SAVING AND LOADING WAS HERE///
+      ////////////////////////////////
 
-
-
-
-
-
-
-
-
-  
-                   ////////////// 
+                         ////////////// 
                   ///NEW GAME///
                  //////////////
 
 
-document.getElementById('reset_game_button').addEventListener("click", function(){
-  currentGame = defaultSettings();
-  resetGame(currentGame);
-});
-
-
-
-
-                ///////////////
-               ///SAVE GAME///
-              ///////////////
-
-
-function saveGame(){
-
-  let name = document.getElementById('game_name').value;  
-  let gravity = document.getElementById('game_world_gravity').value;
-  let friction = document.getElementById('game_world_friction').value;
-
-  let gameData = new Game(name, gravity, friction)
-
-  
-
-  let player_name = document.getElementById('player_name').value;
-  let player_speed = document.getElementById('player_speed').value;
-  let player_jumping_height = document.getElementById('player_jumping_height').value;
-
-  gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
-
-  gameData.baddies = [];
-
-  gameData.baddies = currentGame.baddies;
-
-  gameData.map = currentGame.map;
-  gameData.columns = currentGame.columns;
-  gameData.rows = currentGame.rows;
-  gameData.canvas_width = currentGame.canvas_width;
-  gameData.canvas_height = currentGame.canvas_height;
-  gameData.coins = [];
-
-  for(let i = currentGame.coins.length -1; i >=0; --i){
-    gameData.coins.push([currentGame.coins[i].column, currentGame.coins[i].row]);
-    
-  }
-  
-
-if(currentGame.id == null){
-
-    let postGameObject = {
-      method: "POST",
-      headers:{
-          "Content-Type":"application/json",
-          "Accept":"application/json"
-      },
-      body: JSON.stringify(gameData)
-    };
-
-  fetch(GAMES_URL, postGameObject)
-  .then(resp => resp.json())
-  .then(function(obj){
-
-     loadGame(obj.id)
-
-     populate_load_list()
-
-    })
-  .catch(function(error){
-
-      alert ("holy shmokes");
-
-  })
-}
-
-if(currentGame.id != null){
-  
-console.log(currentGame.id + "updated");
-      let patchGameObject = {
-        method: "PATCH",
-        headers:{
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(gameData)
-      };
-    
-    fetch(GAMES_URL + `/${currentGame.id}`, patchGameObject)
-    .then(resp => resp.json())
-    .then(function(obj){
-       populate_load_list()
-      })
-    .catch(function(error){
-        alert ("holy shmokes");
-    
-    
-    })
-}
-
-}
-
-
-///event listeners to save game
-
-document.getElementById('game_save_button').addEventListener("click", function(){
-  saveGame(currentGame);
-});
-
-
-
-
-
-
-                   ///////////////
-                  ///LOAD GAME///
-                 ///////////////
-                            
-
-
-
-function loadGame(id){
-
-
-  let editor = document.getElementById('baddies-box');
-  editor.innerHTML = "";
-  
-  removeDeleteButton();
-
-    fetch(GAMES_URL+`/${id}`)
-    .then(resp => resp.json())
-    .then(function(obj){
-
-
-    let gameData = obj['data'].attributes
-
-
-     //game properties
-    let name = gameData.name;
-    let gravity = gameData.gravity;
-    let friction = gameData.friction;
-    let canvas_width = gameData.canvas_width;
-    let canvas_height = gameData.canvas_height;
-    let map = gameData.map;
-    let columns = gameData.columns;
-    let rows = gameData.rows;
-    let coins = gameData.coins;
-
-    let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
-    loadedGame.id = id;
-    loadedGame.map = map;
-    loadedGame.columns = columns;
-    loadedGame.rows = rows;
-    loadedGame.coins = [];
-
-    for(let x = coins.length - 1; x >= 0; --x){
-      loadedGame.coins.push(new Coin(coins[x][0], coins[x][1]));
-    } 
-
-
-    //player properties
-    let p_name = gameData.player.name;
-    let p_height = gameData.player.height;
-    let p_width = gameData.player.width;
-    let p_speed = gameData.player.speed;
-    let p_jumping_height = gameData.player.jumping_height;
-    
-    loadedGame.player = new Player(p_name, p_height, p_width, p_speed, p_jumping_height);
-
-
-    //baddy properties
-    loadedGame.baddies = [];
-    gameData.baddies.forEach(function(el){
-      let new_b = new Baddy(el.name, el.height, el.width, el.speed, el.type_of_baddy);
-      new_b.id = el.id;
-      new_b.d = el.d;
-      new_b.range = el.range;
-      new_b.x_respawn = el.x_respawn;
-      new_b.y_respawn = el.y_respawn;
-    //  new_b.type_of_baddy = el.type_of_baddy;
-      loadedGame.baddies.push(new_b)
-    })
-
-    for(let i = loadedGame.baddies.length -1; i >= 0; --i){
-      loadedGame.baddies[i].set_image_and_behavior(tile_sheet);
-     }
-     
-
-    
-
-
-    currentGame = loadedGame;
-   
-    resetGame(currentGame);
-  
-   })
-
-
-   createDeleteButton();
-   
-
-}
-
-
-
-
-
-
-
-function createDeleteButton(){
-
-
-  let btn = document.createElement('button');
-  btn.id = "delete-button";
-  btn.textContent = "Delet Game";
-
-
-  btn.addEventListener("click", function(){
-    deleteGame(currentGame.id);
-  })
-
-
-  editorToolBox.appendChild(btn);
-
-}
-
-
-
-function removeDeleteButton(){
-
-  let btn = document.getElementById("delete-button");
-
-  if(btn){
-   btn.remove();
-  }
-
-}
-
-
- 
-              /////////////////
-             ///DELETE GAME///
-            /////////////////
-
-  function deleteGame(){
-
-    if(confirm("Are you sure you want to delete this game?")){
- 
-  
-      let configurationObject = {
-        method: "DELETE",
-        header: {
-            "Content-Type" : "application/json",
-            "Accept" : "application/json"
-        },
-        body: JSON.stringify(currentGame)
-      }
-
-
-      fetch(GAMES_URL+`/${currentGame.id}`, configurationObject)
-      .then()
-      .then(function() {
-         removeDeleteButton()
-         resetGame()
-        }
-      )
-    }
-    
-    
-  }         
-
+                 document.getElementById('reset_game_button').addEventListener("click", function(){
+                  currentGame = defaultSettings();
+                  resetGame(currentGame);
+                });
+                
+                
+                
+                
+                                ///////////////
+                               ///SAVE GAME///
+                              ///////////////
+                
+                
+                function saveGame(){
+                
+                  let name = document.getElementById('game_name').value;  
+                  let gravity = document.getElementById('game_world_gravity').value;
+                  let friction = document.getElementById('game_world_friction').value;
+                
+                  let gameData = new Game(name, gravity, friction)
+                
+                  
+                
+                  let player_name = document.getElementById('player_name').value;
+                  let player_speed = document.getElementById('player_speed').value;
+                  let player_jumping_height = document.getElementById('player_jumping_height').value;
+                
+                  gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
+                
+                  gameData.baddies = [];
+                
+                  gameData.baddies = currentGame.baddies;
+                
+                  gameData.map = currentGame.map;
+                  gameData.columns = currentGame.columns;
+                  gameData.rows = currentGame.rows;
+                  gameData.canvas_width = currentGame.canvas_width;
+                  gameData.canvas_height = currentGame.canvas_height;
+                  gameData.coins = [];
+                
+                  for(let i = currentGame.coins.length -1; i >=0; --i){
+                    gameData.coins.push([currentGame.coins[i].column, currentGame.coins[i].row]);
+                    
+                  }
+                  
+                
+                if(currentGame.id == null){
+                
+                    let postGameObject = {
+                      method: "POST",
+                      headers:{
+                          "Content-Type":"application/json",
+                          "Accept":"application/json"
+                      },
+                      body: JSON.stringify(gameData)
+                    };
+                
+                  fetch(GAMES_URL, postGameObject)
+                  .then(resp => resp.json())
+                  .then(function(obj){
+                
+                     loadGame(obj.id)
+                
+                     populate_load_list()
+                
+                    })
+                  .catch(function(error){
+                
+                      alert ("holy shmokes");
+                
+                  })
+                }
+                
+                if(currentGame.id != null){
+                  
+                console.log(currentGame.id + "updated");
+                      let patchGameObject = {
+                        method: "PATCH",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Accept":"application/json"
+                        },
+                        body: JSON.stringify(gameData)
+                      };
+                    
+                    fetch(GAMES_URL + `/${currentGame.id}`, patchGameObject)
+                    .then(resp => resp.json())
+                    .then(function(obj){
+                       populate_load_list()
+                      })
+                    .catch(function(error){
+                        alert ("holy shmokes");
+                    
+                    
+                    })
+                }
+                
+                }
+                
+                
+                ///event listeners to save game
+                
+                document.getElementById('game_save_button').addEventListener("click", function(){
+                  saveGame(currentGame);
+                });
+                
+                
+                
+                
+                
+                
+                                   ///////////////
+                                  ///LOAD GAME///
+                                 ///////////////
+                                            
+                
+                
+                
+                function loadGame(id){
+                
+                
+                  let editor = document.getElementById('baddies-box');
+                  editor.innerHTML = "";
+                  
+                  removeDeleteButton();
+                
+                    fetch(GAMES_URL+`/${id}`)
+                    .then(resp => resp.json())
+                    .then(function(obj){
+                
+                
+                    let gameData = obj['data'].attributes
+                
+                
+                     //game properties
+                    let name = gameData.name;
+                    let gravity = gameData.gravity;
+                    let friction = gameData.friction;
+                    let canvas_width = gameData.canvas_width;
+                    let canvas_height = gameData.canvas_height;
+                    let map = gameData.map;
+                    let columns = gameData.columns;
+                    let rows = gameData.rows;
+                    let coins = gameData.coins;
+                
+                    let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
+                    loadedGame.id = id;
+                    loadedGame.map = map;
+                    loadedGame.columns = columns;
+                    loadedGame.rows = rows;
+                    loadedGame.coins = [];
+                
+                    if(coins){
+                      for(let x = coins.length - 1; x >= 0; --x){
+                        loadedGame.coins.push(new Coin(coins[x][0], coins[x][1]));
+                      } 
+                    }
+
+                
+                
+                    //player properties
+                    let p_name = gameData.player.name;
+                    let p_height = gameData.player.height;
+                    let p_width = gameData.player.width;
+                    let p_speed = gameData.player.speed;
+                    let p_jumping_height = gameData.player.jumping_height;
+                    
+                    loadedGame.player = new Player(p_name, p_height, p_width, p_speed, p_jumping_height);
+                
+                
+                    //baddy properties
+                    loadedGame.baddies = [];
+                    gameData.baddies.forEach(function(el){
+                      let new_b = new Baddy(el.name, el.height, el.width, el.speed, el.type_of_baddy);
+                      new_b.id = el.id;
+                      new_b.d = el.d;
+                      new_b.range = el.range;
+                      new_b.x_respawn = el.x_respawn;
+                      new_b.y_respawn = el.y_respawn;
+                    //  new_b.type_of_baddy = el.type_of_baddy;
+                      loadedGame.baddies.push(new_b)
+                    })
+                
+                    for(let i = loadedGame.baddies.length -1; i >= 0; --i){
+                      loadedGame.baddies[i].set_image_and_behavior(tile_sheet);
+                     }
+                     
+                
+                    
+                
+                
+                    currentGame = loadedGame;
+
+                    
+                   
+                    resetGame(currentGame);
+                  
+                   })
+                
+                
+                   createDeleteButton();
+                   
+                
+                }
+                
+                
+                
+                
+                
+                
+                
+                function createDeleteButton(){
+                
+                
+                  let btn = document.createElement('button');
+                  btn.id = "delete-button";
+                  btn.textContent = "Delet Game";
+                
+                
+                  btn.addEventListener("click", function(){
+                    deleteGame(currentGame.id);
+                  })
+                
+                
+                  editorToolBox.appendChild(btn);
+                
+                }
+                
+                
+                
+                function removeDeleteButton(){
+                
+                  let btn = document.getElementById("delete-button");
+                
+                  if(btn){
+                   btn.remove();
+                  }
+                
+                }
+                
+                
+                 
+                              /////////////////
+                             ///DELETE GAME///
+                            /////////////////
+                
+                  function deleteGame(){
+                
+                    if(confirm("Are you sure you want to delete this game?")){
+                 
+                  
+                      let configurationObject = {
+                        method: "DELETE",
+                        header: {
+                            "Content-Type" : "application/json",
+                            "Accept" : "application/json"
+                        },
+                        body: JSON.stringify(currentGame)
+                      }
+                
+                
+                      fetch(GAMES_URL+`/${currentGame.id}`, configurationObject)
+                      .then()
+                      .then(function() {
+                         removeDeleteButton()
+                         resetGame()
+                        }
+                      )
+                    }
+                    
+                    
+                  }         
+
+
+
+
+             
 
 function defaultSettings(){
 
@@ -782,6 +865,8 @@ function defaultSettings(){
 
 function resetGame(gameObj){
    populate_load_list();
+
+
    gameObj ||= defaultSettings();
    currentGame = gameObj;
    map_edit_mode = false;
@@ -798,8 +883,8 @@ function resetGame(gameObj){
    
    if(currentGame.baddies){
     reset_alive_baddies()
-  //  currentGame.alive_baddies = currentGame.baddies.slice();
-     spawn_all_baddies(currentGame.alive_baddies)}
+    spawn_all_baddies(currentGame.alive_baddies)
+   }
 
 }
 
@@ -814,24 +899,20 @@ function respawnPlayer(){
                 ////////////////////////////
 
 function addEarth(){
-  //let map = currentGame.map;
-  let ary = [0, 0, 0, 0, 0, 0, 1]
   
+
+  let ary = [0, 0, 0, 0, 0, 0, 1]
   
   for(let x = 0; x < ary.length; x++){
     currentGame.map.splice(((x + 1) * currentGame.columns) + x, 0, ary[x])
   }
 
-//currentGame.map = map
+
   currentGame.columns += 1;
   currentGame.canvas_width += tile_size;
 
-  game_canvas = document.querySelector("#game-canvas");
-  
-  game_canvas.width = currentGame.canvas_width;
-
   currentGame.player.x = currentGame.canvas_width - tile_size;
-  // respawnPlayer();
+  
   
 }
 
@@ -848,12 +929,8 @@ function minusEarth(){
   
   currentGame.canvas_width -= tile_size;
 
-  game_canvas = document.querySelector("#game-canvas");
-  
-  game_canvas.width = currentGame.canvas_width;
  currentGame.player.x = currentGame.canvas_width - tile_size;
- // respawnPlayer();
-  console.log(currentGame.map.length)
+
 }
 
 
@@ -1047,7 +1124,8 @@ function placeTile(game, column, row){
       coin_list = game.coins.slice()
       coin_count = 0;
   }else if(erase_coins_mode == true){
-    let coin = new Coin(column, row)
+
+    let coin = game.coins.find(obj => obj.row == row && obj.column == column) 
     let i = game.coins.indexOf(coin)
     game.coins.splice( i, 1);
     coin_list = game.coins.slice()
@@ -1135,6 +1213,8 @@ switch(safe_mode){
  
                                             game_loop = function(){
 
+
+
                                               current_x.textContent = "X: " + Math.round(currentGame.player.x);
                                               current_y.textContent = "Y: " + Math.round(currentGame.player.y);
                                               
@@ -1206,9 +1286,11 @@ switch(safe_mode){
                                              game_context.fillRect(0, 0, viewport.w, viewport.h); //fill in the size of the game.canvas_width/height
 
 
-                                             if(map_edit_mode == false){
-                                              viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
-                                             }
+                                            // if(map_edit_mode == false){
+                                            //  viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
+                                            // }
+
+                                             viewport.scrollTo(currentGame.player.x,  currentGame.player.y )
 
 
 
@@ -1494,8 +1576,8 @@ remove_coin_btn.addEventListener("click", function(e){
 })
   
 
-  scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport)};
-  scrollRightBtn.onmousedown = function () { map_edit_mode = true; scrollRight(viewport)};
+  scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport, currentGame.player)};
+  scrollRightBtn.onmousedown = function () { map_edit_mode = true; scrollRight(viewport, currentGame.player)};
 
 
 
@@ -1527,33 +1609,43 @@ remove_coin_btn.addEventListener("click", function(e){
 
   let game_play_button = document.getElementById('game-play-button');
 
-  let game_paused = true;
-  
+     let game_paused = true;
 
-  game_play_button.addEventListener("click", function(){
-    game_paused = !game_paused;
-    if(map_edit_mode == true){
-      game_paused = true;
-    }
-    map_edit_mode = false;
-    clearMapEdit()
+     var all_images = Object.keys(tile_sheet).length
 
+     var loaded_images = 0;
 
+     game_play_button.addEventListener("click", function(){
 
+       game_paused = !game_paused;
 
-
-    player_editor_paused = true;
-let img_1 = new Image();
-img_1.src = "./public/images/crate_1.png";
-    img_1.addEventListener('load', function(){
-      let img_2 =new Image();
-      img_2.src = "./public/images/earth_1.png";
-
-      img_2.addEventListener('load', function(){
-
+       if(map_edit_mode == true){
+         game_paused = true;
+       }
+     
+       map_edit_mode = false;
+     
+       clearMapEdit()
+     
+     
+       player_editor_paused = true;
+     
+     
+       if(all_images == loaded_images){
          window.requestAnimationFrame(game_loop);  
-      })
-    })
+       }else{
+
+         for(let img in tile_sheet){
+           tile_sheet[img].addEventListener("load", function(){
+             loaded_images += 1;
+             if(all_images == loaded_images){
+               window.requestAnimationFrame(game_loop);  
+             }
+           })
+         }
+  
+      }
+ 
     
     
   })

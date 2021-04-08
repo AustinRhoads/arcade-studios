@@ -139,3 +139,7 @@ font-size: 33px;
     transform: scaleX(-1);
 }
 
+.baddy_drop_down_button{
+    background-color:  rgb(87, 83, 83);
+}
+

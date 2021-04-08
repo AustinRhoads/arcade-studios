@@ -338,3 +338,6 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
  function draw_all_baddies(baddies, ctx, vp){
   baddies.forEach((b) => draw_baddy(b, ctx, vp))
  }
+
+
+
