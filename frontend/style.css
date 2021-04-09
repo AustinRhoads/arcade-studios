@@ -143,3 +143,34 @@ font-size: 33px;
     background-color:  rgb(87, 83, 83);
 }
 
+
+.baddy_display_image{
+    margin: auto;
+    display: block;
+}
+
+.baddy_display_image_div{
+    margin: auto;
+    display: block;
+    width: 100px;
+    height: 100px;
+    border: solid black 3px;
+    align-content: center;
+    display: flex;
+    background-color: rgb(218, 218, 218);
+}
+
+.display_tile{
+    margin: auto;
+    display: block;
+}
+
+.door_active{
+    border: solid green 3px;
+    color: darkgreen;
+}
+
+.door_inactive{
+   /* border: solid red 3px;*/
+    color: rgb(75, 74, 74);
+}

@@ -35,8 +35,9 @@ var coin_list = [];
 var dead_baddies_count = 0;
 var current_x = document.getElementById('current-x');
 var current_y = document.getElementById('current-y');
-
-
+var door_x_pos = document.getElementById('game_over_x_pos');
+var door_y_pos = document.getElementById('game_over_y_pos');
+var door_activation_button = document.getElementById('door_activation_button');
 
 
 
@@ -104,8 +105,6 @@ function populate_load_list(){
 
 function populate_editor(obj){
 
-//let old_baddy_remove_btns = document.getElementsByClassName("removeBaddyButton");
-
   if (obj.name){
     document.getElementById('game_name').value = obj.name;
   } else if (!obj.name){
@@ -122,34 +121,15 @@ function populate_editor(obj){
   document.getElementById('player_jumping_height').value = obj.player.jumping_height;
 
   if(obj.baddies.length > 0){
-
     create_baddies_drop_down_list(obj.baddies);
- 
-    for(let x = obj.baddies.length - 1; x >= 0; --x){
-
-
-    //  newBadButton.click();
-
-    ///ANOTHER TEST HERE
-   //   addBaddy(obj.baddies[x])
-      
-      let allBaddies = document.getElementsByClassName('baddy');
-
-/*
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_name"]').value = obj.baddies[x].name;
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_speed"]').value = obj.baddies[x].speed;
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_d"]').value = obj.baddies[x].d;
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_range"]').value = obj.baddies[x].range;
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_x_respawn"]').value = obj.baddies[x].x_respawn;
-      allBaddies[allBaddies.length -1].querySelector('input[name="baddy_y_respawn"]').value = obj.baddies[x].y_respawn;
-      */
-
-
-
-      ///////JUST TESTING MOVING THIS/////
-
-  }
  }
+
+ if(obj.game_over){
+  door_x_pos.value = obj.game_over.x_pos;
+  door_y_pos.value = obj.game_over.y_pos;
+  
+ }
+
 }
 
 
@@ -182,40 +162,27 @@ function type_of_baddy_name(bad){
   }
 }
 
-/*function create_baddy_dropdown_button(bad){
-  let dropdown_button = document.createElement('button');
-  set_drp_down_btn_title(bad, dropdown_button)
-  dropdown_button.classList.add("baddy_dropdown_button");
-  dropdown_button.addEventListener("click", function(){
-
-    collapse_baddy_div(this);
-
-  })
-  return dropdown_button
-}
-
-function set_drp_down_btn_title(bad, btn){
-  btn.textContent = bad.name + " - " + type_of_baddy_name(bad);
-}
-
-function collapse_baddy_div(btn){
-let baddy_div = btn.parentElement;
-if(baddy_div.style.display === "block"){
-  baddy_div.style.display = "none"
-} else {baddy_div.style.display = "block"}
-}
-
-*/
 
 
 function create_baddies_drop_down_list(all_baddies){
 
-  let editor = document.getElementById('baddies-box');
+  let old_list = document.getElementById("baddy_select_list");
+  if(old_list){old_list.remove()}
+  
+
+  let list_div = document.getElementById('baddies_list_div');
+ 
 
   let select_list = document.createElement('SELECT');
 
   select_list.id = "baddy_select_list";
 
+  let placeholder = document.createElement('option');
+  placeholder.textContent = "--Choose A Baddy To Edit--";
+  placeholder.value = "";
+  select_list.appendChild(placeholder);
+
+  placeholder.disabled = true;
   for(let bad of all_baddies){
     let opt = document.createElement('option');
     opt.textContent = bad.name + " - " + type_of_baddy_name(bad);
@@ -228,11 +195,16 @@ function create_baddies_drop_down_list(all_baddies){
     let found = currentGame.baddies.find(el => el.name == this.value)
     addBaddy(found)
   })
-  editor.appendChild(select_list);
+
+  list_div.appendChild(select_list);
 
 
 
 }
+
+
+
+
 
 
 function addBaddy(new_baddy){
@@ -262,6 +234,12 @@ function addBaddy(new_baddy){
 
   });
 
+  let hide_div_button = document.createElement('button');
+  hide_div_button.textContent = "Hide";
+  hide_div_button.addEventListener("click", function(){
+    removeMe(this);
+  })
+
   let nameInput = document.createElement('input')
   nameInput.required = true;
   nameInput.style = "margin: 10px;";
@@ -273,6 +251,16 @@ function addBaddy(new_baddy){
   nameInput.addEventListener("change", function(){
     new_baddy.name = this.value;
   })
+
+
+  let img = document.createElement('img');
+  let img_div = document.createElement('div')
+  img.classList.add("baddy_display_image")
+  img_div.classList.add("baddy_display_image_div")
+  img_div.appendChild(img);
+ 
+
+
 
   let br = document.createElement('br');
   let br2 = document.createElement('br');
@@ -465,27 +453,13 @@ type_of_baddyInput.appendChild(follower_option);
  }
  
 
- //let drp_down_button = create_baddy_dropdown_button(new_baddy);
-
-
-
-
-//   let type_options = div.getElementsByClassName('type_option');
-//console.log(type_options.length)
-//      for(const t of type_options){
-//        console.log(t)
-//        if(t.value == new_baddy.type_of_baddy){ t.selected = true;}
-//      }
-//
-
-
-
-
-
   
   div.appendChild(nameInput);
-  div.appendChild(removeBaddyButton);
   div.appendChild(br);
+  div.appendChild(img_div);
+  div.appendChild(br2);
+  div.appendChild(hide_div_button);
+  div.appendChild(br3);
   div.appendChild(x_respawnLabel);
   div.appendChild(x_respawnInput);
   div.appendChild(y_respawnLabel);
@@ -498,14 +472,18 @@ type_of_baddyInput.appendChild(follower_option);
   div.appendChild(dInput);
   div.appendChild(rangeLabel);
   div.appendChild(rangeInput);
-  div.appendChild(br3);
+  div.appendChild(br5);
   div.appendChild(type_of_baddyLabel);
   div.appendChild(type_of_baddyInput);
+  
   div.appendChild(idInput);
  // editor.appendChild(drp_down_button)
+  div.appendChild(removeBaddyButton);
   editor.appendChild(div)
-  editor.appendChild(br2);
+  editor.appendChild(br6);
 
+  create_baddies_drop_down_list(currentGame.baddies)
+  set_div_image(div, new_baddy)
 }
 
 
@@ -516,6 +494,11 @@ function removeMe(el){
 
 function reset_alive_baddies(){
   currentGame.alive_baddies = currentGame.baddies.slice()
+}
+
+function set_div_image(div, bad){
+  let img = div.querySelector('img');
+  img.src = bad.image.src;
 }
 
 
@@ -555,19 +538,19 @@ game_friction.addEventListener("change", function() {
 })
 
 
-        ////////////////////////////////
-       //SAVING AND LOADING WAS HERE///
-      ////////////////////////////////
+        ////////////////////////
+       ///SAVING AND LOADING///
+      ////////////////////////
 
-                         ////////////// 
+                   ////////////// 
                   ///NEW GAME///
                  //////////////
 
 
-                 document.getElementById('reset_game_button').addEventListener("click", function(){
-                  currentGame = defaultSettings();
-                  resetGame(currentGame);
-                });
+         document.getElementById('reset_game_button').addEventListener("click", function(){
+          currentGame = defaultSettings();
+          resetGame(currentGame);
+        });
                 
                 
                 
@@ -607,6 +590,10 @@ game_friction.addEventListener("change", function() {
                   for(let i = currentGame.coins.length -1; i >=0; --i){
                     gameData.coins.push([currentGame.coins[i].column, currentGame.coins[i].row]);
                     
+                  }
+
+                  if(currentGame.game_over){
+                    gameData.game_over = currentGame.game_over;
                   }
                   
                 
@@ -708,6 +695,7 @@ game_friction.addEventListener("change", function() {
                     let columns = gameData.columns;
                     let rows = gameData.rows;
                     let coins = gameData.coins;
+                    let game_over = gameData.game_over
                 
                     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
                     loadedGame.id = id;
@@ -721,6 +709,7 @@ game_friction.addEventListener("change", function() {
                         loadedGame.coins.push(new Coin(coins[x][0], coins[x][1]));
                       } 
                     }
+
 
                 
                 
@@ -749,6 +738,14 @@ game_friction.addEventListener("change", function() {
                 
                     for(let i = loadedGame.baddies.length -1; i >= 0; --i){
                       loadedGame.baddies[i].set_image_and_behavior(tile_sheet);
+                     }
+
+                     if(game_over){
+                       loadedGame.game_over = new GameOver(game_over.x_pos, game_over.y_pos);
+                       loadedGame.game_over.active = game_over.active;
+                     }else{
+                      loadedGame.game_over = new GameOver();
+                      loadedGame.game_over.active = false;
                      }
                      
                 
@@ -854,6 +851,8 @@ function defaultSettings(){
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   defaultGame.coins = []
   defaultGame.baddies = []
+  defaultGame.game_over = new GameOver();
+  defaultGame.game_over.active = false;
   return defaultGame;
   
 
@@ -885,6 +884,7 @@ function resetGame(gameObj){
     reset_alive_baddies()
     spawn_all_baddies(currentGame.alive_baddies)
    }
+ //  currentGame.game_over = new GameOver();
 
 }
 
@@ -1179,6 +1179,28 @@ switch(safe_mode){
 }
 
 
+function  activate_door(){
+
+  if(door_x_pos.value == ""){alert("Please set the X postion for the door")}
+  else if (door_y_pos.value == ""){alert("Please set the y postion for the door")}
+  else {
+    door_activation_button.classList.toggle("door_active");
+    door_activation_button.classList.toggle("door_inactive");
+    set_door_x_y()
+    
+    currentGame.game_over.active = !currentGame.game_over.active
+    door_activation_button.textContent = currentGame.game_over.active ? "Active":"Inactive"
+  }
+  
+}
+
+function set_door_x_y(){
+
+  currentGame.game_over.x_pos = parseInt(door_x_pos.value);
+  currentGame.game_over.y_pos = parseInt(door_y_pos.value);
+
+}
+
 
     /////////////////////////
    //// SIMPLY GAME BUILD///
@@ -1347,8 +1369,12 @@ switch(safe_mode){
                                       }  
                                   }
 
+                                  if(currentGame.game_over.active){
+                                    draw_door(currentGame, game_context, viewport, tile_sheet)
+                                  }
 
-                                  if(currentGame.alive_baddies){draw_all_baddies(currentGame.alive_baddies, game_context, viewport)}
+
+                                  if(currentGame.alive_baddies){draw_all_baddies(currentGame.alive_baddies, game_context, viewport, tile_sheet)}
                                   
 
 
@@ -1576,6 +1602,19 @@ remove_coin_btn.addEventListener("click", function(e){
 })
   
 
+//game over door
+
+door_activation_button.addEventListener("click", function(){
+  activate_door()
+})
+
+door_x_pos.addEventListener("change", function(){
+set_door_x_y()
+})
+door_y_pos.addEventListener("change", function(){
+set_door_x_y()
+})
+
   scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport, currentGame.player)};
   scrollRightBtn.onmousedown = function () { map_edit_mode = true; scrollRight(viewport, currentGame.player)};
 
@@ -1645,6 +1684,8 @@ remove_coin_btn.addEventListener("click", function(e){
          }
   
       }
+      
+     
  
     
     

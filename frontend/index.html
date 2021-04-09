@@ -40,6 +40,9 @@
         <fieldset id="baddies-editor" class = "editor_box">
           <legend>Baddies Editor</legend>
           <button id="add-baddy">Add Baddy</button>
+          <div id= "baddies_list_div">
+
+          </div>
           <div id= "baddies-box">
 
           </div>
@@ -59,12 +62,16 @@
 
         <fieldset id="game-over-editor" class = "editor_box">
           <legend>End of Game Door</legend>
+          <img class = "display_tile" src= "./public/images/game_over_door.png">
+          <br>
+          <button id="door_activation_button" class = "door_inactive">Inactive</button>
+          <br>
           <label for="game_over_x_pos">X Postion: </label>
-          <input style="margin: 10px;" type="number" id="game_over_x_pos" min="0">
+          <input style="margin: 10px; width: 50px;" type="number" id="game_over_x_pos" min="0" >
           <br>
           <label for="game_over_y_pos">Y Position: </label>
-          <input style="margin: 10px;" type="number" id="game_over_y_pos" min="0">
-          <img src= "./public/images/game_over_door.png">
+          <input style="margin: 10px; width: 50px;" type="number" id="game_over_y_pos" min="0" >
+         
         </fieldset>
       
         <input type="submit" value = "Save Game" id = "game_save_button">

@@ -319,23 +319,14 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
   baddies.forEach((b) => spawn_baddy(b))
  }
 
- function draw_baddy(bad, ctx, vp){
+ function draw_baddy(bad, ctx, vp, ts){
   let x = (bad.x - vp.x);
   let y = bad.y;
-  
-  
- /* if(bad.type_of_baddy == 2){
-    if(bad.facing_left == true){
-      ctx.drawImage(bad.second_image, x, y);
-    }else{ctx.drawImage(bad.image, x, y)}
-  } else {ctx.drawImage(bad.image, x, y)}
- */
-
   ctx.drawImage(bad.image, x, y)
 
  }
 
- function draw_all_baddies(baddies, ctx, vp){
+ function draw_all_baddies(baddies, ctx, vp, ts){
   baddies.forEach((b) => draw_baddy(b, ctx, vp))
  }
 
