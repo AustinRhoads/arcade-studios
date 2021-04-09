@@ -25,6 +25,10 @@ class GamesController < ApplicationController
             end
         end
 
+        game_over = game.build_game_over(game_over_params)
+        if game_over.valid?
+            game_over.save
+        end
 
         render json: game, include: [:player, :baddies]
     end
@@ -39,6 +43,14 @@ class GamesController < ApplicationController
         game = Game.find_by(:id => params[:id])
         game.player.update(player_params)
         game.player.save
+      # binding.pry
+        if game.game_over
+            game.game_over.update(game_over_params)
+            game.game_over.save
+        else
+            game.build_game_over(game_over_params)
+            game.game_over.save
+        end
         game.coins = params['coins']
          
         current_baddies = []
@@ -66,6 +78,8 @@ class GamesController < ApplicationController
                 bad.delete
             end
         end
+
+
 
         game.update(game_params)
       
@@ -95,7 +109,7 @@ class GamesController < ApplicationController
     end
 
     def game_over_params
-        params.require(:game_over).permit(:x_pos, :y_pos, :coin_min, :has_coin_min, :player_lives)
+        params.require(:game_over).permit(:x_pos, :y_pos, :coin_min, :has_coin_min, :player_lives, :active)
     end
 
 
