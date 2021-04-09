@@ -25,9 +25,9 @@ class GamesController < ApplicationController
             end
         end
 
-        game_over = game.build_game_over(game_over_params)
-        if game_over.valid?
-            game_over.save
+        end_of_game = game.build_end_of_game(end_of_game_params)
+        if end_of_game.valid?
+            end_of_game.save
         end
 
         render json: game, include: [:player, :baddies]
@@ -44,12 +44,12 @@ class GamesController < ApplicationController
         game.player.update(player_params)
         game.player.save
       # binding.pry
-        if game.game_over
-            game.game_over.update(game_over_params)
-            game.game_over.save
+        if game.end_of_game
+            game.end_of_game.update(end_of_game_params)
+            game.end_of_game.save
         else
-            game.build_game_over(game_over_params)
-            game.game_over.save
+            game.build_end_of_game(end_of_game_params)
+            game.end_of_game.save
         end
         game.coins = params['coins']
          
@@ -108,8 +108,8 @@ class GamesController < ApplicationController
        
     end
 
-    def game_over_params
-        params.require(:game_over).permit(:x_pos, :y_pos, :coin_min, :has_coin_min, :player_lives, :active)
+    def end_of_game_params
+        params.require(:end_of_game).permit(:x_pos, :y_pos, :coin_min, :has_coin_min, :player_lives, :active)
     end
 
 

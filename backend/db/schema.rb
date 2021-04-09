@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_08_224753) do
+ActiveRecord::Schema.define(version: 2021_04_07_161908) do
 
   create_table "baddies", force: :cascade do |t|
     t.string "name"
@@ -30,17 +30,17 @@ ActiveRecord::Schema.define(version: 2021_04_08_224753) do
     t.index ["game_id"], name: "index_baddies_on_game_id"
   end
 
-  create_table "game_overs", force: :cascade do |t|
+  create_table "end_of_games", force: :cascade do |t|
     t.integer "x_pos"
     t.integer "y_pos"
     t.integer "coin_min"
     t.integer "player_lives", default: 1
     t.integer "game_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
     t.boolean "has_coin_min", default: false
     t.boolean "active", default: false
-    t.index ["game_id"], name: "index_game_overs_on_game_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["game_id"], name: "index_end_of_games_on_game_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -75,6 +75,6 @@ ActiveRecord::Schema.define(version: 2021_04_08_224753) do
   end
 
   add_foreign_key "baddies", "games"
-  add_foreign_key "game_overs", "games"
+  add_foreign_key "end_of_games", "games"
   add_foreign_key "players", "games"
 end
