@@ -35,8 +35,8 @@ var coin_list = [];
 var dead_baddies_count = 0;
 var current_x = document.getElementById('current-x');
 var current_y = document.getElementById('current-y');
-var door_x_pos = document.getElementById('game_over_x_pos');
-var door_y_pos = document.getElementById('game_over_y_pos');
+var door_x_pos = document.getElementById('end_of_game_x_pos');
+var door_y_pos = document.getElementById('end_of_game_y_pos');
 var door_activation_button = document.getElementById('door_activation_button');
 
 
@@ -124,9 +124,9 @@ function populate_editor(obj){
     create_baddies_drop_down_list(obj.baddies);
  }
 
- if(obj.game_over){
-  door_x_pos.value = obj.game_over.x_pos;
-  door_y_pos.value = obj.game_over.y_pos;
+ if(obj.end_of_game){
+  door_x_pos.value = obj.end_of_game.x_pos;
+  door_y_pos.value = obj.end_of_game.y_pos;
   
  }
 
@@ -592,8 +592,8 @@ game_friction.addEventListener("change", function() {
                     
                   }
 
-                  if(currentGame.game_over){
-                    gameData.game_over = currentGame.game_over;
+                  if(currentGame.end_of_game){
+                    gameData.end_of_game = currentGame.end_of_game;
                   }
                   
                 
@@ -695,7 +695,7 @@ game_friction.addEventListener("change", function() {
                     let columns = gameData.columns;
                     let rows = gameData.rows;
                     let coins = gameData.coins;
-                    let game_over = gameData.game_over
+                    let end_of_game = gameData.end_of_game
                 
                     let loadedGame = new Game(name, gravity, friction, canvas_width, canvas_height );
                     loadedGame.id = id;
@@ -740,12 +740,12 @@ game_friction.addEventListener("change", function() {
                       loadedGame.baddies[i].set_image_and_behavior(tile_sheet);
                      }
 
-                     if(game_over){
-                       loadedGame.game_over = new GameOver(game_over.x_pos, game_over.y_pos);
-                       loadedGame.game_over.active = game_over.active;
+                     if(end_of_game){
+                       loadedGame.end_of_game = new EndOfGame(end_of_game.x_pos, end_of_game.y_pos);
+                       loadedGame.end_of_game.active = end_of_game.active;
                      }else{
-                      loadedGame.game_over = new GameOver();
-                      loadedGame.game_over.active = false;
+                      loadedGame.end_of_game = new EndOfGame();
+                      loadedGame.end_of_game.active = false;
                      }
                      
                 
@@ -851,8 +851,8 @@ function defaultSettings(){
   defaultGame.player = new Player(...Array(1), 32, 32, 0.5, 20);  
   defaultGame.coins = []
   defaultGame.baddies = []
-  defaultGame.game_over = new GameOver();
-  defaultGame.game_over.active = false;
+  defaultGame.end_of_game = new EndOfGame();
+  defaultGame.end_of_game.active = false;
   return defaultGame;
   
 
@@ -884,7 +884,7 @@ function resetGame(gameObj){
     reset_alive_baddies()
     spawn_all_baddies(currentGame.alive_baddies)
    }
- //  currentGame.game_over = new GameOver();
+ //  currentGame.end_of_game = new EndOfGame();
 
 }
 
@@ -1188,16 +1188,16 @@ function  activate_door(){
     door_activation_button.classList.toggle("door_inactive");
     set_door_x_y()
     
-    currentGame.game_over.active = !currentGame.game_over.active
-    door_activation_button.textContent = currentGame.game_over.active ? "Active":"Inactive"
+    currentGame.end_of_game.active = !currentGame.end_of_game.active
+    door_activation_button.textContent = currentGame.end_of_game.active ? "Active":"Inactive"
   }
   
 }
 
 function set_door_x_y(){
 
-  currentGame.game_over.x_pos = parseInt(door_x_pos.value);
-  currentGame.game_over.y_pos = parseInt(door_y_pos.value);
+  currentGame.end_of_game.x_pos = parseInt(door_x_pos.value);
+  currentGame.end_of_game.y_pos = parseInt(door_y_pos.value);
 
 }
 
@@ -1369,7 +1369,7 @@ function set_door_x_y(){
                                       }  
                                   }
 
-                                  if(currentGame.game_over.active){
+                                  if(currentGame.end_of_game.active){
                                     draw_door(currentGame, game_context, viewport, tile_sheet)
                                   }
 
@@ -1393,6 +1393,9 @@ function set_door_x_y(){
                                                 game_context.stroke()
                                               }
                               
+                                              if(doorCollide(currentGame, currentGame.player, viewport) == true){
+                                                console.log("game over")
+                                              }
 
                                               //calls upon itself
                                               if(game_paused == false){

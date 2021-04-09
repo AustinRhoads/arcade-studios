@@ -346,13 +346,20 @@ function retrieve_in_x_seconds(baddy, seconds){
 }
 
 
-function GameOver(x_pos, y_pos){
+function EndOfGame(x_pos, y_pos){
 this.x_pos = x_pos,
-this.y_pos = y_pos
+this.y_pos = y_pos,
+this.width = 80,
+this.height = 80
 }
 
-GameOver.prototype = {
+EndOfGame.prototype = {
+    getBottom: function() {return this.y_pos + this.height},
+    getTop: function(){return this.y_pos },
+    getLeft: function(){return this.x_pos},
+    getRight: function(){return this.x_pos + this.width},
     set_image: function(tile_sheet){
         this.image = tile_sheet.game_over_door
     }
 }
+

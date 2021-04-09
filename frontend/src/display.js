@@ -177,8 +177,8 @@ function placeCoins(coins, vp, ctx){
 
 function draw_door(g, ctx, vp, ts){
 
-let x = g.game_over.x_pos - vp.x;
-let y = g.game_over.y_pos;
+let x = g.end_of_game.x_pos - vp.x;
+let y = g.end_of_game.y_pos;
 ctx.drawImage(ts.game_over_door, 0, 0, 80, 80, x, y, 80, 80)
 }
 

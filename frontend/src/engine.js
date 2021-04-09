@@ -111,6 +111,7 @@ function collision_detection(game, player){
                                                                           
  
    } 
+
  }
 
 
@@ -191,6 +192,23 @@ function coinCollide(coin, player , vp){
        return true;
    };
   }
+
+
+  
+  function doorCollide(game, player , vp){
+       
+
+    let rightOver = player.getRight() <= game.end_of_game.getRight() && player.getRight() >= game.end_of_game.getLeft();
+    let leftOver = player.getLeft() >= game.end_of_game.getLeft() && player.getLeft() <= game.end_of_game.getRight();
+    let topOver = player.getTop() <= game.end_of_game.getBottom() && player.getTop() >= game.end_of_game.getTop();
+    let bottomOver = player.getBottom() >= game.end_of_game.getTop() && player.getBottom() <= game.end_of_game.getBottom();
+    
+     if( (rightOver || leftOver) && (bottomOver || topOver) ){
+         return true;
+     };
+    }
+  
+    
 
 
 
