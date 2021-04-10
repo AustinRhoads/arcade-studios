@@ -1,5 +1,17 @@
+body{
+    background-color: #484848;
+}
+
+.editor{
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+
+
+
 .editor_box{
-    border: 3px solid rgb(78, 76, 76);
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
     width: 320px;
 }
 
@@ -11,6 +23,8 @@
     background-color: rgb(109, 105, 105);
     width: 360px;
     color: seashell;
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
 }
 
 canvas#game-canvas{
@@ -49,21 +63,29 @@ div#game-console{
     overflow: hidden;
   
 }
-#map-editor{
+/*#map-editor{
     position: absolute;
     vertical-align: top;
-    display: inline-block;
+    display: inline-block; 
     background-color: rgb(109, 105, 105);
     margin-left: 400px;
     height: 240px;
     top: 740px;
     width: 960px;
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
 
+}
+*/
+
+#map-editor{
+    
 }
 
 div#add-earth{
     
-    float: right;
+ /*   float: right;*/
+ margin-top: 33px;
 }
 
 button#add-earth-button{
@@ -127,6 +149,10 @@ div#tile-editor{
     cursor: url(./public/images/mario_coin_80px.png), auto;
     z-index: 4000;
 }
+.door_cursor{
+    cursor: url(./public/images/game_over_door.png), auto;
+    z-index: 4000;
+}
 
 #coin-counter{
 position: absolute;
@@ -164,6 +190,11 @@ font-size: 33px;
     margin: auto;
     display: block;
 }
+#tile-display{
+    background-image: url('./public/images/grey_checkered_4px.png');
+    background-size: 320px 160px, contain;
+   /* background-repeat:no-repeat;*/
+}
 
 .door_active{
     border: solid green 3px;
@@ -175,9 +206,73 @@ font-size: 33px;
     color: rgb(75, 74, 74);
 }
 
-fieldset#game-over-editor{
-    width: 25%;
+fieldset#end-of-game-editor{
+    margin-top: 33px;
+    width: 300px;
     height: 200px;
     vertical-align: top;
     display: inline-block;
 }
+
+
+
+
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width: 360px;
+  }
+
+
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
+    outline: none;
+    cursor: pointer;
+    padding: 7px 8px;
+    transition: 0.2s;
+  }
+
+  .tab button:hover {
+    background-color: #ddd;
+  }
+  
+  .tab button.active {
+    background-color: #ccc;
+  }
+  
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+
+  .palette-img{
+      cursor: pointer;
+      width:40px;
+      height:40px;
+      padding: 3px;
+  
+  }
+  .palette-img:hover{
+      background-color: darkgrey;
+  }
+
+  #tile-palette{
+      width:160px;
+    border: solid rgb(218, 218, 218) 1px;
+    box-shadow: 1px 1px 1px 1px #888888;
+    margin:  33px 33px 33px 0px;
+    display: inline-block;
+  }
+
+  .palette_selected{
+    background-color: darkgrey;
+  }
+
+  

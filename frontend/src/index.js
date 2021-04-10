@@ -16,10 +16,11 @@ const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 var addEarthButton = document.getElementById('add-earth-button')
 var tile_size = 80;
 var  minusEarthButton = document.getElementById('minus-earth-button');
-var tileButton = document.getElementById('tile-placer');
+//var tileButton = document.getElementById('tile-placer');
 var xy = document.getElementById('mouse-x-y')
 var tile_selector = document.getElementById('tile-type');
 var tile_sheet;
+var tileType = document.getElementById('tile-type');
 var viewport;
 var borderDiv = document.getElementById("border-div");
 var map_edit_mode = false;
@@ -29,17 +30,22 @@ var tile_selector_y;
 var tile_selector_on = false;
 var coin_count = 0;
 var coin_counter = document.getElementById('coin-counter');
-var add_coin_btn = document.getElementById('add-coin-button');
-var remove_coin_btn =  document.getElementById('remove-coin-button');
+//var add_coin_btn = document.getElementById('add-coin-button');
+//var remove_coin_btn =  document.getElementById('remove-coin-button');
+var respawn_coin_btn =  document.getElementById('coin-respawn');
 var coin_list = [];
+var coin_total = document.getElementById('coins-total')
 var dead_baddies_count = 0;
 var current_x = document.getElementById('current-x');
 var current_y = document.getElementById('current-y');
 var door_x_pos = document.getElementById('end_of_game_x_pos');
 var door_y_pos = document.getElementById('end_of_game_y_pos');
 var door_activation_button = document.getElementById('door_activation_button');
-
-
+var door_edit_mode = false;
+var paint_button = document.getElementById("paint-button");
+var erase_button = document.getElementById("erase-button");
+var painter_on = false;
+var eraser_on = false;
 
 
 function populate_load_list(){
@@ -306,6 +312,7 @@ function addBaddy(new_baddy){
   respawn_button.textContent = "Respawn"
   respawn_button.addEventListener("click", function(){
     reset_alive_baddies()
+    new_baddy.mode = "waiting"
    // currentGame.alive_baddies = currentGame.baddies.slice();
     new_baddy.respawn();
   })
@@ -382,6 +389,7 @@ type_of_baddyInput.addEventListener("click", function(){
     bad_boy.mode = "waiting";
     reset_alive_baddies()
     spawn_baddy(bad_boy)
+    set_div_image(div, bad_boy)
   }else{
    
     new_baddy.type_of_baddy = this.value;
@@ -878,15 +886,26 @@ function resetGame(gameObj){
    populate_editor(gameObj);
    coin_count = 0;
    coin_list = currentGame.coins.slice();
+   coin_total.textContent = "Total Coins: " + currentGame.coins.length
    set_game_canvas()
    
    if(currentGame.baddies){
     reset_alive_baddies()
     spawn_all_baddies(currentGame.alive_baddies)
    }
- //  currentGame.end_of_game = new EndOfGame();
+
+   if(currentGame.end_of_game.active){
+     door_activation_button.classList = "door_active";
+     door_activation_button.textContent = "Active"
+   } else {
+    door_activation_button.classList = "door_inactive";
+    door_activation_button.textContent = "Inactive"
+   }
+  
 
 }
+
+
 
 
 function respawnPlayer(){
@@ -967,12 +986,14 @@ function mapEdit(e){
   borderDiv.classList.remove("crate_cursor");
   borderDiv.classList.remove("island_cursor");
   borderDiv.classList.remove("coin_cursor");
+  borderDiv.classList.remove("door_cursor");
   
-  map_edit_mode = !map_edit_mode;
+  //map_edit_mode = !map_edit_mode;
+  
 
   if(map_edit_mode == true){
 
-    clearMapEdit("tiles");
+   // clearMapEdit("tiles");
 
     tile_selector.click();    
 
@@ -995,10 +1016,10 @@ var coin_edit_mode = false;
 
 function coinAdder(e){
   
-  coin_edit_mode = !coin_edit_mode;
+//  coin_edit_mode = !coin_edit_mode;
 
   if(coin_edit_mode == true){
-    clearMapEdit("coins")
+    //clearMapEdit("coins")
 
     tile_selector_on = true;
     setCursor();
@@ -1012,9 +1033,9 @@ function coinAdder(e){
 
 function remove_coin(e, game){
 
-  erase_coins_mode = !erase_coins_mode;
+  //erase_coins_mode = !erase_coins_mode;
   if(erase_coins_mode == true){
-    clearMapEdit("erase-coins");
+ //   clearMapEdit("erase-coins");
     mapSelectEdit(e);
   } else {
     clearMapEdit();
@@ -1037,6 +1058,37 @@ function coinRemover(){
   }
 }
 
+paint_button.addEventListener("click", function(){
+  painter_on = !painter_on;
+
+  if(painter_on){
+    eraser_on = false;
+    tileType.click();
+    this.style.background = '#57a551'
+    erase_button.style.background = 'lightgray'
+  }else {
+    this.style.background = "lightgray";
+    clearMapEdit()
+    tileType.click();
+  }
+
+})
+
+erase_button.addEventListener("click", function(){
+  eraser_on = !eraser_on;
+  if(eraser_on){
+    painter_on = false;
+    tileType.click();
+    this.style.background = '#57a551'
+    paint_button.style.background = 'lightgray'
+  }else{
+    this.style.background = "lightgray";
+    clearMapEdit()
+    tileType.click();
+}
+
+})
+
 
 function setCursor(){
 
@@ -1045,6 +1097,8 @@ function setCursor(){
      cursorType = document.getElementById('tile-type').value;
   } else if(coin_edit_mode == true){
      cursorType = 9;
+  }else if(door_edit_mode == true){
+    cursorType = 4;
   }
   
  
@@ -1053,6 +1107,7 @@ function setCursor(){
   borderDiv.classList.remove("crate_cursor");
   borderDiv.classList.remove("island_cursor");
   borderDiv.classList.remove("coin_cursor");
+  borderDiv.classList.remove("door_cursor");
   
 
     switch(parseInt(cursorType)){
@@ -1069,12 +1124,31 @@ function setCursor(){
       case 3:
         borderDiv.classList.add("island_cursor");
       break;
+      case 4:
+        borderDiv.classList.add("door_cursor");
+      break;
       case 9:
         borderDiv.classList.add("coin_cursor");
       break
 
 
     }
+ 
+}
+
+
+function palette_select(el){
+
+  let tileType = document.getElementById('tile-type');
+  let all_palette_images = document.querySelectorAll("img.palette-img")
+
+  for(let x = all_palette_images.length -1; x >= 0; --x){
+    all_palette_images[x].classList.remove("palette_selected")
+  }
+  el.classList.toggle("palette_selected");
+  
+  tileType.value = el.getAttribute("value")
+  tileType.click()
  
 }
 
@@ -1095,9 +1169,12 @@ function mapSelectEdit(e){
   }
 
 
-  if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
+  //if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
+  if(tile_selector_x <= 0 && tile_selector_x > -30){tile_selector_x = 0 - (viewport.x % tile_size)};
   if(tile_selector_y <= 0){tile_selector_y = 0};
 
+  if(tile_selector_x < -40){tile_selector_x = -86};
+  
   
 
   var coor = "column: " + column + ", row: " + row  + "  vp.x: " + viewport.x % tile_size;
@@ -1123,12 +1200,29 @@ function placeTile(game, column, row){
       game.coins.push(new Coin(column, row));
       coin_list = game.coins.slice()
       coin_count = 0;
+      coin_total.textContent = "Total Coins: " + currentGame.coins.length
   }else if(erase_coins_mode == true){
 
     let coin = game.coins.find(obj => obj.row == row && obj.column == column) 
     let i = game.coins.indexOf(coin)
     game.coins.splice( i, 1);
     coin_list = game.coins.slice()
+    coin_total.textContent = "Total Coins: " + currentGame.coins.length
+  } else if(door_edit_mode == true){
+
+    game.end_of_game.active = true;
+
+    game.end_of_game.x_pos = tile_selector_x + viewport.x;
+    door_x_pos.value = tile_selector_x + viewport.x;
+    game.end_of_game.y_pos = tile_selector_y + 6;
+    door_y_pos.value = tile_selector_y + 6;
+    
+      door_activation_button.classList = "door_active";
+      door_activation_button.textContent = "Active"
+    
+    
+   
+    
   }
 
 }
@@ -1140,26 +1234,39 @@ function clearMapEdit(safe_mode){
 
 switch(safe_mode){
   case "coins":
+    coin_edit_mode = true;
     map_edit_mode = false;
     tile_selector_on = false;
     erase_coins_mode = false;
+    door_edit_mode = false;
   break;
   case "tiles":
+    map_edit_mode = true;
     coin_edit_mode = false;
     tile_selector_on = false;
     erase_coins_mode = false;
+    door_edit_mode = false;
   break;
   case "erase-coins":
     erase_coins_mode = true;
     map_edit_mode = false;
     coin_edit_mode = false;
     tile_selector_on = false;
+    door_edit_mode = false;
+  break;
+  case "door":
+    door_edit_mode = true;
+    map_edit_mode = false;
+    coin_edit_mode = false;
+    tile_selector_on = true;
+    erase_coins_mode = false;
   break;
   default:
     map_edit_mode = false;
     coin_edit_mode = false;
     tile_selector_on = false;
     erase_coins_mode = false;
+    door_edit_mode = false;
   break;
 }
 
@@ -1354,7 +1461,10 @@ function set_door_x_y(){
 
                                                 }
 
-
+                                                if(currentGame.end_of_game.active){
+                                                  draw_door(currentGame, game_context, viewport, tile_sheet)
+                                                }
+              
 
                                      if(coin_list.length != 0){
                                       placeCoins(coin_list, viewport, game_context);
@@ -1369,10 +1479,7 @@ function set_door_x_y(){
                                       }  
                                   }
 
-                                  if(currentGame.end_of_game.active){
-                                    draw_door(currentGame, game_context, viewport, tile_sheet)
-                                  }
-
+                            
 
                                   if(currentGame.alive_baddies){draw_all_baddies(currentGame.alive_baddies, game_context, viewport, tile_sheet)}
                                   
@@ -1573,14 +1680,14 @@ function set_door_x_y(){
   minusEarthButton.addEventListener("click", () => minusEarth());
 
   //tile editor
-  tileButton.addEventListener("click", function() {
-
-  //game_paused = true;
-    player_editor_paused = true;
-    mapEdit();
-
-
-  });
+ // tileButton.addEventListener("click", function() {
+//
+ // //game_paused = true;
+ //   player_editor_paused = true;
+ //   mapEdit();
+//
+//
+ // });
 
 
 
@@ -1594,14 +1701,19 @@ function set_door_x_y(){
   var scrollRightBtn = document.getElementById("scroll-right");
 
   //coin editor
-add_coin_btn.addEventListener("click", function(){
-  player_editor_paused = true;
- 
-  coinAdder();
-})
+//add_coin_btn.addEventListener("click", function(){
+//  player_editor_paused = true;
+// 
+//  coinAdder();
+//})
+//
+//remove_coin_btn.addEventListener("click", function(e){
+//  remove_coin(e, currentGame)
+//})
 
-remove_coin_btn.addEventListener("click", function(e){
-  remove_coin(e, currentGame)
+respawn_coin_btn.addEventListener("click", function(){
+  coin_list = currentGame.coins.slice();
+  coin_count = 0;
 })
   
 

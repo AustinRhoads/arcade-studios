@@ -4,9 +4,21 @@
     <meta charset="utf-8">
     <title>ARCADE STUDIOS</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
   </head>
   <body>
-    <div id = "editor-toolbox">
+    <div class="tab">
+      <button class="tablinks" onclick="selectEditTab(event, 'game-file')"><i class="fa fa-folder"></i></button>
+      <button class="tablinks" onclick="selectEditTab(event, 'player-editor')">Player</i></button>
+      <button class="tablinks" onclick="selectEditTab(event, 'map-editor')">Map</button>
+      <button class="tablinks" onclick="selectEditTab(event, 'baddies-editor')">Baddies</button>
+      <button class="tablinks" onclick="selectEditTab(event, 'game-world-editor')">Physics</button> 
+  <!--    <button class="tablinks" onclick="selectEditTab(event, 'end-of-game-editor')">End of Game</button> -->
+    </div>
+    <div id = "editor-toolbox" >
+      <div id = "game-file" class="tabcontent">
         <fieldset id="game-loader" class = "editor_box">
           <legend>Load Game</legend>
           <select id="game-selector"></select><button id="load_game">Load</button><button id = "reset_game_button">New Game</button>
@@ -18,10 +30,11 @@
           <legend>Game Name</legend>
           <input style="margin: 10px;" type="text" id="game_name" placeholder = "--Name of the game--">
         </fieldset>
+        </div>
         <br>
       
       
-        <fieldset id="player-editor" class = "editor_box">
+        <fieldset id="player-editor" class = "editor_box tabcontent">
           <legend>Player Editor</legend>
           <input style="margin: 10px;" type="text" id="player_name" placeholder = "--Name of player--"><button id ='player_editor_button'>play/pause</button>
         
@@ -37,7 +50,7 @@
         <p id="current-x"></p><p id = "current-y"></p>
         </fieldset>
     <br>
-        <fieldset id="baddies-editor" class = "editor_box">
+        <fieldset id="baddies-editor" class = "editor_box tabcontent">
           <legend>Baddies Editor</legend>
           <button id="add-baddy">Add Baddy</button>
           <div id= "baddies_list_div">
@@ -51,7 +64,7 @@
 
         <br>
       
-        <fieldset id="game-world-editor" class = "editor_box">
+        <fieldset id="game-world-editor" class = "editor_box tabcontent">
           <legend>Game World Physics</legend>
           <label for="game_gravity">Gravity (1-3):</label>
           <input style="margin: 10px;" type="number" id="game_world_gravity" min="0.0" max="5" step="0.1" value = "1.5">
@@ -60,6 +73,59 @@
           <input style="margin: 10px;" type="number" id="game_world_friction" min="0.63" max="1" step="0.01" value = "0.9">
         </fieldset>
 
+        <div id="map-editor" class="tabcontent">
+          <fieldset id="tile-palette">
+            <legend>Tile Palette</legend>
+            <img class="palette-img" onclick = "palette_select(this)" value =0 src="./public/images/sky_block_1.png">
+            <img class="palette-img" onclick = "palette_select(this)" value =1 src="./public/images/earth_1.png">
+            <img class="palette-img" onclick = "palette_select(this)" value =2 src="./public/images/crate_1.png">
+            <br>
+            <img class="palette-img" onclick = "palette_select(this)" value =3 src="./public/images/sky_island_1.png">
+            <img class="palette-img" onclick = "palette_select(this)" value =4 src="./public/images/mario_coin_80px.png">
+            <img class="palette-img" onclick = "palette_select(this)" value =5 src="./public/images/game_over_door.png">
+
+          </fieldset>
+          <br>
+          <button id= "paint-button"><i class="material-icons">brush</i></button>
+          <button id= "erase-button"><i class="material-icons">auto_fix_normal</i></button>
+          <br>
+          <div id="tile-editor">
+          
+            
+            <label for="tile-type">Tile Type:</label>
+            <input style="margin: 10px;" type="number" id="tile-type" min="0" max="5" step="1" value = "1">
+            <br>
+            <canvas id="tile-display" ></canvas>
+            <br>
+            <div id = "mouse-x-y"></div>
+          </div>
+          <br>
+          <div id="coin-editor">
+            <button id="coin-respawn">Respawn Coins</button>
+            <p id="coins-total"></p>
+          </div>
+        
+          <fieldset id="end-of-game-editor" class = "editor_box">
+            <legend>End of Game Door</legend>
+            <img class = "display_tile" src= "./public/images/game_over_door.png">
+            <br>
+            <button id="door_activation_button" class = "door_inactive">Inactive</button>
+            <br>
+            <label for="end_of_game_x_pos">X Postion: </label>
+            <input style="margin: 10px; width: 50px;" type="number" id="end_of_game_x_pos" min="0" >
+            <br>
+            <label for="end_of_game_y_pos">Y Position: </label>
+            <input style="margin: 10px; width: 50px;" type="number" id="end_of_game_y_pos" min="0" >
+           
+          </fieldset>
+        
+        <fieldset id="map-length" class = "editor_box">
+          <legend> Edit Map Length</legend>
+          <div id= "add-earth">
+            <button id="minus-earth-button">&#x2190;</button><button id = "add-earth-button">&#8594;</button>
+          </div>
+        </fieldset>
+        </div>
 
       
         <input type="submit" value = "Save Game" id = "game_save_button">
@@ -78,41 +144,7 @@
       
     </div>
 <br>
-<div id="map-editor">
 
-  <div id="tile-editor">
-    <button id="tile-placer">Add New Tile</button>
-    <label for="tile-type">Tile Type:</label>
-    <input style="margin: 10px;" type="number" id="tile-type" min="0" max="3" step="1" value = "1">
-    <br>
-    <canvas id="tile-display" ></canvas>
-    <br>
-    <div id = "mouse-x-y"></div>
-  </div>
-  <div id="coin-editor">
-    <button id="add-coin-button">Add a Coin</button>
-    <button id="remove-coin-button">remove a Coin</button>
-  </div>
-
-  <fieldset id="game-over-editor" class = "editor_box">
-    <legend>End of Game Door</legend>
-    <img class = "display_tile" src= "./public/images/game_over_door.png">
-    <br>
-    <button id="door_activation_button" class = "door_inactive">Inactive</button>
-    <br>
-    <label for="end_of_game_x_pos">X Postion: </label>
-    <input style="margin: 10px; width: 50px;" type="number" id="end_of_game_x_pos" min="0" >
-    <br>
-    <label for="end_of_game_y_pos">Y Position: </label>
-    <input style="margin: 10px; width: 50px;" type="number" id="end_of_game_y_pos" min="0" >
-   
-  </fieldset>
-
-
-  <div id= "add-earth">
-    <button id="minus-earth-button">&#x2190;</button><button id = "add-earth-button">&#8594;</button>
-  </div>
-</div>
 
 <br>
 
@@ -123,6 +155,7 @@
    <script type="application/javascript" src = "src/display.js" charset="UTF-8"></script>
    <script type="application/javascript" src = "src/controller.js" charset="UTF-8"></script>
    <script type="application/javascript" src = "src/engine.js" charset="UTF-8"></script>
+   
    
   </body>
 </html>
