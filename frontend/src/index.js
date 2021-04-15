@@ -4,6 +4,9 @@ const BASE_URL = "http://localhost:3000";
 const GAMES_URL = BASE_URL + "/games";
 var currentGame;
 
+
+
+var game_play_button = document.getElementById('game-play-button');
 var editorToolBox = document.getElementById("editor-toolbox");
 const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -16,7 +19,6 @@ const  DEFAULT_MAP = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 var addEarthButton = document.getElementById('add-earth-button')
 var tile_size = 80;
 var  minusEarthButton = document.getElementById('minus-earth-button');
-//var tileButton = document.getElementById('tile-placer');
 var xy = document.getElementById('mouse-x-y')
 var tile_selector = document.getElementById('tile-type');
 var tile_sheet;
@@ -30,8 +32,6 @@ var tile_selector_y;
 var tile_selector_on = false;
 var coin_count = 0;
 var coin_counter = document.getElementById('coin-counter');
-//var add_coin_btn = document.getElementById('add-coin-button');
-//var remove_coin_btn =  document.getElementById('remove-coin-button');
 var respawn_coin_btn =  document.getElementById('coin-respawn');
 var coin_list = [];
 var coin_total = document.getElementById('coins-total')
@@ -46,11 +46,22 @@ var paint_button = document.getElementById("paint-button");
 var erase_button = document.getElementById("erase-button");
 var painter_on = false;
 var eraser_on = false;
+var game_over = false;
+var at_door = false;
+var player_dead = false;
+var game_paused = false;
+var paused_screen = document.getElementById('paused-screen');
+var game_over_screen = document.getElementById('game-over-screen');
+var you_died_screen = document.getElementById('you-died-screen');
+var invincible_mode = false;
+var invincible_switch = document.getElementById('invincible-switch');
+
+
 
 
 function populate_load_list(){
 
-  let loader_box = document.getElementById('game-loader')
+  let loader_box = document.getElementById('game-loader');
   let game_load_list = document.getElementById('game-selector');
   let game_load_btn = document.getElementById('load_game');
 
@@ -63,9 +74,7 @@ function populate_load_list(){
   game_load_btn.textContent = 'Load';
 
   game_load_btn.addEventListener("click", function(){
-  
-    loadGame(document.getElementById('game-selector').value);
-   
+    loadGame(document.getElementById('game-selector').value); 
   });
 
   loader_box.insertBefore(game_load_list, document.getElementById('reset_game_button'));
@@ -379,28 +388,36 @@ function addBaddy(new_baddy){
   type_of_baddyInput.name = "baddy_type_of_baddy";
   type_of_baddyInput.style = "margin: 10px;";
   type_of_baddyInput.type = "number";
-type_of_baddyInput.addEventListener("click", function(){
-  let init_id = this.parentElement.querySelector('input[name="baddy_id').value;
-  console.log()
-  if(init_id){
-    let bad_boy = currentGame.baddies.find(bad => bad.id == init_id);
-    bad_boy.type_of_baddy = this.value;
-    bad_boy.set_image_and_behavior(new TileSheet());
-    bad_boy.mode = "waiting";
-    reset_alive_baddies()
-    spawn_baddy(bad_boy)
-    set_div_image(div, bad_boy)
-  }else{
-   
-    new_baddy.type_of_baddy = this.value;
-    
-    new_baddy.set_image_and_behavior(new TileSheet());
-    new_baddy.mode = "waiting"
-    new_baddy.respawn();
-    
-  }
 
-})
+
+
+  type_of_baddyInput.addEventListener("click", function(){
+
+    let init_id = this.parentElement.querySelector('input[name="baddy_id').value;
+    console.log()
+    if(init_id){
+      let bad_boy = currentGame.baddies.find(bad => bad.id == init_id);
+      bad_boy.type_of_baddy = this.value;
+      bad_boy.set_image_and_behavior(new TileSheet());
+      bad_boy.mode = "waiting";
+      reset_alive_baddies()
+      spawn_baddy(bad_boy)
+      set_div_image(div, bad_boy)
+    }else{
+    
+      new_baddy.type_of_baddy = this.value;  
+      new_baddy.set_image_and_behavior(new TileSheet());
+      new_baddy.mode = "waiting"
+      new_baddy.respawn();
+
+    }
+
+    set_div_image(div, new_baddy);
+
+  })
+
+
+
 let block_head_option = document.createElement('option');
 block_head_option.value = 1;
 block_head_option.innerHTML = "Block Head";
@@ -483,9 +500,7 @@ type_of_baddyInput.appendChild(follower_option);
   div.appendChild(br5);
   div.appendChild(type_of_baddyLabel);
   div.appendChild(type_of_baddyInput);
-  
   div.appendChild(idInput);
- // editor.appendChild(drp_down_button)
   div.appendChild(removeBaddyButton);
   editor.appendChild(div)
   editor.appendChild(br6);
@@ -511,9 +526,18 @@ function set_div_image(div, bad){
 
 
 
+
+
+
+
+
+
+
                 /////////////////////////////////
                ///REAL TIME PARAMETER CHANGES///
               /////////////////////////////////
+
+
 
 
 
@@ -544,6 +568,16 @@ let game_friction = document.getElementById('game_world_friction');
 game_friction.addEventListener("change", function() {
   currentGame.friction = parseFloat(game_friction.value);
 })
+
+invincible_switch.addEventListener("click", function(){
+  invincible_mode = !invincible_mode;
+})
+
+
+
+
+
+
 
 
         ////////////////////////
@@ -871,9 +905,12 @@ function defaultSettings(){
                //////////////////
 
 function resetGame(gameObj){
+
+  let old_list = document.getElementById("baddy_select_list");
+  if(old_list){old_list.remove()}
+  
    populate_load_list();
-
-
+   
    gameObj ||= defaultSettings();
    currentGame = gameObj;
    map_edit_mode = false;
@@ -889,6 +926,7 @@ function resetGame(gameObj){
    coin_total.textContent = "Total Coins: " + currentGame.coins.length
    set_game_canvas()
    
+ 
    if(currentGame.baddies){
     reset_alive_baddies()
     spawn_all_baddies(currentGame.alive_baddies)
@@ -902,7 +940,12 @@ function resetGame(gameObj){
     door_activation_button.textContent = "Inactive"
    }
   
-
+   at_door = false;
+   player_dead = false;
+   game_over_screen.style.display = "none";
+   you_died_screen.style.display = "none";
+   game_play_button.click()
+   
 }
 
 
@@ -913,9 +956,21 @@ function respawnPlayer(){
   currentGame.player.y = currentGame.player.y_respawn;
 }
 
+
+
+
+
+
+
+
+
+
                   ////////////////////////////
                  ////MAP EDITING FUNCTIONS///
                 ////////////////////////////
+
+
+
 
 function addEarth(){
   
@@ -1015,78 +1070,65 @@ function mapEdit(e){
 var coin_edit_mode = false;
 
 function coinAdder(e){
-  
-//  coin_edit_mode = !coin_edit_mode;
 
-  if(coin_edit_mode == true){
-    //clearMapEdit("coins")
-
-    tile_selector_on = true;
-    setCursor();
-    mapSelectEdit(e);
-
-  } else {
-    clearMapEdit()
-  }
-
+        if(coin_edit_mode == true){
+        
+           tile_selector_on = true;
+           setCursor();
+           mapSelectEdit(e);
+        
+        } else {
+           clearMapEdit()
+        }
 }
+
+
+
 
 function remove_coin(e, game){
 
-  //erase_coins_mode = !erase_coins_mode;
-  if(erase_coins_mode == true){
- //   clearMapEdit("erase-coins");
-    mapSelectEdit(e);
-  } else {
-    clearMapEdit();
-  }
+        if(erase_coins_mode == true){
+        
+           mapSelectEdit(e);
+        } else {
+            clearMapEdit();
+        }
 
 
 }
 
 
-function coinRemover(){
-  if(coin_edit_mode == true){
-    clearMapEdit("coins")
-
-    tile_selector_on = true;
-    setCursor();
-    mapSelectEdit(e);
-
-  } else {
-    clearMapEdit()
-  }
-}
 
 paint_button.addEventListener("click", function(){
   painter_on = !painter_on;
 
-  if(painter_on){
-    eraser_on = false;
-    tileType.click();
-    this.style.background = '#57a551'
-    erase_button.style.background = 'lightgray'
-  }else {
-    this.style.background = "lightgray";
-    clearMapEdit()
-    tileType.click();
-  }
+        if(painter_on){
+               eraser_on = false;
+               tileType.click();
+               this.style.background = '#57a551'
+               erase_button.style.background = 'lightgray'
+        }else {
+               this.style.background = "lightgray";
+               clearMapEdit()
+               tileType.click();
+        }
 
 })
 
 erase_button.addEventListener("click", function(){
-  eraser_on = !eraser_on;
-  if(eraser_on){
-    painter_on = false;
-    tileType.click();
-    this.style.background = '#57a551'
-    paint_button.style.background = 'lightgray'
-  }else{
-    this.style.background = "lightgray";
-    clearMapEdit()
-    tileType.click();
-}
 
+                  eraser_on = !eraser_on;
+
+                  if(eraser_on){
+                           painter_on = false;
+                           tileType.click();
+                           this.style.background = '#57a551'
+                           paint_button.style.background = 'lightgray'
+                  }else{
+                           this.style.background = "lightgray";
+                           clearMapEdit()
+                           tileType.click();
+                  }
 })
 
 
@@ -1139,92 +1181,103 @@ function setCursor(){
 
 function palette_select(el){
 
-  let tileType = document.getElementById('tile-type');
-  let all_palette_images = document.querySelectorAll("img.palette-img")
+             let tileType = document.getElementById('tile-type');
 
-  for(let x = all_palette_images.length -1; x >= 0; --x){
-    all_palette_images[x].classList.remove("palette_selected")
-  }
-  el.classList.toggle("palette_selected");
-  
-  tileType.value = el.getAttribute("value")
-  tileType.click()
- 
+             let all_palette_images = document.querySelectorAll("img.palette-img")
+
+             for(let x = all_palette_images.length -1; x >= 0; --x){
+                       all_palette_images[x].classList.remove("palette_selected")
+             }
+
+             el.classList.toggle("palette_selected");
+
+             tileType.value = el.getAttribute("value")
+
+             tileType.click()
 }
+
+
+
+
+
 
 function mapSelectEdit(e){
 
   borderDiv.onmousemove = function(e){
 
+               
+                 let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
+                 let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
+
+                 tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
+                 tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
+
+                 if(e.offsetX >= tile_selector_x + (tile_size * 0.5)){
+                   tile_selector_x += tile_size
+                 }
+               
+               
+               
+                 if(tile_selector_x <= 0 && tile_selector_x > -30){tile_selector_x = 0 - (viewport.x % tile_size)};
+                 if(tile_selector_y <= 0){tile_selector_y = 0};
+               
+                 if(tile_selector_x < -40){tile_selector_x = -86};
 
 
-  let column = Math.floor((e.offsetX + (tile_size * 0.5)) / tile_size) + Math.round(viewport.x / tile_size);
-  let row = Math.floor((e.offsetY + tile_size * 0.5)/ tile_size);
-
-  tile_selector_x = ((column - Math.round(viewport.x / tile_size)) * tile_size) - viewport.x % tile_size
-  tile_selector_y = Math.floor((e.offsetY + (tile_size * 0.5)) / tile_size) * tile_size;
-
-  if(e.offsetX >= tile_selector_x + (tile_size * 0.5)){
-    tile_selector_x += tile_size
-  }
-
-
-  //if(tile_selector_x <= 0){tile_selector_x = 0 - (viewport.x % tile_size)};
-  if(tile_selector_x <= 0 && tile_selector_x > -30){tile_selector_x = 0 - (viewport.x % tile_size)};
-  if(tile_selector_y <= 0){tile_selector_y = 0};
-
-  if(tile_selector_x < -40){tile_selector_x = -86};
-  
-  
-
-  var coor = "column: " + column + ", row: " + row  + "  vp.x: " + viewport.x % tile_size;
-  var ts_coor = "tile_selector_x: " +  tile_selector_x + "   tile_selector_y: " +  tile_selector_y;
-  var testing_coor = "mouse: " + e.offsetX + "  selector: " +  tile_selector_x 
-
-
-  xy.innerHTML = testing_coor;
-
-  borderDiv.onclick = () => placeTile(currentGame, column, row);
+               
+                 var coor = "column: " + column + ", row: " + row  + "  vp.x: " + viewport.x % tile_size;
+                 var ts_coor = "tile_selector_x: " +  tile_selector_x + "   tile_selector_y: " +  tile_selector_y;
+                 var testing_coor = "mouse: " + e.offsetX + "  selector: " +  tile_selector_x 
+               
+               
+                 xy.innerHTML = testing_coor;
+               
+                 borderDiv.onclick = () => placeTile(currentGame, column, row);
   }
 
 }
 
+
+
+
+
+
 function placeTile(game, column, row){
+
   if(map_edit_mode == true){
-     let tileType = document.getElementById('tile-type');
-     let val = parseInt(tileType.value);
-     let index = row * game.columns + column;
-  
-     currentGame.map[index] = val;
+
+               let tileType = document.getElementById('tile-type');
+               let val = parseInt(tileType.value);
+               let index = row * game.columns + column;
+               currentGame.map[index] = val;
+
   }else if(coin_edit_mode == true){
-      game.coins.push(new Coin(column, row));
-      coin_list = game.coins.slice()
-      coin_count = 0;
-      coin_total.textContent = "Total Coins: " + currentGame.coins.length
+
+               game.coins.push(new Coin(column, row));
+               coin_list = game.coins.slice()
+               coin_count = 0;
+               coin_total.textContent = "Total Coins: " + currentGame.coins.length;
+
   }else if(erase_coins_mode == true){
 
-    let coin = game.coins.find(obj => obj.row == row && obj.column == column) 
-    let i = game.coins.indexOf(coin)
-    game.coins.splice( i, 1);
-    coin_list = game.coins.slice()
-    coin_total.textContent = "Total Coins: " + currentGame.coins.length
+                let coin = game.coins.find(obj => obj.row == row && obj.column == column) 
+                let i = game.coins.indexOf(coin)
+                game.coins.splice( i, 1);
+                coin_list = game.coins.slice()
+                coin_total.textContent = "Total Coins: " + currentGame.coins.length;
+
   } else if(door_edit_mode == true){
 
-    game.end_of_game.active = true;
+                game.end_of_game.active = true;
 
-    game.end_of_game.x_pos = tile_selector_x + viewport.x;
-    door_x_pos.value = tile_selector_x + viewport.x;
-    game.end_of_game.y_pos = tile_selector_y + 6;
-    door_y_pos.value = tile_selector_y + 6;
-    
-      door_activation_button.classList = "door_active";
-      door_activation_button.textContent = "Active"
-    
-    
-   
-    
+                game.end_of_game.x_pos = tile_selector_x + viewport.x;
+                door_x_pos.value = tile_selector_x + viewport.x;
+                game.end_of_game.y_pos = tile_selector_y + 6;
+                door_y_pos.value = tile_selector_y + 6;
+
+                door_activation_button.classList = "door_active";
+                door_activation_button.textContent = "Active"; 
   }
-
 }
 
 
@@ -1232,74 +1285,79 @@ function placeTile(game, column, row){
 
 function clearMapEdit(safe_mode){
 
-switch(safe_mode){
-  case "coins":
-    coin_edit_mode = true;
-    map_edit_mode = false;
-    tile_selector_on = false;
-    erase_coins_mode = false;
-    door_edit_mode = false;
-  break;
-  case "tiles":
-    map_edit_mode = true;
-    coin_edit_mode = false;
-    tile_selector_on = false;
-    erase_coins_mode = false;
-    door_edit_mode = false;
-  break;
-  case "erase-coins":
-    erase_coins_mode = true;
-    map_edit_mode = false;
-    coin_edit_mode = false;
-    tile_selector_on = false;
-    door_edit_mode = false;
-  break;
-  case "door":
-    door_edit_mode = true;
-    map_edit_mode = false;
-    coin_edit_mode = false;
-    tile_selector_on = true;
-    erase_coins_mode = false;
-  break;
-  default:
-    map_edit_mode = false;
-    coin_edit_mode = false;
-    tile_selector_on = false;
-    erase_coins_mode = false;
-    door_edit_mode = false;
-  break;
-}
+            switch(safe_mode){
+              case "coins":
+                           coin_edit_mode = true;
+                           map_edit_mode = false;
+                           tile_selector_on = false;
+                           erase_coins_mode = false;
+                           door_edit_mode = false;
+              break;
+              case "tiles":
+                           map_edit_mode = true;
+                           coin_edit_mode = false;
+                           tile_selector_on = false;
+                           erase_coins_mode = false;
+                           door_edit_mode = false;
+              break;
+              case "erase-coins":
+                           erase_coins_mode = true;
+                           map_edit_mode = false;
+                           coin_edit_mode = false;
+                           tile_selector_on = false;
+                           door_edit_mode = false;
+              break;
+              case "door":
+                           door_edit_mode = true;
+                           map_edit_mode = false;
+                           coin_edit_mode = false;
+                           tile_selector_on = true;
+                           erase_coins_mode = false;
+              break;
+              default:
+                           map_edit_mode = false;
+                           coin_edit_mode = false;
+                           tile_selector_on = false;
+                           erase_coins_mode = false;
+                           door_edit_mode = false;
+              break;
+            }
 
 
+              borderDiv.classList.remove("sky_cursor");
+              borderDiv.classList.remove("earth_cursor");
+              borderDiv.classList.remove("crate_cursor");
+              borderDiv.classList.remove("island_cursor");
+              borderDiv.classList.remove("coin_cursor");
 
-  
-
-  borderDiv.classList.remove("sky_cursor");
-  borderDiv.classList.remove("earth_cursor");
-  borderDiv.classList.remove("crate_cursor");
-  borderDiv.classList.remove("island_cursor");
-  borderDiv.classList.remove("coin_cursor");
-
-  borderDiv.onmousemove = null;
-  borderDiv.onclick = null;
-  xy.innerHTML = "";
+              borderDiv.onmousemove = null;
+              borderDiv.onclick = null;
+              xy.innerHTML = "";
 }
 
 
 function  activate_door(){
 
-  if(door_x_pos.value == ""){alert("Please set the X postion for the door")}
-  else if (door_y_pos.value == ""){alert("Please set the y postion for the door")}
-  else {
-    door_activation_button.classList.toggle("door_active");
-    door_activation_button.classList.toggle("door_inactive");
-    set_door_x_y()
-    
-    currentGame.end_of_game.active = !currentGame.end_of_game.active
-    door_activation_button.textContent = currentGame.end_of_game.active ? "Active":"Inactive"
-  }
-  
+          if(door_x_pos.value == ""){
+          
+                                alert("Please set the X postion for the door")
+          
+                  }else if (door_y_pos.value == ""){
+
+                                alert("Please set the y postion for the door")
+                  
+                  } else {
+                                door_activation_button.classList.toggle("door_active");
+                                door_activation_button.classList.toggle("door_inactive");
+                                set_door_x_y()
+
+                                currentGame.end_of_game.active = !currentGame.end_of_game.active
+                                door_activation_button.textContent = currentGame.end_of_game.active ? "Active":"Inactive"
+          } 
 }
+
+
+
 
 function set_door_x_y(){
 
@@ -1314,6 +1372,14 @@ function set_door_x_y(){
   /////////////////////////
   
 
+
+  window.addEventListener('keydown', function(e){
+    if(e.code == "Space"){
+    e.preventDefault();
+    game_play_button.click()
+   }
+  })
+ 
 
 
 
@@ -1340,7 +1406,7 @@ function set_door_x_y(){
                                              ///GAME ENGINE LOOP///
                                             //////////////////////                                                                                                              
  
-                                            game_loop = function(){
+                            game_loop = function(){
 
 
 
@@ -1364,41 +1430,38 @@ function set_door_x_y(){
                                ///GAME PHYSICS///  ///AND///  ///COLLISION DETECTION///
                               //////////////////             /////////////////////////
 
-                              if(currentGame.alive_baddies){
-                                for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
-                                  currentGame.alive_baddies[b].behave();
-                                //  baddies_collision_detection(currentGame, currentGame.player, currentGame.alive_baddies[b]);
-                                }
-                              }
+                                              if(currentGame.alive_baddies){
+                                              
+                                                            for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
+                                                                          currentGame.alive_baddies[b].behave();
+                                                            }
+                                              }
+                                            
+                                            
+                                            
+                                              if(currentGame.alive_baddies){
+                                                            for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
+                                                            
+                                                                         if(currentGame.alive_baddies[b].x <= 0){
+                                                                                    currentGame.alive_baddies[b].x = 1;
+                                                                         } else if(currentGame.alive_baddies[b].x >= currentGame.canvas_width - currentGame.alive_baddies[b].width){
+                                                                                    currentGame.alive_baddies[b].x = currentGame.canvas_width - currentGame.alive_baddies[b].width - 1 ;  
+                                                                         }
+                                                                       
+                                                                         collision_detection(currentGame, currentGame.alive_baddies[b]); 
+                                                                         currentGame.alive_baddies[b].x = Math.round(currentGame.alive_baddies[b].x)
+                                                                       
+                                                            }
+                                              }
 
-                              if(currentGame.alive_baddies){
-                                for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
 
-                                  if(currentGame.alive_baddies[b].x <= 0){
-                                    currentGame.alive_baddies[b].x = 1;
-                                  } else if(currentGame.alive_baddies[b].x >= currentGame.canvas_width - currentGame.alive_baddies[b].width){
-                                    currentGame.alive_baddies[b].x = currentGame.canvas_width - currentGame.alive_baddies[b].width - 1 ;  
-                                  }
 
-                                  collision_detection(currentGame, currentGame.alive_baddies[b]); 
-                                  currentGame.alive_baddies[b].x = Math.round(currentGame.alive_baddies[b].x)
 
-                                }
-                              }
-                                         
                                             velocity_controll(currentGame);
                                             collision_detection(currentGame, currentGame.player); 
 
-                                            if(currentGame.alive_baddies){
-                                              for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){
-                                                
-                                              }
-                                            }
                                           
-                                        //    baddies_collision_detection( currentGame.player, currentGame.alive_baddies)
-
-                                          
-
+                                        
 
                                             currentGame.player.x = Math.round(currentGame.player.x)
                                             
@@ -1466,18 +1529,18 @@ function set_door_x_y(){
                                                 }
               
 
-                                     if(coin_list.length != 0){
-                                      placeCoins(coin_list, viewport, game_context);
-
-                                      for(let i = coin_list.length - 1; i >= 0; --i){
-
-                                        if( coinCollide(coin_list[i], currentGame.player, viewport)){
-                                          coin_list.splice( i, 1);
-                                          coin_count += 1;
-                                        }
-
-                                      }  
-                                  }
+                                                if(coin_list.length != 0){
+                                                 placeCoins(coin_list, viewport, game_context);
+                                                
+                                                 for(let i = coin_list.length - 1; i >= 0; --i){
+                                                  
+                                                   if( coinCollide(coin_list[i], currentGame.player, viewport)){
+                                                     coin_list.splice( i, 1);
+                                                     coin_count += 1;
+                                                   }
+                                                  
+                                                 }  
+                                             }
 
                             
 
@@ -1500,19 +1563,33 @@ function set_door_x_y(){
                                                 game_context.stroke()
                                               }
                               
-                                              if(doorCollide(currentGame, currentGame.player, viewport) == true){
-                                                console.log("game over")
+                                              if(doorCollide(currentGame, currentGame.player, viewport) == true && currentGame.end_of_game.active == true){
+                                                at_door = true;
+                                              }
+
+
+                                              if(invincible_mode == true){
+                                                player_dead = false;
                                               }
 
                                               //calls upon itself
-                                              if(game_paused == false){
+                                              
+                                              if(game_paused == false && at_door == false && player_dead == false){
 
                                                 window.requestAnimationFrame(game_loop);
 
-                                              }
+                                              } else if(at_door == true && player_dead == false){
+                                                game_over_screen.style.display = "block";
+
+                                                
+                                              } else if (player_dead == true){
+                                                you_died_screen.style.display = "block";
+                                                  
+                                              } 
+
                                              
                                             
-                                           }
+                           }
                                      
                      
                      
@@ -1525,6 +1602,8 @@ function set_door_x_y(){
 
 
  
+
+
                       
   player_editor_context = document.querySelector("#pe_canvas").getContext("2d");
                                 
@@ -1679,17 +1758,6 @@ function set_door_x_y(){
   //shorten map
   minusEarthButton.addEventListener("click", () => minusEarth());
 
-  //tile editor
- // tileButton.addEventListener("click", function() {
-//
- // //game_paused = true;
- //   player_editor_paused = true;
- //   mapEdit();
-//
-//
- // });
-
-
 
   //tile editor
 
@@ -1700,16 +1768,6 @@ function set_door_x_y(){
   var scrollLeftBtn = document.getElementById("scroll-left");
   var scrollRightBtn = document.getElementById("scroll-right");
 
-  //coin editor
-//add_coin_btn.addEventListener("click", function(){
-//  player_editor_paused = true;
-// 
-//  coinAdder();
-//})
-//
-//remove_coin_btn.addEventListener("click", function(e){
-//  remove_coin(e, currentGame)
-//})
 
 respawn_coin_btn.addEventListener("click", function(){
   coin_list = currentGame.coins.slice();
@@ -1744,16 +1802,28 @@ set_door_x_y()
   
   let player_editor_button = document.getElementById('player_editor_button')
 
-  let player_editor_paused = false;
+  let player_editor_paused = true;
 
   window.requestAnimationFrame(player_editor_loop);
 
   player_editor_button.addEventListener("click",function(){
 
       player_editor_paused = !player_editor_paused;
-      game_paused = true;
+
+      if(player_editor_paused == false){
+
+        one_engine_at_a_time("player")
+
+        toggle_button.call(game_play_button)
     
-      window.requestAnimationFrame(player_editor_loop);  
+        window.requestAnimationFrame(player_editor_loop);  
+
+      }else{
+
+      game_play_toggle.call(game_play_button);
+
+      }
+
     
   });
 
@@ -1761,57 +1831,99 @@ set_door_x_y()
                 ///RUNNING GAME ENGINE///
                /////////////////////////
 
-  let game_play_button = document.getElementById('game-play-button');
 
-     let game_paused = true;
+
+
+
+      game_paused = true;
 
      var all_images = Object.keys(tile_sheet).length
 
      var loaded_images = 0;
 
-     game_play_button.addEventListener("click", function(){
+     //game playe button
 
-       game_paused = !game_paused;
+   game_play_button.addEventListener("click", function(){
 
-       if(map_edit_mode == true){
-         game_paused = true;
-       }
-     
-       map_edit_mode = false;
-     
-       clearMapEdit()
-     
-     
-       player_editor_paused = true;
-     
-     
-       if(all_images == loaded_images){
-         window.requestAnimationFrame(game_loop);  
-       }else{
-
-         for(let img in tile_sheet){
-           tile_sheet[img].addEventListener("load", function(){
-             loaded_images += 1;
-             if(all_images == loaded_images){
-               window.requestAnimationFrame(game_loop);  
-             }
-           })
-         }
-  
-      }
-      
-     
- 
-    
+    game_play_toggle.call(this)
     
   })
 
-  game_play_button.click()
+  function game_play_toggle(){
+
+    game_paused = !game_paused;
+
+    if(game_paused == false){
+
+      one_engine_at_a_time("game")
+
+    }
+    
+
+  toggle_button.call(this)
   
 
+  
+  
+    if(all_images == loaded_images){
+      window.requestAnimationFrame(game_loop);  
+    }else{
+
+      for(let img in tile_sheet){
+        tile_sheet[img].addEventListener("load", function(){
+          loaded_images += 1;
+          if(all_images == loaded_images){
+            window.requestAnimationFrame(game_loop);  
+          }
+        })
+      }
+     }
+ 
+  }
+
+  game_play_button.click()
+
+
+
+
+  function one_engine_at_a_time(save){
+    switch(save){
+      case "game":
+        game_paused = false;
+        player_editor_paused = true;
+      break;
+      case "player":
+        game_paused = true;
+        player_editor_paused = false;
+      break;
+      default:
+        game_paused = true;
+        player_editor_paused = true;
+      break;
+    }
+
+  }
+
+  
+  function toggle_button(){
+    if(at_door == false && player_dead == false){
+      if(game_paused == false){
+        paused_screen.style.display = "none";
+       this.textContent = "PAUSE ENGINE GAME LOOP"
+      }else{
+        paused_screen.style.display = "block";
+        this.textContent = "START GAME ENGINE LOOP"
+      }
+    }
+  }
+
+ 
+
   //move next two lines to bottom for cleanliness, "cleanliness is next to jimi hendrixliness"
-  window.addEventListener("keydown", controller.keyListener)
-  window.addEventListener("keyup", controller.keyListener)
+  window.addEventListener("keydown", controller.keyListener);
+  window.addEventListener("keyup", controller.keyListener);
+
+  
 
 });
 

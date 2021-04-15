@@ -133,8 +133,8 @@ function x_func(tt){
     tileDisplay.height = 80;
     tileDisplay.width = 80;
     let tileType = tt;
-    let testImg = document.createElement('img')
-    testImg.src = './public/images/grey_checkered_4px.png';
+   
+   
   
     
     let img = imageRef(parseInt(tileType.value), tile_sheet);
@@ -152,75 +152,69 @@ function x_func(tt){
   
    
     if(img.src == tile_sheet.coin.src){
-     // ctx.drawImage(testImg, 0, 0);
       ctx.drawImage(img, -23, 0);
     }else{
-      //  ctx.drawImage(testImg, 0, 0);
         ctx.drawImage(img, 0, 0);
     }
 
     if(tileType.value >=0 && tileType.value <= 3){
-        console.log(tileType.value)
-        if(painter_on == true){
+                     console.log(tileType.value)
+                     if(painter_on == true){
 
 
-            map_edit_mode = true;
-            clearMapEdit("tiles");
+                         map_edit_mode = true;
+                         clearMapEdit("tiles");
 
-            player_editor_paused = true;
-            mapEdit();
+                         player_editor_paused = true;
+                         mapEdit();     
 
-            
+                     } else if(eraser_on == true){
 
-        } else if(eraser_on == true){
+                         map_edit_mode = true;
+                         clearMapEdit("tiles");
 
-            map_edit_mode = true;
-            clearMapEdit("tiles");
+                         tileType.value = 0;
+                         tileType.click();
 
-            tileType.value = 0;
-            tileType.click();
-            
-            player_editor_paused = true;
-            mapEdit();
-            
+                         player_editor_paused = true;
+                         mapEdit();
 
-            
-        }
+                     }
         
     }else if(tileType.value == 4){  ////coins
         
-        if(painter_on == true){
+                    if(painter_on == true){
+                    
+                        coin_edit_mode = true;
+                        clearMapEdit("coins")
+                    
+                    
+                        player_editor_paused = true;
+                    
+                        coinAdder();
+                    
 
-            coin_edit_mode = true;
-            clearMapEdit("coins")
+                    
+                       } else if(eraser_on == true){
+                    
+                        erase_coins_mode = true;
+                        clearMapEdit("erase-coins")
+                    
+                        remove_coin()
+                    
 
-
-            player_editor_paused = true;
- 
-            coinAdder();
-
-            
-
-           } else if(eraser_on == true){
-
-            erase_coins_mode = true;
-            clearMapEdit("erase-coins")
-
-            remove_coin()
-
-               
-           }
+                       }
     }else if(tileType.value == 5){
-        if(painter_on == true){
-
-            door_edit_mode = true;
-            clearMapEdit("door")
-            mapSelectEdit()
-            setCursor()
-           } else if(eraser_on == true){
-
-               clearMapEdit()
-           }
+                     if(painter_on == true){
+                        
+                         door_edit_mode = true;
+                         clearMapEdit("door")
+                         mapSelectEdit()
+                         setCursor()
+                        } else if(eraser_on == true){
+                        
+                            clearMapEdit()
+                        }
     }
     tileType.click();
 

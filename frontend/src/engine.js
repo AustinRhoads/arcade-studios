@@ -265,10 +265,10 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
     if (player.getBottom() > bad.getTop() && player.getOldBottom() <= bad.getTop()){
       
         player.setBottom(bad.getTop() - 0.01);
-        console.log("dead")
         
         player.y_velocity = 0;
         player.jumping = false;
+        player_dead = true;
         
         return true;
     } return false;
@@ -293,7 +293,7 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
     if (player.getRight() > bad.getLeft() && player.getOldRight() <= bad.getLeft()){
         player.setRight(bad.getLeft() - 1);
         player.x_velocity = 0;
-        console.log("dead")
+        player_dead = true;
         return true;
     } return false;
     
@@ -306,7 +306,7 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
     if (player.getLeft() < bad.getRight() && player.getOldLeft() >= bad.getOldRight()){  
         player.setLeft(bad.getRight() + 1);
         player.x_velocity = 0;
-        console.log("dead")
+        player_dead = true;
         return true;
       } return false;
 
@@ -320,7 +320,7 @@ let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad
         
         bad.setBottom(player.getTop() - 10);
         bad.y_velocity = 0;
-        console.log("dead")
+        player_dead = true;
         return true;
      // } return false;
    
