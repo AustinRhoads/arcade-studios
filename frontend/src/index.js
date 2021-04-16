@@ -1437,7 +1437,23 @@ function set_door_x_y(){
                                                             }
                                               }
                                             
-                                            
+
+                                              ///broad phase
+
+                                              let near_baddies = []
+
+                                              for(let i = currentGame.alive_baddies.length - 1; i >=0; --i){
+                                                if(currentGame.alive_baddies[i].x >= currentGame.player.x - 450 && currentGame.alive_baddies[i].x <= currentGame.player.x + 450 ){
+                                                  near_baddies.push(currentGame.alive_baddies[i])
+                                                }
+                                              }
+                                             // console.log(near_baddies.length)
+
+                                            for(let x = near_baddies.length - 1; x >= 0; --x){
+                                              if(touching_baddy(near_baddies[x], currentGame.player)){
+                                                baddy_collide(near_baddies[x].type_of_baddy, currentGame.player, near_baddies[x])
+                                             }
+                                            }
                                             
                                               if(currentGame.alive_baddies){
                                                             for(let b = currentGame.alive_baddies.length - 1; b >= 0; --b){

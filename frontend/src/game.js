@@ -160,14 +160,9 @@ Coin.prototype = {
 
 function block_head_behavior(baddy){
     let destination_x = currentGame.player.x;
-   // let destination_y = currentGame.player.y;
+   
     let baddy_width = this.width;
-  //  let baddy_height = this.height;
-
-
-  if(touching_baddy(this, currentGame.player)){
-   baddy_collide(this.type_of_baddy, currentGame.player, this)
-}
+  
     
     switch(this.mode){
         case "waiting":
@@ -213,10 +208,6 @@ function block_head_behavior(baddy){
 }
 
 function back_and_forth_behavior(baddy){
-
-    if(touching_baddy(this, currentGame.player)){
-        baddy_collide(this.type_of_baddy, currentGame.player, this)
-     }
 
     switch(this.mode){
         case "waiting":
@@ -283,9 +274,6 @@ function back_and_forth_behavior(baddy){
 
 function follower_behavior(baddy){
  
-    if(touching_baddy(this, currentGame.player)){
-        baddy_collide(this.type_of_baddy, currentGame.player, this)
-     }
   
   switch(this.mode){
       case "waiting":
