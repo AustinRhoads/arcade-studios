@@ -1,3 +1,11 @@
+function aabb(player, b){
+  return player.getLeft() < b.getRight() && player.getRight() > b.getLeft() && player.getTop() < b.getBottom() && player.getBottom() > b.getTop();
+}
+
+
+
+
+
 function setOld(game){
     let player = game.player;
     let x = player.x;
@@ -74,7 +82,6 @@ function collision_detection(game, player){
     left = Math.floor(player.getLeft() / tile_size);
     val = game.map[top * game.columns + left]
     collide(val, player, left * tile_size, top * tile_size, tile_size);
-  //  console.log(currentGame.player.getTop() /tile_size);
  
  
     top = Math.floor(player.getTop() / tile_size);
@@ -182,30 +189,20 @@ function collideRight(player, tile_right){
 
 function coinCollide(coin, player , vp){
        
-
-  let rightOver = player.getRight() <= coin.getRight() - 11 && player.getRight() >= coin.getLeft() + 11;
-  let leftOver = player.getLeft() >= coin.getLeft() + 11 && player.getLeft() <= coin.getRight() - 11;
-  let topOver = player.getTop() <= coin.getBottom() && player.getTop() >= coin.getTop();
-  let bottomOver = player.getBottom() >= coin.getTop() && player.getBottom() <= coin.getBottom();
-  
-   if( (rightOver || leftOver) && (bottomOver || topOver) ){
+      if(aabb(player, coin)){
        return true;
-   };
+      }
+
   }
 
 
   
   function doorCollide(game, player , vp){
-       
 
-    let rightOver = player.getRight() <= game.end_of_game.getRight() && player.getRight() >= game.end_of_game.getLeft();
-    let leftOver = player.getLeft() >= game.end_of_game.getLeft() && player.getLeft() <= game.end_of_game.getRight();
-    let topOver = player.getTop() <= game.end_of_game.getBottom() && player.getTop() >= game.end_of_game.getTop();
-    let bottomOver = player.getBottom() >= game.end_of_game.getTop() && player.getBottom() <= game.end_of_game.getBottom();
-    
-     if( (rightOver || leftOver) && (bottomOver || topOver) ){
-         return true;
-     };
+      if(aabb(player, game.end_of_game)){
+       return true;
+      }
+
     }
   
     
@@ -216,21 +213,16 @@ function coinCollide(coin, player , vp){
 
 function touching_baddy(bad, player){
 
-let leftOver =  player.getLeft() <= bad.getRight() &&  player.getLeft() >= bad.getLeft();
-let topOver = player.getTop() <= bad.getBottom() && player.getTop() >= bad.getTop();
-let rightOver = player.getRight() >= bad.getLeft() && player.getRight() <= bad.getRight();
-let bottomOver = player.getBottom() >= bad.getTop() && player.getBottom() <= bad.getBottom();
-
-  if((leftOver || rightOver) && (bottomOver || topOver)){
-      return true;
-  }else{return false}
+if(aabb(player, bad)){
+  return true;
+}else{return false}
 
 
 }
 
 
   function baddy_collide(val, player, bad){
-    //var val = bad.type_of_baddy
+    
     switch(val){
       case 1:
               

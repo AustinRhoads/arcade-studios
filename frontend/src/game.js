@@ -154,8 +154,8 @@ function Coin(column, row){
 Coin.prototype = {
     getBottom: function() {return this.y + this.height},
     getTop: function(){return this.y },
-    getLeft: function(){return this.x},
-    getRight: function(){return this.x + this.width},
+    getLeft: function(){return this.x + 11},
+    getRight: function(){return this.x + this.width - 11},
 }
 
 function block_head_behavior(baddy){
@@ -222,12 +222,9 @@ function back_and_forth_behavior(baddy){
           let baddy_x = this.x;
           let baddy_width = this.width;
           let baddy_speed = this.speed;
-          //let baddy_x_velocity = this.x_velocity;
-          //let baddy_y_velocity = this.x_velocity;
           let baddy_x_respawn = this.x_respawn;
-          //let baddy_y_respawn = this.y_respawn;
           let destination_x = currentGame.player.x
-          let player = currentGame.player;
+          
 
             if(this.x_velocity == 0 || this.paces >= this.range || baddy_x == currentGame.canvas_width - baddy_width - 1){
                 
@@ -251,7 +248,7 @@ function back_and_forth_behavior(baddy){
                 this.image = this.first_image;
                }
 
-               //calling collision_destection
+               
 
 
 
@@ -287,8 +284,6 @@ function follower_behavior(baddy){
       case "chasing":
           let baddy_x = this.x
           let destination_x = currentGame.player.x
-          let baddy_width = this.width
-
           let distance = destination_x - baddy_x
           this.x_velocity += distance * (0.0005 * this.speed);
           this.x += this.x_velocity;
