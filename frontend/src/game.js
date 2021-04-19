@@ -329,7 +329,7 @@ function retrieve_in_x_seconds(baddy, seconds){
 }
 
 
-function EndOfGame(x_pos, y_pos){
+function EndOfGame(x_pos = 0, y_pos = 0){
 this.x_pos = x_pos,
 this.y_pos = y_pos,
 this.width = 80,

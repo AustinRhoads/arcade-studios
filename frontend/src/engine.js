@@ -78,7 +78,7 @@ function collision_detection(game, player){
     var top, left, bottom, right, val
  
  
-   top = Math.floor(player.getTop() / tile_size);
+    top = Math.floor(player.getTop() / tile_size);
     left = Math.floor(player.getLeft() / tile_size);
     val = game.map[top * game.columns + left]
     collide(val, player, left * tile_size, top * tile_size, tile_size);
@@ -104,10 +104,9 @@ function collision_detection(game, player){
    function collide(val, player, tile_x, tile_y, tile_size){
      
      switch(val){
-       case 0:
-       //sky
+       case 0://sky      
        break;
-       case 1: if(collideTop   (player, tile_y             )); break;   // return; //earth
+       case 1: if(collideTop   (player, tile_y             )); break; //earth
        case 2: if(collideTop   (player, tile_y             )) return; //crate
                if(collideLeft  (player, tile_x             )) return;
                if(collideRight (player, tile_x + tile_size )) return;
@@ -306,7 +305,7 @@ if(aabb(player, bad)){
   
   function baddyCollideBottom(player, bad){
    
-  //    if(player.getTop() <= bad.getBottom() && player.getOldTop() >= bad.getBottom()){
+  
         player.setTop(bad.getBottom() + 0.01);
         player.y_velocity = 0;
         
@@ -314,7 +313,7 @@ if(aabb(player, bad)){
         bad.y_velocity = 0;
         player_dead = true;
         return true;
-     // } return false;
+ 
    
   }
 

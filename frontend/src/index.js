@@ -617,7 +617,7 @@ invincible_switch.addEventListener("click", function(){
                   let player_jumping_height = document.getElementById('player_jumping_height').value;
                 
                   gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
-                
+                console.log(gameData.player)
                   gameData.baddies = [];
                 
                   gameData.baddies = currentGame.baddies;
@@ -728,6 +728,7 @@ invincible_switch.addEventListener("click", function(){
                 
                 
                      //game properties
+                    
                     let name = gameData.name;
                     let gravity = gameData.gravity;
                     let friction = gameData.friction;
@@ -756,13 +757,21 @@ invincible_switch.addEventListener("click", function(){
                 
                 
                     //player properties
-                    let p_name = gameData.player.name;
-                    let p_height = gameData.player.height;
-                    let p_width = gameData.player.width;
-                    let p_speed = gameData.player.speed;
-                    let p_jumping_height = gameData.player.jumping_height;
                     
-                    loadedGame.player = new Player(p_name, p_height, p_width, p_speed, p_jumping_height);
+                    if(gameData.player){
+                      let p_name = gameData.player.name;
+                      let p_height = gameData.player.height;
+                      let p_width = gameData.player.width;
+                      let p_speed = gameData.player.speed;
+                      let p_jumping_height = gameData.player.jumping_height;
+                      
+                      loadedGame.player = new Player(p_name, p_height, p_width, p_speed, p_jumping_height);
+                    }else{
+                      loadedGame.player = new Player("", 32, 32, 20, 20);
+                    }
+
+                    
+
                 
                 
                     //baddy properties
@@ -796,7 +805,7 @@ invincible_switch.addEventListener("click", function(){
                 
                     currentGame = loadedGame;
 
-                    
+                 
                    
                     resetGame(currentGame);
                   
@@ -850,7 +859,7 @@ invincible_switch.addEventListener("click", function(){
                             /////////////////
                 
                   function deleteGame(){
-                
+                    console.log(currentGame.id)
                     if(confirm("Are you sure you want to delete this game?")){
                  
                   
@@ -863,7 +872,7 @@ invincible_switch.addEventListener("click", function(){
                         body: JSON.stringify(currentGame)
                       }
                 
-                
+                      console.log(currentGame.id)
                       fetch(GAMES_URL+`/${currentGame.id}`, configurationObject)
                       .then()
                       .then(function() {
@@ -873,7 +882,7 @@ invincible_switch.addEventListener("click", function(){
                       )
                     }
                     
-                    
+                    populate_load_list()
                   }         
 
 
@@ -914,8 +923,8 @@ function resetGame(gameObj){
    gameObj ||= defaultSettings();
    currentGame = gameObj;
    map_edit_mode = false;
-   currentGame.player.x = currentGame.player.x_respawn;//add currentGame.x_respawn 
-   currentGame.player.y = currentGame.player.y_respawn;//add currentGame.y_respawn
+   currentGame.player.x = currentGame.player.x_respawn; 
+   currentGame.player.y = currentGame.player.y_respawn;
    currentGame.player.edit_x = 144;
    currentGame.player.edit_y = 0; 
    currentGame.player.jumping = true;
@@ -1439,7 +1448,7 @@ function set_door_x_y(){
                                             
 
                                               ///broad phase
-                                              let near_min = currentGame.player.x - 450;
+                                              let near_min = currentGame.player.x - 450 ;
                                               let near_max = currentGame.player.x + 450;
 
                                               let near_baddies = []
@@ -1594,10 +1603,14 @@ function set_door_x_y(){
                                                 game_context.rect(tile_selector_x, tile_selector_y, tile_size, tile_size);
                                                 game_context.stroke()
                                               }
-                              
-                                              if(doorCollide(currentGame, currentGame.player, viewport) == true && currentGame.end_of_game.active == true){
-                                                at_door = true;
+
+                                              if(currentGame.end_of_game.x_pos > near_min && currentGame.end_of_game.x_pos < near_max){
+                                                if(doorCollide(currentGame, currentGame.player, viewport) == true && currentGame.end_of_game.active == true){
+                                                  at_door = true;
+                                                }
                                               }
+                              
+                                       
 
 
                                               if(invincible_mode == true){
