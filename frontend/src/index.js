@@ -1439,11 +1439,13 @@ function set_door_x_y(){
                                             
 
                                               ///broad phase
+                                              let near_min = currentGame.player.x - 450;
+                                              let near_max = currentGame.player.x + 450;
 
                                               let near_baddies = []
 
                                               for(let i = currentGame.alive_baddies.length - 1; i >=0; --i){
-                                                if(currentGame.alive_baddies[i].x >= currentGame.player.x - 450 && currentGame.alive_baddies[i].x <= currentGame.player.x + 450 ){
+                                                if(currentGame.alive_baddies[i].x >= near_min && currentGame.alive_baddies[i].x <= near_max ){
                                                   near_baddies.push(currentGame.alive_baddies[i])
                                                 }
                                               }
@@ -1545,17 +1547,31 @@ function set_door_x_y(){
                                                 }
               
 
+                                                let near_coins = [];
+
                                                 if(coin_list.length != 0){
                                                  placeCoins(coin_list, viewport, game_context);
+
+                                                 
                                                 
                                                  for(let i = coin_list.length - 1; i >= 0; --i){
                                                   
-                                                   if( coinCollide(coin_list[i], currentGame.player, viewport)){
-                                                     coin_list.splice( i, 1);
-                                                     coin_count += 1;
-                                                   }
+                                                      if(coin_list[i].x > near_min && coin_list[i].x < near_max){
+                                                        near_coins.push(coin_list[i])
+                                                      }
                                                   
                                                  }  
+
+                                                 let this_player = currentGame.player
+
+                                                 for(let x = near_coins.length - 1; x >= 0; --x){
+                                                  if(coinCollide(near_coins[x], this_player, viewport)){
+                                                    let index = coin_list.indexOf(near_coins[x])
+                                                    coin_list.splice( index, 1);
+                                                    coin_count += 1;
+                                                  }
+                                                 }
+
                                              }
 
                             
