@@ -3,7 +3,7 @@ class GamesController < ApplicationController
     def index
         games = Game.all 
         options = {
-            include: [:players, :baddies,  :name, :player, :gravity, :friction, :canvas_width, :canvas_height, :map, :coins]
+            include: [:player, :baddies,  :name, :player, :gravity, :friction, :canvas_width, :canvas_height, :map, :coins]
         }
         render json: GameSerializer.new(games)
     end
@@ -90,13 +90,19 @@ class GamesController < ApplicationController
 
     def destroy
         game = Game.find_by(:id => params[:id])
+        
+        game.baddies.each do |b|
+            b.delete
+        end
+      
+        game.end_of_game.delete
         game.player.delete
         game.delete
     end
 
 
     def game_params
-        params.require(:game).permit( :name, :player, :gravity, :friction, :canvas_width, :canvas_height, :columns, :rows, coins: [], map: [])
+        params.require(:game).permit( :name, :id, :player, :gravity, :friction, :canvas_width, :canvas_height, :columns, :rows, coins: [], map: [])
     end
 
     def player_params
