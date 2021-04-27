@@ -323,7 +323,6 @@ function addBaddy(new_baddy){
   respawn_button.addEventListener("click", function(){
     reset_alive_baddies()
     new_baddy.mode = "waiting"
-   // currentGame.alive_baddies = currentGame.baddies.slice();
     new_baddy.respawn();
   })
 
@@ -446,27 +445,10 @@ if(follower_option.value == new_baddy.type_of_baddy){
 }
 
 
-/*
-let spikes_option = document.createElement('option');
-spikes_option.value = 4;
-spikes_option.innerHTML = "Spikes";
-
-
-let jumper_option = document.createElement('option');
-jumper_option.value = 5;
-jumper_option.innerHTML = "Jumper";
-*/
-
 
 type_of_baddyInput.appendChild(block_head_option);  
 type_of_baddyInput.appendChild(back_and_forth_option);
 type_of_baddyInput.appendChild(follower_option);
-//type_of_baddyInput.appendChild(spikes_option);
-//type_of_baddyInput.appendChild(jumper_option);
-
-
-
-
 
 
   let idInput =  document.createElement("input");
@@ -1955,10 +1937,12 @@ set_door_x_y()
     if(at_door == false && player_dead == false){
       if(game_paused == false){
         paused_screen.style.display = "none";
-       this.textContent = "PAUSE ENGINE GAME LOOP"
+      // this.textContent = "PAUSE GAME ENGINE LOOP"
+      this.style.backgroundImage = "url('./public/images/homebrew_pause_button.png')";
       }else{
         paused_screen.style.display = "block";
-        this.textContent = "START GAME ENGINE LOOP"
+      //  this.textContent = "START GAME ENGINE LOOP"
+      this.style.backgroundImage = "url('./public/images/home_brew_play_button.png')";
       }
     }
   }

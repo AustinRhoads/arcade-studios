@@ -30,7 +30,7 @@ body{
     background-color: rgb(109, 105, 105);
     width: 360px;
     color: seashell;
-    border: solid rgb(218, 218, 218) 1px;
+   /* border: solid rgb(218, 218, 218) 1px;*/
     border-radius: 25px;
     box-shadow: 1px 1px 1px 1px #888888;
 }
@@ -317,7 +317,8 @@ fieldset#end-of-game-editor{
   .tabcontent {
     display: none;
     padding: 6px 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc ;
+    border-radius: 25px;
     border-top: none;
   }
 
@@ -471,4 +472,45 @@ fieldset#end-of-game-editor{
   
   .slider.round:before {
     border-radius: 50%;
+  }
+
+  button{
+    border-radius: 4px;
+  }
+
+
+  button:hover{
+cursor: pointer;
+  }
+
+  #game_save_button{
+    border-radius: 4px;
+  }
+
+  #delete-button{
+    border-radius: 4px;
+  }
+
+  #scroll-left{
+    background-image: url(./public/images/homebrew_left.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 60px;
+    height: 40px;
+  }
+
+  #scroll-right{
+    background-image: url(./public/images/home_brew_right.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 60px;
+    height: 40px;
+  }
+
+  #game-play-button{
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url(./public/images/home_brew_play_button.png);
+    width: 60px;
+    height: 40px;
   }
