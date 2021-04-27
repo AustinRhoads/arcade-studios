@@ -158,7 +158,7 @@ function x_func(tt){
     }
 
     if(tileType.value >=0 && tileType.value <= 3){
-                     console.log(tileType.value)
+                     
                      if(painter_on == true){
 
 

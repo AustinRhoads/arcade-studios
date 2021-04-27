@@ -97,11 +97,13 @@ div#border-div{
 }
 
 div#game-console{
+  display:inline-block;
     height: 40px;
     margin-top: 60px;
+    margin-left: 35%;
     border: solid black 6px;
-    border-radius: 25px; 
-    width: 330px;
+    border-radius: 8px; 
+    width: auto;
     overflow: hidden;
   
 }

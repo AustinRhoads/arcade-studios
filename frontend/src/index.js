@@ -59,6 +59,8 @@ var invincible_switch = document.getElementById('invincible-switch');
 
 
 
+
+
 function populate_load_list(){
 
   let loader_box = document.getElementById('game-loader');
@@ -633,6 +635,8 @@ invincible_switch.addEventListener("click", function(){
                       body: JSON.stringify(gameData)
                     };
                 
+                   
+
                   fetch(GAMES_URL, postGameObject)
                   .then(resp => resp.json())
                   .then(function(obj){
@@ -648,6 +652,8 @@ invincible_switch.addEventListener("click", function(){
                 
                   })
                 }
+
+                
                 
                 if(currentGame.id != null){
                   
@@ -1379,9 +1385,21 @@ function set_door_x_y(){
   
  window.addEventListener('DOMContentLoaded',  () => {
 
- 
+ /*
+let palletteImages = document.getElementsByClassName("palette-img");
 
-  
+for( let x = palletteImages.length -1; x >= 0; --x){
+  let p = document.createElement('p')
+  p.textContent = 0
+  palletteImages[x].parentNode.insertBefore(p, palletteImages[x].nextSibling)
+
+  palletteImages[x].addEventListener("click", function(){
+    this.nextSibling.textContent = parseInt(this.nextSibling.textContent) + 1
+  })
+}
+
+*/  
+
   resetGame();
   
 
