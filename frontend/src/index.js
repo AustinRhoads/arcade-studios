@@ -140,8 +140,9 @@ function populate_editor(obj){
  }
 
  if(obj.end_of_game){
-  door_x_pos.value = obj.end_of_game.x_pos;
-  door_y_pos.value = obj.end_of_game.y_pos;
+   console.log(obj.end_of_game.x_pos)
+  door_x_pos.value = obj.end_of_game.x_pos ||= 0;
+  door_y_pos.value = obj.end_of_game.y_pos ||= 0;
   
  }
 
@@ -617,7 +618,7 @@ invincible_switch.addEventListener("click", function(){
                   let player_jumping_height = document.getElementById('player_jumping_height').value;
                 
                   gameData.player = new Player(player_name, ...Array(2), player_speed, player_jumping_height);
-                console.log(gameData.player)
+                
                   gameData.baddies = [];
                 
                   gameData.baddies = currentGame.baddies;
@@ -859,7 +860,7 @@ invincible_switch.addEventListener("click", function(){
                             /////////////////
                 
                   function deleteGame(){
-                    console.log(currentGame.id)
+                   
                     if(confirm("Are you sure you want to delete this game?")){
                  
                   
@@ -872,7 +873,7 @@ invincible_switch.addEventListener("click", function(){
                         body: JSON.stringify(currentGame)
                       }
                 
-                      console.log(currentGame.id)
+                     
                       fetch(GAMES_URL+`/${currentGame.id}`, configurationObject)
                       .then()
                       .then(function() {
@@ -1833,8 +1834,8 @@ door_y_pos.addEventListener("change", function(){
 set_door_x_y()
 })
 
-  scrollLeftBtn.onmousedown = function () { map_edit_mode = true; scrollLeft(viewport, currentGame.player)};
-  scrollRightBtn.onmousedown = function () { map_edit_mode = true; scrollRight(viewport, currentGame.player)};
+  scrollLeftBtn.onmousedown = function () { scrollLeft(viewport, currentGame.player)};
+  scrollRightBtn.onmousedown = function () { scrollRight(viewport, currentGame.player)};
 
 
 
