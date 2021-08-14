@@ -1,4 +1,4 @@
-# player-one-maker
+# Arcade Studios
 
 Design and play your own 2d platformer game!
 
